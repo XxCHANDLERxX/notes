@@ -1,0 +1,130 @@
+Lecture 01
+Data Structures and Data Management
+
+Opening vid: Gigi D' Agostino: The Riddle
+
+Can attend either lecture section occasionally.
+
+ISA John Wittnebel 4th year CS co-op
+Piazza poll for office hours, 3 hours in tutorial centre
+
+(Not prof) Olga Zorin "Call me Olga"
+Taught course before, hasn't changed much over time.
+Office MC 4005, hours on web page. (4-5 TTh)
+
+A0 posted - learn LaTeX
+Tutorial this week on LaTeX
+6 bonus marks on A1 mark!
+
+Assignments submitted online on Markus - use LaTeX!
+(Or scan, but scans of handwriting can be messy.)
+
+All assignments due Mondays 5pm,
+Except for A1 due Tues May 19 and A5 Fri July 24
+
+Textbooks are optional
+    CLRS Algorithms textbook is famous, also used in CS 341
+
+Piazza - search before posting!
+
+Email cs240@student.cs.uwaterloo.ca "John will respond"
+
+Final 50%
+Midterm Tuesday June 23 4:30pm 25%
+5 assignments 5% each for 25%
+Must pass weighted average of both exams to pass.
+
+Ask lots of questions in the lecture!
+
+Study slides before and after class, and attend all lectures!
+Lots of tedious proofs covered in class.
+
+Lots of different topics, don't worry about not getting one.
+
+Course objectives:
+
+    How do you sort and retrieve your socks?
+
+    Study efficient methods of storing, accessing, and performing operations on
+    large collections of data.
+
+    Inserting new data items (throwing socks into the drawer)
+    Deleting data
+    Searching for data
+    Sorting
+
+    Motivating examples: music collections, dictionaries
+
+    We will consider some Abstract Data Types (ADTs) and how to implement them
+    efficiently using appropriate data structures.
+
+    ADT - "A description of things you want to do with your data."
+
+    Data structure example - linked list
+    ADT example - queue
+
+    Lots of mathematical analysis and proofs
+
+        e.g. analysing code to see how many times something runs
+    
+    Big-O notation
+
+Course topics
+
+    Priority queues and heaps
+    Sorting - more in-depth theory instead of just learning algorithms
+    Binary search trees (self balancing!), AVL trees, B-trees
+    Skip lists (intro to randomized complexity!)
+    Hashing (hash tables! how are they so fast!?)
+    Quadtrees, kd-trees (how to solve geometric problems? e.g. closest store)
+    Range search
+    Tries "really cute!"
+    String matching
+    Data compression (lossless! CS 370 discusses lossy)
+
+    "Ask me about anything in my office! Strings?!"
+
+Recall:
+
+    Sorting algos: Heap, insertion, binary, quick, etc.
+
+    Binary search trees
+
+Terminology:
+
+    Problem: given a problem instance, carry out a computational task
+    Problem instance: input for specified problem
+    Problem output: output (correct answer) for the specified problem instance
+    Algorithm: step-by-step process
+    Algorithm solving a problem: A solves a problem N if for every instance I of
+        N, A finds a valid solution for he instance I in finite time.
+    Program: Implementation of an algorithm using a specified computer language.
+
+This course emphasises algorithms (as opposed to progams or programming)
+
+Algorithm design: A that solves N
+Algorithm Analysis: Asses correctness and efficiency of A
+If acceptable (correct and efficient), implement A
+
+We are mainly concerned with running time efficiency.
+We may also be interested in memory (space) efficiency.
+The amount/time required by program depends on size(I), the input size
+
+Experiemental study of algorithms:
+
+    Implement algorithm, run it with various input sizes and compositions.
+    Use a method like clock() from time.h to measure actual running time.
+    Plot/compare the results.
+
+    Problems:
+
+        Different hardware cases?
+        Best/worst case inputs?
+        You have to implement the programs :(
+            "Watching a TV show would be more better for my soul!"
+        Sometimes, inefficient things are okay.
+            "Nobody is going to kill you as long as you sort the data."
+            (But sometimes it is a must.)
+
+Short lecture today!
+

@@ -1,0 +1,282 @@
+Recall:
+
+    Start
+        a-zA-Z -> ACCEPT (loop while a-zA-Z0-9)
+        <- EPSILLON (output token here)
+
+    - input abab could be 1, 2, 3, or 4 tokens
+    - take the EPSILLON move only when there is no other choice
+      (always return the longest possible token)
+
+    Could miss valid matches, e.g. L = {aa, aaa} word = aaaa
+
+Concrete realization: Maximal Munch Algorithm
+
+    "Take the largest bite out of the input as you can."
+
+    Run the DFA (no EPSILLON-moves) until no non-error move is available.
+    If in an accepting state:
+        token found
+    Else:
+        Back up to most recent accepting state (use a variable to track this).
+        Input up until that point is the next token.
+        Resume scanning from there.
+    Endif.
+    Output token; EPSILLON-move back to start.
+
+Simplified Maximal Munch Algorithm
+
+    As above, but:
+        
+        If you are not in an accepting state when no transitions are possible,
+        error. In other words, no backtracking.
+
+    Note that this simplification is language-dependant, rather than a matter of
+    personal preference. Only certain languages support Simplified MM.
+
+    "This example should make everyone happy - we're combining the best parts of
+     Scheme and the best parts of C!"
+
+    Example: Identifiers begin and end with a letter, and can include dashes.
+
+    "I love typing dashes in Scheme!"
+
+    Operator: --
+
+    "Who doesn't love operator-- and operator++ in C?"
+
+    Input: ab--,
+
+    Machine thinks:
+        
+        "a" is a valid identifier
+        "ab" is a valid identifier
+        "ab-" is a valid identifer (dashes are allowed)
+        "ab--" is a valid identifer, but at this point we have no further valid
+        characters to be consumed without falling off.
+
+        But "ab--" isn't a valid token (doesn't end with a letter), and our
+        machine isn't in an accepting state.
+
+        Simplified MM: ERROR!
+
+        MM: back up to previous accepting state ("ab"), output that token, and
+        scan from there ("--,").
+
+    In practice, SMM is very often good enough.
+
+        "Our WLP4 scanner can be Simplified MM."
+
+    Languages are usually designed for easy scanning.
+
+    "What logical person would intentionally make the problem harder when
+     designing a language?"
+
+        Example: C++ ;)
+
+            vector<vector <int>> v; // won't compile!
+
+        C++'s longest-match scanner sees ">>" as one token, a bitshift operator,
+        rather than as two ">" tokens.
+
+        C++ solution (pre-C++11):
+
+            "Let's make it the programmer's fault!"
+
+            vector<vector <int> > v; // compiles!
+
+            This makes it look like two tokens.
+
+            Tangent: they did "fix" this problem in C++11, such that ">>" above
+            will be recognized as two ">" tokens. The scanner has been hacked to
+            look for close-angled brackets, but wait - the bitshift operator can
+            be used legally here in some places.
+
+                e.g.
+
+                    Template <int n> T;
+                    T<44 >> 3> // incorrect
+                    T<(44 >> 3)> // correct
+
+                "Don't write this down."
+
+    Recall the question we covered already (now stated in reverse):
+
+        What (if any) specific features of C (or Scheme) cannot be verified with
+        a DFA?
+
+            "If you had to explain Scheme in lamen terms you would say -
+            parenthesis!"
+
+            Consider the alphabet SIGMA = {(, )}
+            L = { w in SIGMA* | w is a string of balanced parens }
+
+                e.g. EPSILLON IN L, () IN L, ()() IN L, (()) IN L, (())() IN L,
+                )( NOT IN L
+
+            Can we build a DFA for L?
+
+                Start state (Accepting)
+                    -> ( (not accepting)
+                    <- ) (back home)
+
+                This accepts '()' and '()()' but not '(())'.
+                Improved:
+
+                Start state (Accepting)
+                    -> ( (not accepting)
+                        -> ( (not accepting)
+                        <- ) (back home)
+                    <- ) (back home)
+
+                Now we support '(())' but not '((()))' etc.
+
+            But we can't assume that there is an upper bound on the number of
+            parenthesis that a Scheme program can be nested.
+
+            Each new state lets us recognize one more level of nesting. But no
+            finite number of states recognizes all levels of nesting, and DFAs
+            have finitely many states.
+            
+                (We haven't proven this, but it's true.)
+
+            "That's our signal to move on to a more complex languages."
+
+Context-free Languages
+
+    Context-free languages are languages that can be described by a context-free
+    grammar.
+
+    Intuition: balanced parens problem
+
+        "A word in the language is either empty or a word in the language
+         surrounded by '()', or the concatenation of two words in the
+         language."
+
+        S -> EPSILLON
+        S -> (S)
+        S -> SS
+
+    Shorthand:
+        
+        S -> EPSILLON | (S) | SS
+        
+        (Where '|' means 'or'.)
+
+    Show that this system generates '(())()'
+
+        S => SS => (S)S => (S)(S) => ((S))(S) => (())(S) => (())()
+
+        Note: in the final steps we replace S with EPSILLON.
+        Note: Read "=>" as "derives".
+
+            So ALPHA => BETA means that BETA can be optained from ALPHA by one
+            application of a grammar rule.
+
+        Note: If we ask you for a derivation and your notation is wrong, you
+        will get the question wrong. don't confuse single-arrows in the
+        definition with the double-arrow derivation notation.
+
+    Formal definition:
+
+        A context-free grammar consists of:
+
+            - An alphabet, SIGMA, of terminal symbols.
+            - A finite, non-empty set N of non-terminal symbols.
+              
+                  SIGMA UNION N = GAMMA (We use V, as in vocabulary, to denote
+                  N UNION EPSILLON).
+
+            - A finite set P of productions.
+
+                  Productions have the form A -> B, where A IN N and B IN V*
+                  "A is non-terminal and B is terminal."
+
+            - An element S IN N (start symbol).
+
+        Q: What are the terminal symbols in the above parens example?
+        A: '(' and ')'
+
+        Q: What are our non-terminal symbols?
+        A: 'S'
+
+    Conventions:
+
+        When I use letters like a, b, c, etc. (letters near the beginning of the
+        alphabet) - typically denote elements of SIGMA (characters).
+
+        Letters like w, x, y (near the end of the alphabet) denote elements of
+        SIGMA* (strings/words).
+
+        Capital letters like A, B, C typically denote elements of N.
+        
+        S - Denotes start symbol.
+
+        ALPHA, BETA, GAMMA - Denotes elements of V* = (SIGMA UNION N)*
+
+        We write ALPHA A BETA => ALPHA GAMMA BETA if there is a production
+        A -> GAMMA in P (right hand side is derivable from left hand side in one
+        step).
+
+        ALPHA =>* BETA means ALPHA => ... => BETA (0 or more steps)
+
+    Definition:
+    
+        L(G) = { w IN SIGMA* | S => *w }
+
+        Where L(G) is a language specified by G, and SIGMA* is the strings of
+        terminals derivable from S.
+
+    Definition:
+        
+        A language L is context-free if L = L(G) for some context-free grammar
+        G.
+
+    Example: Palindromes over {a, b, c}.
+
+        S -> aSa | bSb | cSc | M
+        M -> a | b | c | EPSILLON
+
+        "This is our first example of a context-free grammar with more than one
+         non-terminal."
+
+        Q: Show S =>* abcba
+
+            S => aSa => abSba => abMba => abcba
+
+            This process is called a derivation.
+
+    Expressions:
+
+        SIGMA = { a, b, c, +, -, *, / }
+        L = { arithmetic expressions over SIGMA }
+
+        "Assume variable names are single-variable."
+
+        S -> S OP S | a | b | c
+        OP -> + | - | * | /
+
+        "An expression can be thought of as two expressions with an operator in
+         between."
+
+    Now how would we need to modify that to allow us to use parens?
+
+        SIGMA = { a, b, c, +, -, *, /, (, ) }
+        L = { arithmetic expressions over SIGMA }
+
+        S -> S OP S | a | b | c | (S)
+        OP -> + | - | * | /
+                                                    
+    Show: S =>* a + b
+
+        S => S OP S => a OP S => a + S => a + b
+
+    Notice how we had a choice of which symbol to expand.
+
+        Leftmost derivation - always expand the leftmost symbol.
+        Rightmost derivation - always expand the rightmost symbol.
+
+A5 is due tomorrow; we have 2 weeks to do A6 because of the midterm.
+Don't wait 2 weeks to start A6! It will be good prep for the midterm.
+A7 is a historically difficult assigment - please do it! It isn't that bad!
+

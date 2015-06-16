@@ -1,0 +1,122 @@
+Lecture 2 May 7 2015
+
+Analyzing algorithms
+
+    We will express our algorithms in language-neutral pseudocode rather than a
+    full programming language.
+
+    We need a model of computation in order to compare efficiency:
+
+        Recall: We have RAM, which is like an array of memory that we can access
+        in constant time.
+
+        So we can assume memory access is constant time.
+
+            Fetching and storing is constant time. We call these unit-cost
+            operations.
+
+        We also assume that basic arithmetic operations are constant
+        time.
+
+    Other running time simplifications:
+
+        Over come dependency on hardware/software by:
+            Using pseudocode
+            Counting the number of primitive operations
+            Assume primitive operations are similar across systems
+
+        Simplify comparisons by:
+            Using order notation
+            Ignoring lower-power terms
+
+    Order notation:
+
+        O-notation
+        Ω-notation
+        Θ-notation
+        o-notation
+
+    After some point, f(n) is going to be sandwiched between t
+
+    Our function is within O(n^2) -> "Our function doesn't grow any faster than
+    n^2." (An upper bound, or worse case)
+
+
+    Our function is within Ω(n) -> "Our function doesn't grow any slower
+    than n." (A lower bound, or best case)
+
+    Solving big-O or big-Ω is just a matter of finding a constant to satisfy
+    the inequalities shown on the slides.
+
+    Little-O (o) and Little-Ω (ω) are strict upper and lower bounds.
+
+    Summary:
+
+        Big-O: g is an upper bound for f, within constant factors (so we ignore 
+        constant values) for large values of n.
+
+        Big-Ω: g is a lower bound for f, within constant factors, for large
+        values of n.
+
+        Little-o: g is a strict upper bound for f, for large n.
+
+        Little-ω: g is a strict lower bound for f.
+
+    Note that even if small values don't hold, we just need large n to
+    eventually overpower g.
+
+    We will be doing a lot of proofs of these properties.
+
+    "Assignment 0 is annoying because we need to do a lot of these nitty-gritty
+     proofs."
+
+Complexity of algorithms
+
+    Goal: express running time of algorithm as a function of n, where n is the
+    input size.
+
+    Terminology TA(I) Time of algorithm A on problem instance I.
+
+    We can look at:
+        Best case:
+            e.g. Insertion sort, best case sorting an empty array is really fast
+            but remember that we are still looking at input of size n.
+
+            So the best case is *when the array is already sorted*, and so the
+            best case runtime is linear (O(n)).
+
+            Best case is the minimum cost of an operation *as a function of n*.
+
+        Average-case:
+            Difficult to compute... compute average across ALL inputs
+            and consider weighted average based on chance of each input. Ick!
+
+            Average case is the average cost over all inputs of size n as a
+            function or n. The slides assume a uniform distribution. However,
+            we usually need knowledge or assumptions about the probability
+            distribution of your input.
+
+            It's typical to assume the distribution is uniform.
+
+        Worst-case:
+            We need to make sure the worst case is "good enough".
+
+    We usually look at worst-case.
+
+Growth rates
+
+    Theta(1)
+    Theta(n)
+    ...
+
+    How it affects running time if, say, input size doubles.
+
+Complexity vs running time
+
+    If A1 has complexity O(n^3) and A2 has O(n^2), we can't say for certain A2
+    is less complex than A1.
+
+    Big-O(n^3) only says n^3 is *an upper bound*.
+
+    Any algorithm is technically O(2^n).
+

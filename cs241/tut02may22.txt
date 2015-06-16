@@ -1,0 +1,156 @@
+Tutorial 2 May 22 2015
+
+Topics
+    1) Symbol Tables
+    2) Assembly Errors
+    3) C++ Review
+
+1)
+
+Code:
+    begin:
+    label: beq $0, $0, after
+    jr $4
+
+    after:
+    sw $31, 16($0)
+    lis $4
+    abc0: abc1: .word after
+
+    loadStore:
+    lw $20, 4($0)
+    sw $20, 28($0)
+
+    end:
+
+Symbol table (lookup table of all the labels and their addresses):
+
+    Note: each line jumps the counter by 4 because each instruction is 4 bytes
+
+    A label itself doesn't take up space in the machine code.
+    Whay allow two labels on one line? Our language doesn't impose that
+    restriction, because we may want to do that.
+
+    name  | value
+    begin      0
+    after      8
+    label      0
+    loadStore  20
+    abc0       16
+    abc1       16
+    end        28
+
+Error checking
+
+    We want to weed out unwanted/confusing cases, like this in C:
+
+    int main() {
+        int a;
+        &a = 10; // lol wut
+    }
+
+
+    label: label: .word label
+    .word ;0
+    .word aaaaa
+    .word 1 2 3
+    .word 2147483648 abcde:
+    .word ,
+
+    Errors:
+        1: duplicate label definition
+        2: argument is commented (.word has no arg)
+           Warn: .word not used after lis
+        3: 'aaaaa' label undefined; did you mean '0xaaaaa'?
+        4: .word has 3 operands
+        5: Note: .word operand (2^31) is too big for unsigned [-2^31, 2^31 - 1]
+           Can be an unsigned int [0, 2^32]
+        5: label not defined at the beginning of the line, also .word has 2
+           operands
+        6: invalid argument to .word (,)
+
+    "labels must start with a letter"
+
+C++ Review
+
+    "I don't have a lot of advice for you in Racket except to not do
+    imperative style with it by doing mutation."
+
+    STL
+
+    .pair<anyType, anyType>
+    .pair<int, string> p; p.first = 5; p.second = 'foo';
+
+    .vector
+        grows for me
+        fast access
+        access any index at any time
+
+    .vector<string> v; v.push_back('hello');
+    cout << v[5];
+
+    .list<string>
+        doubly-linked list
+        "can insert at the beginning without shuffling"
+        push_front("hello");
+        push_back("bye");
+
+
+    .map<keyType, valueType>
+        dictionary data type
+        .map<string,int> m;
+        m["foo"] = 5;
+        cout << m["foo"];
+        useful for, say `symbolTable['label'] = 4;`
+
+    .set<string>
+        set of strings
+        check quickly if a particular string is in your set
+
+    Code example
+
+Note: docs available at cplusplus.com
+
+#include
+#include
+#include
+#include
+#include
+
+bool foo(vector<string> v) {
+    if v.size() > 16) {
+        return true;    // if-else statement is redundant
+    } else {
+        return false;
+    }
+}
+
+int bar(map<string, map<vector<string>, int> > m, string w) {
+    // should be passed by reference instead of value
+    // (map<...> &m
+    // should use a class or a typedef or something
+    return m[w].size();
+}
+
+bool baz(string fruit) {
+    // can use sets here instead
+    return fruit == "apple" || fruit == "pear" || fruit == "mango" ||
+        fruit == "coconut" || fruit == "pepper";
+}
+
+string temp; // avoid global variables - make a bunker (?)
+bool quz(pair<vector<string>, int> p) {
+    int count = 0;
+    for (int i = 0; i < p.second; ++i) {
+        ...
+    }
+}
+
+// also, avoid using magic variables
+// use enumerations or constants
+// `throw 143` lol what, document that or make your own exception type
+// avoid gross use of flag variables `flag1`, `flag2`, etc.
+// be consistant using tabs/spaces for indentation
+
+// improved version of program is posted
+

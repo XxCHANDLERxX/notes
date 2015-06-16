@@ -1,0 +1,305 @@
+Lecture 3 May 19 2015
+
+Mobility and Border Security
+
+Airport security
+
+    Where our mobility is slowed down in the name of security!
+
+    Picture: Lineup at U.S. pre-clearance in Pearson Airport
+
+        This is a fairly new system - part of "post-9/11 security measures".
+        A bilateral agreement done to streamline security practices between
+        Canada and U.S.
+
+        Also "nexus" program for pre-approving passengers for customs.
+
+        Aftermath of Sept 11 2001 - U.S. created a "smart border security"
+        system, as well as the Department of Homeland Defense.
+
+        Canada also created the Canada Border Services Agency and CATSA.
+
+        On the one hand, border systems had to create barriers to try and stop
+        threats. On the other, they had to maintain permeability of the border
+        and uphold international travel and relations.
+
+        Moves to create enhanced border security were actually in progress
+        before 9/11, so we can't simply say that these initiatives were in
+        direct response to the 9/11 attacks. The ball was already rolling.
+
+        Although these changes look like they are increasing security and
+        efficiency at the border, certain historical contexts can lead to
+        criticisms.
+
+Cold War 1947-1991
+
+    Picture: Map of the world, 1989
+
+    Soviet Union covered much of Europe and Asia.
+
+    Both sides had security concerns related to nuclear weapons and the
+    risk of Mutually Assured Destruction (MAD)
+
+    Satirical cartoon: Calvin and Hobbes shooting each other with darts
+    and simultaneously "killing" each other.
+
+    The U.S. had no qualms about supporting the middle east, Angola, and
+    dictators in latin america. These regimes were supported by the U.S.
+    as part of a security strategy while fighting communism.
+
+    The Vietnam War was a "proxy war" for the cold war.
+
+    Efforts were focused on securing against communist influence, or
+    "containment" of the "spread" of communism.
+
+    There was also motivation to maintain supply lines, etc.
+    The cold war was really a series of hot wars, or violent conflicts,
+    outside of the superpower nations.
+
+    Resentment against the superpowers fuels a lot of contemporary
+    conflict.
+
+        e.g. The current situation in the middle east can be tied back
+        to resentment created during the cold war.
+
+    Movement looked a lot different during the cold war. The so-called
+    "Iron Curtain" between eastern and western europe made it very
+    difficult to cross between the two regions.
+
+    After 1949 revolution in China, movement to/from that region was
+    also limited.
+
+    The soviet "sphere of influence" cut off access from american
+    trade.
+
+    Much conflict during that time was, therefore, a matter of
+    maintaining economic influence.
+
+    End of cold war - fall of the Berlin wall, reunification of Germany.
+
+    By 1991, the soviet union was ended, Russia was created, as well as
+    other post-soviet countries.
+
+    For these countries, they had no choice but to participate in the
+    global economy. Borders were opened between countries in ways that
+    they haven't been in over 50 years. People were able to move to
+    escape oppression, poverty, etc.
+
+    There was a sense of hope in the 1990s. Some speculated that the
+    last great conflict was over, and we had reached the "end of
+    history" and the world would unite under democracy and the free
+    market.
+
+    However, it didn't turn out like that. None of the resentment and
+    fallout created by the previous 50 years could be undone, and it
+    couldn't be contained by the promise of capitalism - we couldn't
+    all be happy and free.
+
+    There was a shift in tone between positive jubilation after the cold
+    war to a more ominous atmosphere as we realized that conflicts still
+    exist and may even be worse. We now have to defend against small
+    groups or even individuals.
+
+    Risk management - quote from Donald Rumsfeld:
+
+        There are things we know, things we don't know, and lots of
+        things we don't know we don't know.
+
+    As the global economy expanded, we also had more and more threats
+    and risks to manage. This created a paradox for border security.
+
+Contradictory borders
+
+        Picture: Protestor sign
+
+    Shangan agreement - freedom of movement between everyone in the
+    european union. This increased the strength of the EU and led to
+    increased integration of internal borders and increased focus on
+    a singular external border around the entire EU.
+
+    Frontex system developed - an integrated border security for the
+    entire EU. FRONTEX is a pre-clearance system; people with nexus
+    cards can be fast-tracked through border security (no questions
+    asked regarding travel intent, etc. but baggage is still screened).
+
+    Border security at the U.S./Mexico border also increased
+    significantly, and had a very large budget. We'll discuss this more
+    in another lecture.
+
+    Intelligent borders
+
+        Picture: Biometric passports
+        Picture: FRONTEX clearance gates in Europe
+
+        Advanced collection and categorization of data to assess each
+        passengers' "risk level".
+
+    The idea of externalizing risks - risk management happening outside
+    of the U.S. borders. Questions asked of you to assess your risk
+    level, while also placing that risk outside of American soil.
+
+        e.g. American pre-clearance authorities placed within, say,
+        Canadian borders.
+
+    This imperative keeps risk outside of the physical U.S.
+
+    Airports themselves now act like borders in many ways. All of the
+    trappings of a border - customs, security, and pre-clearance - are
+    all contained in an airport, and you essentially enter a new country
+    without changing your geographical location.
+
+    Increasing use of biometric data - a relatively new practice.
+    Embedding of fingerprints and other physical attributes/measurements
+    in our identification system. This has emerged in partnership with
+    private companies - private airlines, analytics firms, security
+    firms - required to make risk management happen smoothly.
+
+    A lot of data is required to make the determinations regarding
+    someone's mobility (or lack therof).
+
+    This raises concerns for accountability.
+
+        e.g. Carrier liability
+
+            Someone being denied entry means the airline is responsible
+            for returning the passenger.
+
+            Putting immigration enforcement duties in the hands of
+            private companies or militaries is problematic because
+            these organizations have their own agendas.
+
+    How are governments held accountable for data collection done by
+    private companies?
+
+Racial Profiling
+
+    Who pays the costs of all this securitization?
+
+    In a sense, we all pay the cost by sacrificing privacy and
+    convenience.
+
+    However, racial profiling, criminalization, and stereotyping
+    has a much more drastic impact.
+
+    The acceleration of the criminalization of these groups has
+    become more and more problematic post-2001.
+
+    The prominence and justification of racial profiling is largely
+    a result to the reaction to 9/11. The stereotype of the "Islamic
+    terrorist" became very common, and many people were detained or
+    scrutinized solely based on demographics.
+
+    No fly lists were created, Canada created the National Security
+    Certificate system in 2002 (later removed) for watching certain
+    individuals.
+
+        Picture: Maher Arar, Canadian citizen extradited to torture
+        in Syria in 2002
+
+    Pictures: Eyal checkpoint, Qalqilia, West Bank 
+
+        Checkpoint between Israel and the West Bank
+        Used to control movement of workers from the West Bank to Israel
+        522 different checkpoints and roadblocks exist between Israel
+        and the West Bank.
+        Some argue that these limitations placed on workers from
+        Palestine are too great.
+        A quarter of all Palestinians live in poverty.
+        All workers passing over the border have to pass through a
+        complex system of borders - at Eyal, just one gate - before
+        getting to work, and there is no guaruntee that they will even
+        get to work on time.
+        This process is reversed coming home, essentially turning each
+        work day into a 14 hour day.
+        48000 permanent work permits given to Palestinians, of which
+        there are over 100000.
+        Israel West Bank wall constructed to further decrease movement,
+        and even cuts off one town from its surrounding neighbourhood in
+        one place. Once completed, it will be over 700km long.
+        Since 2006, in response to attacks on Israel by Gaza, the
+        Israeli government issued a blockade on trade from Gaza.
+        
+        Reason for all of this information: The way movement is impacted
+        by border security actually has a large impact on inequality.
+
+        U.S. security leads to racial profiling.
+
+        Palestinian border security leads to economic inequality.
+
+        The use of the wall and checkpoints actually has a great deal of
+        impact on the economic fortunes on different groups.
+
+        Checkpoints further stigmatize Palestinian workers as a group
+        to be feared, which in turn justifies enhanced security
+        measures.
+
+        So whose security is actually being maintained here? How do we
+        even define security?
+
+            The ability to work.
+            The freedom to move unrestricted.
+            The ability to not be scrutinized against.
+            The ability to remain safe.
+
+        Some of these debates surrounding security practices might make
+        a great topic for your research paper!
+
+    Picture: Lineup in Israel - people waiting in a fenced compund to get to
+    work.
+
+    Picture: Cornwall, Ontario, protest on reserve against mandatory gun
+    possession for border agents.
+
+Akwesasne
+
+    Conflicts between members of the community being forced to deal with border
+    crossings within their own reserve.
+
+    Picture: Idle No More Protest, Akwesasne, 2013
+
+        Demanding sovereignty
+
+    After the development of the nation-states and settler nations (like Canada)
+    these borders came to overwrite the existing nations' borders.
+
+    The Akwesasne reserve's borders were created pre-colonization. The imposed
+    border was agreed upon by the U.S. and Canada, but not by the reserve.
+
+    These nations are still here, though.
+
+    What legitimacy do nation-state borders have if they were founded on the
+    destruction of indigenous nations, and many first nations don't even
+    claim citizenship in the new nation?
+
+    The first nations are not being allowed the same control as that of the
+    Canadian government.
+
+Key themes:
+
+    Sovereignty is not a stable or fixed thing.
+        However, sovereignty is also about history, and is about acts of
+        sovereignty. When the Canadian state arms border guards, that is an act
+        of sovereignty. When that is protested, that is another act of
+        sovereignty.
+
+        When passports are issued by our government, that is an act of
+        sovereignty. Nations choosing to ignore passports or to not accept them
+        is another act of sovereignty.
+
+        Difficult question: Are first nations who reject passports/citizenship
+        still considered Canadian citizens?
+        
+        Not all sovereignties are recognized equally, but all can be claimed
+        and/or asserted.
+
+        Argument: All of North America is actually international, as it
+        encompasses many different supposedly sovereign nations.
+
+    Borders and checkpoints are places where power is exerted.
+
+        The power to determine who is risky or who isn't, or to arm guards, or
+        to determine how many gates must be crossed through to get to work,
+        or to determine which side of the border a new wall is built on.
+
+Take home points will be posted on LEARN.
+

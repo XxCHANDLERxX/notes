@@ -1,0 +1,300 @@
+Lecture 7 May 27 2015
+
+A3 and A4 are to make an assembler. The most important question of A3 and A4 is
+the first one (A3Q1).
+
+Recall MERL format from last class
+
+    "It sure would be nice if the assembler did this automatically, so we don't
+    have to craft special instructions to create the header and footer.
+
+    The last question of assignment 4 is to do this."
+
+    binasm doesn't relocate!
+
+    cs241.merl is a relocation tool
+
+        input: merl file and relocation address
+        output: non-relocatable MIPS file with MERL header and footer removed,
+        ready to load at the given address, not 0.
+
+    "Great, so how do I load it at a different address?"
+
+    mips.twoints and mips.array take an optional second argument:
+    
+        The load address.
+
+        e.g.
+
+            Want to load myobj.merl at 0x1000? Do:
+
+                java cs241.merl 0x1000 < myobj.merl > myobj.mips
+                java mips.twoints myobj.mips 0x1000
+
+Loader relocation algorithm:
+
+    // Read the header
+    read() // skip the cookie
+    endMod<-read() // end of Merl file
+    codeLen<-read() - 12 // subtract header length = length of code
+    // Done reading header
+
+    alpha<-findFreeRAM(codeLen + stack)
+    
+    for(i=0; i < codeLen; i+=4) {
+        Mem[alpha + i]<-read()
+    }
+    i<-codeLen + 12
+    while (i < endMod){
+        format<-read()
+        if (format == 1) {
+            rel<-read() // addr to be relocated (relative to the start of
+                        // the *header*, not the start of the code
+
+            /*  Beginning of program is at alpha
+             *  Rel is adjustment (relative to beginning of merl file)
+             *  So rel-12 is distance down from the start where the actual
+             *  memory is located.
+             */ This is the actual location because the header is not loaded.
+            Mem[alpha+rel-12] += alpha-12
+            // Everything goes forward by alpha, but then backward by the header
+            // length because we don't load the header.
+        } else {
+            ERROR
+        }
+        i+=8
+    }
+
+Linkers
+
+    Convenient to split large MIPS programs into smaller ones
+        
+        - reusable libraries
+        - team development
+
+    "My friend and I are going to write the next big thing this weekend in our
+     garage!"
+
+    Can you really just do that? Can you simply write a big assembly program
+    spanning multiple files and feed the whole thing to the assembler, no
+    problemo?
+
+    What might go wrong?
+
+        Slide: "Big" file squished into one slide
+
+            main:
+                .word fred
+                .word derf
+                ...
+            x:
+                ...
+            -----------------
+            fred:
+                .word x
+                .word y
+                ...
+            -----------------
+            derf:
+                .word x
+                ...
+            y:
+                ...
+
+        Problem: How can the assembler resolve a reference to a label if the
+        label is in a different file.
+
+        Solution 1: $cat all the .asm files together and assemble the result.
+
+            cat a.asm b.asb c.asm | java cs241.binasm > abc.mips
+
+            This actually does work! But...
+
+                What if my project is very big and has modules that don't
+                change?
+                We would have to re-assemble the entire project every time we
+                make a small change.
+                We want reusable libraries that don't have to be converted back
+                to source to be used each time. We should be able to use the
+                binaries out of the box.
+
+        Can we assemble first and then cat?
+
+            (No, the assembler would get mad about unresolved labels.)
+
+            If the assembler is more lenient on that, though, is it okay to cat
+            MERL files together?
+
+            Issues:
+
+                The binaries need to be relocatable - the addresses will
+                probably conflict - at most one of them can be at 0x00.
+
+                We would be catting MERL files together with headers and footers
+                and everything:
+
+                    [ header ]
+                    [  code  ]
+                    [ footer ]
+                    [ header ]
+                    [  code  ]
+                    [ footer ]
+                    [ header ]
+                    [  code  ]
+                    [ footer ]
+
+                    ^ This ain't no MERL file!
+
+        Solution 2: We need a tool that understands MERL files and puts them
+        together intelligently - a linker.
+
+            "We can't bribe the assembler to assemble things independantly, so
+             we must bend it to our will."
+
+             But still - what should the assembler do with references and labels
+             that aren't there?
+
+             We must change the assembler, but how?
+
+                When the assembler encounters '.word id', where label 'id' isn't
+                found, we can't let it be rejected.
+
+                It doesn't know what to put there though, so what do we put
+                there?
+
+                Zero. It outputs 0.
+
+                All it can do is tell us what the unknown is.
+
+                It must indicate that the value of 'id' is needed before the
+                program can run.
+
+                e.g.
+
+                    a.asm       b.asm
+                    --------    --------     a.asm cannot be executed until the
+                    lis $3      x: ...       value of x is known.
+                    .word x
+
+                How does the assembler notify us of the unknown value?
+
+                    It makes a note in the MERL file.
+
+                But - we've lost something we had before that we'd like to get
+                back.
+                    
+                    e.g.
+                        lis $3
+                        .word abd
+                        ...
+                        abc:
+                            ...
+
+                    When the assembler was rejecting undefined labels, it threw
+                    an error. It will ask the linker for 'abd'. Now we can't
+                    check for undefined labels.
+
+                    What if we meant 'abc' when we said 'abd'?
+
+                    Why can't the linker throw this error?
+
+                        Well, if we are linking in someone else's library then
+                        we are stuck. It's better to catch the error where it
+                        began.
+
+                    How does the assembler know what we type is intentional?
+
+                        We tell it.
+
+                New assembler directive:
+
+                    .import id
+
+                    Note: not seen by the machine; just something for the
+                    assembler.
+
+                    This tells the assembler to ask for id to be linked in.
+
+                    Does NOT assemble to a word of MIPS.
+
+                So when the assembler sees '.word abc' and 'abc:' is not present
+                and we have no '.import abc', then it can confidently raise an
+                error.
+                
+                What does that MERL entry look like?
+
+                    New format code: 0x11
+
+                    Means: External Symbol Reference (ESR)
+
+                What information should be recorded there?
+
+                    - The name of the symbol
+                    - Where it was used (i.e. the address of the blank '.word 0'
+                      to be filled in)
+
+                ESR entry:
+                    
+                    word 1: 0x11
+                    word 2: location where symbol is used
+                    word 3: length of the name in characters (n)
+                    word 4:   \
+                    word 5:    \
+                    ...         } ASCII characters in the symbol's name
+                    word 3+n: _/  (each character in a separate word)
+
+                    Note that this is not a very space-efficient sticky note. If
+                    we have repeated symbol usage, we have a whole new entry for
+                    each usage!
+
+                The other side of the coin:
+
+                    a.asm         b.asm              c.asm
+                    --------      --------           --------
+                    .import abc   abc:               ...
+                    lis $3          sw $4, -4($30)   abc:
+                    .word abc       ...                add $1, $1, $2
+                                  jr $31               ...
+                                                     beq $2, $0, abc
+
+                    Which 'abc' is the right one?
+                    We can make an educated guess.
+
+                    In a.asm, we have an external reference to abc...
+
+                    In b.asm, abc is just the name of a procedure.
+
+                    In c.asm, the beq instruction looks like a loop, so we
+                    should use the abc in that file.
+
+                We can't assume that labels won't be duplicated.
+                How can we make 'abc' in b.asm accessible to the linker, and
+                'abc' in c.asm inaccessible?
+
+                Solution: Another assembler directive! (And another MERL entry)
+
+            Directive:
+
+                .export abc
+
+                Says, "make abc available for linking".
+
+                Does not assemble to a word of MIPS; only for the assembler.
+
+                Tells the assembler to make an entry in the MERL footer.
+
+            MERL entry: External Symbol Definition (ESD)
+
+                word 1 (format code): 0x05
+                word 2: Address th symbol represents
+                word 3: length of the name (n)
+                word 4    \
+                ...        | Name in ASCII, with each char in a separate word
+                word 3+n  /
+
+            But what if two assembly files both export the same symbol?
+
+                It fails/errors.
+                (Same goes in the real world, with C++ and such.)
+                
+                

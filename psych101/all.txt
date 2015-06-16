@@ -1,0 +1,1379 @@
+1a Introduction to Psychology
+
+    Psychology has a great breadth
+
+    Psychology isn't merely common sense, but often we thought the opposite of
+    what is true.
+
+        e.g. Opposites don't attract.
+
+    Psychology isn't about unethical studies, animal torture, etc.
+
+        Since the late 1960s much care is taken to remain ethical.
+
+    Animal sacrifice can still be done, but it is rarer nowadays.
+
+    Now, much research on the brain is done on humans, with machines that can
+    take pictures.
+
+    A way to think about psychology:
+
+        It has to do with what people think; it's about the thoughts that are
+        in our heads.
+
+        Historically, some thought that 'thoughts' should not be part of
+        psychology.
+
+        It also has to do with how we feel about things, our emotions, and
+        motivations.
+
+        Reactions, emotions, thoughts, and such are often not aligned.
+
+            e.g. Getting too nervous to ask someone out.
+
+        Psychology is also about how you act.
+
+        So, three main areas: thoughts, feelings, and actions.
+
+History of Psychology
+
+    1b1 The Three Beginnings of Psychology
+
+        Who do we think is the first psychologist?
+            1. Freud
+                The psychiatric tradition
+                Contributed important contribution to the beginnings of
+                psychology
+                Started psychoanalysis
+                Tradition more represented in medicine nowadays
+            2. Testing tradition
+                Seen most heavily in intelligence testing
+                Developed in England
+                Sir Francis Galton, a first cousing of Charles Darwin
+            3. Academic approach (laboratory psychology)
+                Wilhelm Wundt
+                    Set up the first psychology laboratory
+                    Wundt is interesting for his failure
+                    Scientific approach
+                    Chemical - 'mental atoms' of thoughts
+                William James
+                    A student of Wundt's and a contemporary of Freud's
+                    Made much ley progress
+                    Brought psychology to North America
+                John B Watson
+                    Early proponents of behaviourism
+                Gestalt pschologists in Europe
+
+    1b2 The Psychiatric Tradition
+
+        Dominated by Freud
+
+            Had a very complex theory about the way the psyche worked
+            Two primary motives driving people - sex and aggression
+            Much of what drives our behaviour is unconscious
+            Huge inner mental life that we are unaware of which is very complex
+            and very devious
+
+            One of his most famous, whacky ideas - Oedipus complex.
+
+                Influenced much of adult development.
+                Was the central problem to human psyche.
+                "As children boys want to have sex with their mother, and in
+                realizing that this is not possible, vicariously live this
+                through his father's sex life with the mother."
+                Didn't explain how women developed at all.
+
+        Carl Jung
+
+            Incredibly brilliant
+            More important for his literature
+            His psych theories not taken very seriously
+
+        Carl Adler
+
+            Had different ideas from Freud
+            Adler believed that people wanted to be powerful and in control
+            Echoed in modern psych via self esteem
+
+        Ego Psychologists
+
+            Followed in the Freudian tradition and have made an important impact
+            on modern psychology.
+
+            Erik Erickson - model of social development
+            Karen Horney and Henry Stack Sullivan - focused on the importance of
+            relationships in developing the self-concept.
+            (Social psych, social psych of relationships very contemporary.)
+
+        Major assumptions of the psychiatric tradition
+
+            Cannot rely on what people say or do to indicate anything, because
+            most mental life is unconscious.
+
+                Less emphasis on what people tell you, but on the interpretation
+                of what is said.
+
+            Emphasis on understanding each individual person comprehensively.
+
+                Studying one person at a time and knowing all details.
+
+                Most research done in the psychiatric tradition has been through
+                therapy over a number of years
+
+                Understanding the individual comprehensively as a whole
+
+            The best approach is a clinical approach
+
+                More is learned by people who are sick than those who are
+                healthy, and by doing therapy. That tells you more about what
+                is hidden beneath the psyche, what is really going on.
+
+    1b3 the Testing Tradition
+
+        Charles Darwin
+
+        Sir Francis Galton - Darwin's cousin
+
+            Naive idea of how to study what makes people "fit".
+            What makes people geniuses?
+            Underlying elitism/aristocracy - some people were better than
+            others.
+
+            Conencted his ideas to Darwin's theory of evolution.
+
+            Assumed smartest people were those who were the most fit.
+
+            Believed the first measure of intelligence was physical tests.
+            (Following a spinning disk, riding a bike fast.)
+
+            "A miserable failure. But a brilliant Mathematician!"
+
+        Spearman
+
+            Student of Galton, developed many new important statistical
+            techniques.
+
+            Factor analysis - way of figuring out what goes together.
+
+        Cattel & Eysenek
+
+            Students of Spearman
+            Famous in the trait tradition
+            Two different views ended up creating similar model
+            Two major components to personality:
+                1. Introversion vs Extroversion
+                2. Neuroticism vs Mellow
+
+        Binet
+
+            First to figure out how to actually perform an intelligence test.
+
+            Covered topics one would learn at school.
+
+            Trying to figure out age/grade level.
+
+            Very similar to what we now think of as school testing.
+
+        Major assumptions of the testing tradition
+
+            1. Psychology is primarily a product of biology
+
+                 Emphasis on nature over nurture
+
+                 If you want to know what people are about, study the
+                 evolutionary basis of behaviour.
+
+            2. There are only a few ways in which people differ
+
+                There are only a small number of traits which can explain how
+                people differ
+
+            3. People's traits can be understood through simple tests.
+
+                Questionnaires and paper and pencil tests make up almost all of
+                the research in this tradition
+
+    1b4 The Academic Tradition
+
+        Wilhelm Wundt
+
+            Psychological atomism
+
+            Would have people come in and tell him about a thought that they
+            had had; introspect
+
+            Thought he would get a nice periodic table of "psychological atoms",
+            but it made no sense
+
+        William James
+
+            Pragmatism
+
+            Believed Wundt was wrong for not studying what people really cared
+            about
+
+            Pragmatic approach - study things that are meaningful to people
+
+            Still important in North American psychology
+
+            "What does this matter?" is an important question.
+
+        Watson & Skinner
+
+            Took the approach of behaviourism, which dominated NA psych for
+            about 40 years
+
+            Believed that Wundt was not scientific enough, studying thoughts
+            which cannot be observed
+
+            If we need to be scientific, we need to study something observable,
+            like behaviour.
+
+            Defined psychology as the scientific study of behaviour.
+
+            Made progress in a number of different domains
+
+        Kurt Lewin
+
+            European
+
+            Gestalt psychology
+
+            Argued that Wundt made a wrong assumption, that the whole does not
+            equal the sum of its parts.
+
+            This was a powerful perspective.
+
+            Many times the parts don't add up to the wholes that we see and come
+            to know and understand.
+
+        Major assumptions
+
+            Psychology is best understood when the causes are understood
+                
+                We need to understand what causes a behaviour
+
+                The why is more important than the how or the when
+
+            People's thoughts and actions can be understood.
+
+                Thoughts and actions are not outside of the individual, are not
+                irrelevant.
+
+                By observing people, we can understand them
+
+            Systematic study produces the fullest understanding
+
+                Labs were set up
+
+                Wundt's lab - how long does it take to press a button?
+
+                    Reaction time
+
+    1b5 Three New Beginnings in Psychology
+
+        In the 1960s and 70s, these traditions each had a rebirth
+
+        The Psychiatric Tradition
+
+            Humanistic Approach "Third Wave"
+            
+                First was psychiatric
+                Second was behaviours
+
+            Carl Rogers
+
+                What Rogers tried to do in his therapy was very different from
+                the pschoanalytic tradition
+
+                He reflected back to the individual what they were feeling
+
+                Belief that people are basically good, and if you let them get
+                in touch with themselves and understand themselves they will get
+                better
+
+                They need to get in touch with this good inner part of who they
+                are
+            
+        The Trait Tradition
+
+            Expanded to 5 from 2 traits - OCEAN
+
+                Openness = intelligence
+                    
+                    Open to new experiences -> more education, more flexible
+                    thinking
+
+                Conscientiousness
+                
+                    people who stick to their goals and work to get things done
+
+                Extroversion
+
+                    (Above)
+
+                Agreeableness
+
+                    How positive or negative of a person are you
+
+                Neuroticism
+
+                    (Above)
+
+        The Academic Tradition
+
+            The cognitive revolution
+
+                In the 60s and 70s there was growth and changes from
+                behaviourism to cognitive psychology
+
+                Study of thought is one of the primary and important things
+                about people
+
+                Albert Bandura - observational learning
+
+                It became clear that with behaviourism, there was much that
+                could not be explained
+
+                We can learn by observing people rather than just being
+                reinforced ourselves
+
+                Changed the face of psychology
+
+    1c1 Basic Philosophy of Science
+
+        (Behind research methodologies of psychology.)
+
+        Big questions behind research methodology
+
+        Focus on academic tradition
+
+        Other traditions do not necessarily feel the same way
+
+        Our ideas can be wrong
+
+            "Healthy skepticism"
+
+            "I know my idea can be wrong"
+
+            We set out to demonstrate that our ideas are wrong
+
+                Only draw firm conclusions when we have shown that the idea is
+                wrong
+
+            We accept an idea when we can't prove that it is wrong
+
+                "The textbook should not be read as fact, but as a bunch of
+                ideas we haven't disproved yet."
+
+                This doesn't protect the idea from being disproved in the future
+
+                Good to have healthy skepticism when reading the text
+
+            We might prove everything wrong later!
+
+                True in all branches of science, including physics.
+
+        A number of things influence these ideas.
+
+            What is accepted is often what is popular rather than the data.
+
+            Also shaped by political forces and social influences.
+
+    1c2 Ways of Doing Research
+
+        Tension between discovery and explanation
+
+            When something is discovered and is brand new, does it mean
+            anything?
+
+            Some sciences are mostly about explanation; how things work, how
+            things unfold (like chemistry).
+
+                Astronomy is more abour discovery.
+
+            Psychology is in the middle - new discoveries, but explanation is
+            important
+
+            Different traditions have different emphasis on discovery and
+            explanation
+
+            Psychiatric tradition uses mostly case studies in its research.
+
+        Freud's famous case study - Anna O
+
+            Freud was Anna's therapist for many years
+            Developed an unusual sickness after a couple of years of caring for
+            her sick father
+            Was blind even though nothing was physically wrong with her
+            Also had glove paralysis - paralysis of her left hand.
+
+                Strange - it should be numb all the way up her arm!
+
+            Freud believed that Anna was having fantasies about sex with her
+            father, and that was the cause of her problems.
+
+            Many modern psychologists feel that Anna was being sexually abused
+            by her father
+
+            Freud thought her tales of abuse were part of her fantasy
+
+        Naturalistic observation
+
+            Similar to case study but usually broader
+
+            Observe, watch, and see what happens
+
+            Jane Goodall's research with chimps
+
+            Not very often done with people
+
+        Survey research
+
+            Question a sample of the population
+
+            Goal is to find out what the whole population is like
+
+            Want to represent the whole population from just a sample of people
+
+            Establishes generality
+
+            Sets up correlations between variables
+
+                When one thing happens, another thing tends to happen
+
+            Correlation between children watching violent tv and being violent
+
+            Can randomly sample children throughout all of Canada to find out
+            how much ciolent tv they wathc
+
+            Then, find out how often they use violent behaviour
+
+            What you find is a nice, reliable correlation between the two
+
+        Correlation doesn't mean causation
+
+            Just because kids who watch violent tv tend to be violent doesn't
+            necessarily mean that the tv caused the kids to be violent
+
+        Experiments
+
+            Usually about establishing causation
+
+        Example of correlation established by survey research
+
+            One possibility is that the violent television causes the violent
+            behaviour, but what is really going on?
+
+            Maybe its that violent kids like to watch violent tv
+
+            Whenever you have a correlation, you have to think about which
+            direction it goes in. Does A cause B or does B cause A?
+
+            Or maybe a third thing causes both behaviours - abuse?
+            Hyperactivity?
+
+            Maybe it's education? Parent's background?
+
+            There is always the possibility of having many variables when you
+            have a correlation
+
+            Causation establishes which one it is, which pattern is right
+
+    1c3 Research Methods - Surveys & Establishing Representativeness
+
+        Representative group of people
+
+        You want the people filling out the survey to correspond to the larger
+        group that you want to generalize and represent
+
+        Random sampling
+
+            On surveys
+
+            Survey a subset of a large group of people
+
+        Random assignment
+
+        Surveys must also be unbiased
+
+            Anchoring effects
+
+                Give people something that you know is wrong but influences the
+                way they interpret the question
+
+                Is the Mississippi river longer or shorter than 500 miles? How
+                long is it?
+
+                Will actually give a short estimate because they are still
+                influenced by the 500, even though that info is wrong.
+
+                People given that question gave answers ~2000 shorter.
+
+                Given X terrible incident, is capital punishment justified?
+                Given the legislative slowness behind capital punishment, is it
+                justified?
+
+            Framing effects
+
+            Surveys do a good job of establishing correlation between variables
+
+    1c4 Correlation is not Causation: How do you establish causation?
+
+        Correlation
+            
+            When one variable changes, the other variable changes as well
+
+        Time order
+
+            Know which "cause" comes first
+
+            Longitudinal research - over time.
+
+                e.g. Asking about tv usage/violence now then 3 years later
+
+        Elimination of all other possible causes
+
+            Were their parents more aggressive?
+            Did they come from poor families?
+            Were the children who were more aggressive likely to be hyperactive?
+
+            Experiments do this by random assignment
+
+                Randomly assign people to various conditions
+
+                Take a small group in an experiement, and randomly have one half
+                do one thing and the other half do another.
+
+            Independant variable
+
+                What we think is going to be the cause
+                Experimental group - watches television
+                Control group - doesn't watch television
+
+            Dependent variable
+
+                Behaviour that you are concerned with in the end; the effect
+                Have children play together to see if they will fight
+
+                We want the dependent variable to be:
+
+                    Valid - measures what it is supposed to measure
+
+                    Reliable - get the same outcome every time
+
+                e.g. Violent tv variable needs to measure violence, like
+                fighting. This is valid, but not reliable - kids don't always
+                fight the same amount.
+
+                Reliable = highly clustered data in the same place of a target
+                Valid = hitting the bullseye
+
+                Time order is built in
+
+                    Independent variable leads to the dependent variable
+
+            Random assignment eliminates other causes via probability theory.
+
+Lecture 02: Behavioural Neuroscience I
+
+2a The Nervous System and the Brain
+
+    Neuron
+
+        Basic cells making up the nervous system
+
+    Peripheral nervous system
+
+        All the other nerves that run through the body which are not the brain
+        or the spinal cord
+
+    The central nervous system and the brain
+
+        Is probably one of the frontiers we understand the least in psychology
+
+    The endocrine system
+
+        Hormones
+
+        The different chemicals that float through the blood and also influence
+        us
+
+    Putting it all together - hunger example
+
+        Not separate systems, they all work together (e.g. with hunger).
+
+
+2b1 The Neuron
+
+    Picture - neuron
+
+        Myelin sheath
+
+            Little globule things - not present on neurons iside the brain
+
+            Lets the electric current bounce from node to node so the impulse
+            can travel quickly - impulses/reflexes faster than our brain
+
+            Neurons part of the peripheral system and spinal cord actually work
+            faster than in the brain
+
+        Dendrites
+
+            Branchy things found at the "back end" of the neuron
+
+        Axon
+
+            Branchy terminal things
+
+        Action potential
+        
+            Neural impulse moves from back dendrites to the front axons
+
+        Cell body
+
+            Surrounded by the dendrites
+
+            The cell's life support centre
+
+    How do you take a piece of tissue, like a cell or neuron, and have it
+    conduct electricity
+
+        Studying sea slugs - they have large neurons
+
+    Inside the neuron is chemical ions of one charge flowing in and out of the
+    cell membrane is what creates electricity and causes it to flow down the
+    neuron.
+
+    Where two neurons come together - Axon bumping into cell body/dendrites of
+    another cell - is a synapse.
+
+        There is a synaptic gap between the sending neuron's axon terminal and
+        the receiving neuron's body/dendrite.
+
+        A litle chemical flows between the two - neurotransmitters.
+
+        There are lots of potential connections - a whole bunch of synapses
+        "vote" towards firing the signal.
+
+        Some of those neurotransmitters make it a lot more likely for an impulse
+        to start, and some make it less likely. Add them all together to decide.
+
+        After the neurons dump their neurotransmitter, how do they get used
+        again?
+
+            They transfer back after a short while - reuptake.
+
+    There are lots of different types of neurotransmitters.
+
+        Dopamine
+            
+            Very common, especially in the brain
+
+            Important in two remarkably different disorders:
+
+                Parkinson's disease
+
+                    Partially caused by deficiency of dopamine
+
+                    Marked by tremors
+
+                    Important in the coordination of movement
+
+                Also important in attention and emotion
+
+                Schizophrenia
+
+                    Marked by an excess of dopamine in various parts of the
+                    brain.
+        Seratonin
+
+            Involved in mood, hunger, sleep, and arousal
+
+            It affects things widely in the brain
+
+            A deficiency of seratonin is a cause for insomnia
+
+            Deficiencies are also associated with depression
+
+            Prozac, Zoloft - eases to depression
+
+        Norepinephrine
+
+            More related to alertness and arousal
+
+            Also associated with depression
+
+            Older depression drugs used this
+
+        Acetylcholine
+
+            The most common neurotransmitters
+
+            Involved in muscle movement
+
+            Alzheimer's Disease:
+
+                The nerurons that work through acetylcholine get ruined with
+                Alzheimer's.
+
+            Also involved in learning and memory
+
+        Endorphines (a whole class of neurotransmitters)
+
+            Involved in pain regulation
+
+                When injured, the body releases these to handle more pain
+
+            Heroine and morphine mimic this neurotransmitter.
+
+2b3 How Drugs Affect Neurotransmitters
+
+    Drugs mimic the shape of a neurotransmitter
+
+    The real transmitter fits really well
+
+    Agonist mimic the neurotransmitter with "2/3 shapes"
+
+    Antagonist block neurotransmitter - it gets in the way.
+
+    So, some drugs work like the neurotransmitter (for deficiencies), while
+    others block to reduce an excessive amount.
+
+2c Divisions of the Nervous System
+
+    Nervous system - all the neurons in the body
+
+        Central - brain and spinal cord
+
+        Peripheral
+
+            Somatic - controls voluntary movements of skeletal muscles
+
+            Autonomic - controls self-regulated action of internal organs and
+            glands, like pupil dilation
+
+                Sympathetic - arousing - "gets you ready for fight or flight"
+
+                Parasympathetic - calming - "lets you build up all your energy"
+
+2c1 The Peripheral Nervous System
+
+    Autonomic nervous system
+
+        Controls the glands
+
+        Controls the muscles related to our organs
+
+        Possible to regulate with conscious thought, but often spontaneous
+
+            e.g. hiccups
+
+        Sympathetic nervous system - arousal - often stress
+
+            Pupils dilate - see more
+            Heartbeat accelerates
+            Stomach - digestion is inhibited
+            Stimulates glucose release by liver
+            Adrenal gland - burst of adrenaline
+            Kidney - stimulates secretion of epinephrine, norepinephrine
+            Bladder relaxes
+            Stimulates ejaculation in male
+
+        Parasympathetic - calming - eating and sleeping
+        
+            "classic thanksgiving afternoon"
+
+            Pupils contract
+            Heartbeat slows
+            Stimulates digestion
+            Stimulates gallbladder
+            Contracts bladder (gets bigger)
+            Stimulates erection of sex organs (part of sleep cycle)
+
+2c2 The Central Nervous System
+
+    The spinal cord
+
+        Carries information from the peripheral nervous system up to the brain
+
+        Does some "thinking" in controlling some responses
+
+            Typically refered to as reflexes
+
+            Contains some neurons that cannot only transmit things, but can
+            route things different ways, almost making some primitive decisions.
+
+    The Spinal Cord - a simple reflex
+
+        What happens if you put your finger in a flame?
+
+        People usually pull their finger out immediately.
+
+        The decision is made within the spinal cord. It has things called
+        interneurons that can "flip a switch" to contract motor neurons directly
+
+        You can override these things with your brain
+
+    The Brain
+
+        Does almost all "processing"
+
+        Three areas of the brain we need to know about
+
+            Brainstem
+
+                Controls all vital functions
+
+                Injury often leads to death
+
+                Very crucial
+
+            The lymbic system
+
+                Controls motivation and emotion
+
+                Very important for memory
+
+            Cerebral cortex
+
+                The bulk of our brain
+
+                Much larger than in animals
+
+                Separates us from animals
+
+        The Four Parts of the Brain Stem
+
+            Medulla
+
+                Absolutely critical in keeping us alive
+
+                Controls the heartbeat and breathing
+
+                On top of the spinal cord - common reason for death by broken
+                neck.
+
+                Damage = fatality!
+
+            Reticular formation
+
+                Controls attention, alertness, reactivity
+
+                Can be thought of the accelerator of the brain
+
+                Basic function that regulates the overall amount of brain
+                activity
+
+            Thalamus
+
+                Sensory switching point
+
+                Crucial for vision and other senses
+
+                Beginning processes of our senses come about here
+
+            The Cerebellum - cannopy-looking thing under the brain
+
+                Crucial for movement and coordination of movement
+
+                Crucial for balance
+
+                Big in birds
+
+            The Lymbic System - odd shaped grouping of things around brain stem
+
+                Hypothalmus
+                
+                    Crucial for hunger
+
+                    Controls the hormones of the Pituitary gland
+
+                    Some influence on other emotions as well, particularly
+                    pleasure
+
+                Amygdala
+
+                    Important for a number of things, including anger
+
+                Hippocampus
+
+                    Crucial for memory and for laying down the functions of
+                    memory
+
+                    Damage can cause severe types of memory loss
+
+            The Cerebral Cortex - basic divisions
+
+                Back part: Occipital lobe
+
+                    Heavily involved in vision
+
+                    Damage can blind - even with working eyes
+
+                Top-back: Parietal lobe
+
+                    Language and facial recognition
+
+                    Lots of things
+
+                Lower around the ear: Temporal lobe
+
+                    Involved in hearing, memory, and mood
+
+                Front: Frontal lobe
+
+                    Important in reasoning and thinking
+
+                    Close to half of the cortex
+
+                    Complex processing of information
+
+            The Cerebral Cortex Functional Divisions - Movement and Sense of
+            Touch
+
+                Motor Cortex
+
+                    laid out like a body - toes to trunk to fingers to neck
+                
+                    left hemisphere section controls the body's right side
+
+                Input: Sensory Cortex
+
+                    left hemisphere section receives from the body's right side
+
+                Motor and sensory are separated by a big groove
+
+                If there is a seizure - too much electrical activity in the
+                brain - they convulse if it goes through the motor cortex.
+
+                Epillepsy can happen that misses this - seizures without
+                convulsing.
+
+                Stroke can also paralyze here.
+
+                Often movement and touch are both lost, since they are so close.
+
+            Hearing and vision
+
+                Visual cortex - very back of brain
+
+                Auditory cortex - processed right next to ear
+
+                    Damage here can cause deafness with no possibility of
+                    correction.
+
+            Left and Right side of the brain
+
+                Left side controls right side of body and vice-versa
+
+                Corpus Callosum - big thick area connecting both sides, for
+                exchanging information
+
+                Epileptic study in the 1950s - lots of seizures is very bad, so
+                they went in and cut the corpus collosum - cutting the two sides
+                of the brain apart.
+
+                This helps to reduce the number of seizures dramaically because
+                the electrical impulses do not spread to the other side.
+
+                Odd behaviour was then discovered - the two sides of the brain
+                actually perform different functions.
+
+                Left side is more verbal and able to process language
+
+                Right side is better at visual processing and coordinating, and
+                can only understand simple language
+
+                Caveat: Left-handers have a brain structured like this, but some
+                are reversed.
+
+            Mike Gazanaga Study - helps explain "executive" function of the
+            left brain, the ability to explain and interpret what is going
+            on.
+
+                Brain is able to do this even when it is wrong
+
+                Right brain can process visual stimuli, and process commands
+
+                When he would flash "get up" to the right side, a number of
+                people would get up, and could instantaneously rationalize
+                their behaviour.
+
+                Left side is good at rationalizing.
+
+                Would the right side of the brain be better at picking up what
+                emotion is being shown on a face?
+
+2d The Endocrine System
+
+    Hypothalmus - brain region controlling Pituitary gland
+
+    Pituitary gland - secretes many different hormones, some of which affect
+    other glands
+
+    Testes/Ovaries - secrete male/female sex hormones
+
+    Affects Adrenal glands - inner part, the medulla, helps trigger the fight or
+    flight response
+
+    Pancreas - regulates insulin, blood sugar
+
+    Parathyroids - help regulate the level of calcium in the blood
+
+    Thyroid gland - affects metabolism, energy level, weight gain
+
+    Is usually longer term - hormones stick around in the blood stream and keep
+    going and going. Short term stuff is usually from the nervous system.
+
+2e Putting it All Together - The Case of Hunger
+
+    When we don't eat for a while, what makes us feel hungry?
+
+    Stomach contractions - carry hunger signal trhough the peripheral nervous
+    system to the hypothalmus
+
+    But if we drink lots of water to prevent these contractions, we still feel
+    hungry.
+
+    Blood sugar levels interpreted and controlled by the liver and pancreas to
+    send a message to the hypothalmus
+
+    Lateral hypothalmus is stimulated and releases the hormone orexin which
+    heightens hunger
+
+    fMRI (functional MRI) - shows lateral hypothalmus very active when hungry
+
+    When we eat:
+
+        Stomach expands and this message is transmitted to the hypothalmus
+
+        Blood sugar levels as interpreted and controlled by the liver and
+        pancreas send messages of higher levels to the hypothalmus
+
+        Insulin is also released
+
+        Ventromedial hypothalamus is stimulated and leads to the feeling of
+        satiation, so we stop the eating
+
+        (This is a simplified, strictly physiological version!)
+
+    Damage to the hypothalamus - rats starve to death, feel lethargic/depressed.
+
+    Damage to ventromedial - rats never stop eating and become enormous
+
+2f Overarching principles
+
+    Lots of specificity, or specialization of function in specific parts of the
+    brain.
+
+    However, it's not that simple.
+
+    The whole structure of the brain work together in coordinated, overlapping,
+    and redundant systems
+
+        e.g. Anger passes through frontal lobe - we can reason about our
+        reaction
+
+    The systems act at the same time to influence hunger
+
+    We can't say THAT part controls THAT one thing
+
+    Despite the specificity and complexity, the brain has lots of plasticity
+
+        If one area is damaged, other areas can take over
+
+            e.g. Prof's daughter had hydrocefilus - bleed in the brain - and
+            didn't do any lasting damage despite significant immediate damage.
+
+3a1 Vision
+
+    Cornea
+
+    Pupil
+
+    Iris
+
+    Lens
+
+        Inverts the image, flashes image onto retina upside down
+
+    Fovea
+
+        Point of central focus on retina
+
+    Retina
+
+        Cross-section: 3 cells thick
+
+            Outer: ganglion cells
+
+            Middle layer: Bipolar cell
+
+            Back: Rods (smaller ones) and cones (bigger ones)
+
+                Rods are responsible for black and white
+
+                Cones are responsible for colour
+
+                Light must go through the two cell layers above before getting
+                to the rods and cones, to protect them.
+
+                The rods and cones fire to give visual signals (neural impulses)
+                to the brain.
+
+    Optic nerve to brain's visual cortex
+
+        Takes signals from retina and transmits them back to the brain
+
+    From eye to the cortex (visual cortex at the back of the brain)
+
+        Nerves cross left-right, pass through visual area of the thalmus, and
+        go to the visual cortex at the back. They cross over at the "optic
+        chiasm".
+
+        The process of turning light into shapes is "feature detection".
+
+        In the cortex, there are individual cells that respond to lines at
+        various angles.
+
+        The brain then takes the symbols of lines to create a pattern.
+
+        Cells converge to create our perception of what we see
+
+        Higher level cells provide even more perception
+
+        All of this happens virtually instantaneously
+
+        This is all done with a massive parallel processing of information,
+        currently unmatched by modern computers and arteficial intelligence
+
+        It is still not completely understood as to how the visual cortex
+        organizes all this information
+
+    Colour vision
+
+        How do we see all of these different colours and know what they look
+        like?
+
+        Two main theories:
+
+            Young-Helmholtz Trichromatic Theory
+
+                Comes from primarily studying the retina
+
+                Three types of cones in the retina, which respond to three
+                types of light; primary colours red, green, and blue
+                (like a colour printer ink cartridge).
+
+                All other colours can be made from these three
+
+                Could just the specificity of the cones produce these different
+                colours?
+
+                Consistent with this theory are colourblind individuals
+
+                    Red and green - problem with either green or red cones
+
+                    Blue and green - no distinction between blue and green cones
+
+                Theory works well until we alk about the colour yellow, which is
+                only really explained as another primary colour on its own.
+
+            The Opponent-Process Theory of Colour Vision
+
+                There are actually three sets of opposing pairs of colours
+
+                    Black and white (rods and cones)
+
+                    Red and green
+
+                    Blue and yellow
+
+                "Things that respond to yellow don't respond to blue, etc."
+
+                Afterimage effect
+
+                    Opposing colours are left behind
+
+                    Fired neurons get "worn out", so when we look at a sheet of
+                    paper after staring at something, the reverse neurons fire
+                    as if we are seeing the opposing colours.
+
+                    Like a teeter-totter
+
+            Both of these theories are probably true, but in different areas of
+            the brain. At the retinal level, you have the three types of cones
+            which work together to produce all the different colours.
+
+            Opponent-process is probably true in the thalmus, higher up in the
+            brain as it is processing things.
+
+3a2 Hearing
+
+    Outer Ear
+
+        Pinna (outermost fleshy disk)
+
+        Auditory canal (hole in the middle of the pinna)
+
+        Eardrum (back of auditory canal)
+
+            Vibrates like the top of a drum
+
+    Middle ear
+
+        Three bones transmit the eardrum vibrations mechanically
+
+        Vestibular sacs for balance
+
+    Inner ear
+
+        Stirrup attaches here and vibrates the cochlea
+
+        Cochlea turns physical stimulus into neural impulses
+            
+            Like the retina of the ear
+
+        Auditory nerve (coming out of the cochlea)
+
+    Closer look at the cochlea
+
+        Fluid "sloshes" through basilar or cochlear membrans protruding hair
+        cells - nerve fibers to auditory nerve
+
+        Sound waves -> eardrum -> hammer -> anvil -> stirrup -> oval window
+        -> cochlea
+
+        How does this fluid get turned into a neural impulse?
+
+            Place theory
+
+                Particular hairs determine pitch
+
+                Big waves are going to hit back a lot further creating one pitch
+                (lower sounds, because low sounds make big waves).
+
+                Higher sounds are going to make smaller waves, which land closer
+                in
+
+                This theory can't explain the ultra-high sounds we cannot hear
+            
+            Frequency theory
+
+                The speed of the waves determine the pitch
+
+                Big waves go slower, and little waves go faster
+
+            Both theories seem to be true
+
+            Place theory works well for high pitch sounds, and it is the
+            particular hairs that matter
+
+            Frequency theory explains low sounds, it is the frequency of the
+            waves pushing lots of hairs at once to create a richer, fuller sound
+
+3a3 The Other Senses - Taste, Smell, Touch, Pain, and Balance
+
+    Taste
+
+        Four basic tastes - sweet, sour, salty, bitter
+
+        Tongue has tastebuds that respond to these different tastes
+
+        Taste sensations are created by chemical reactions on the taste buds,
+        rather than a physical reaction as in sight and hearing
+
+        Taste is also heavily influenced by smell
+
+        Together they respond to much of the same stimuli 0 this is called
+        sensory interaction
+
+        Often what enhances the flavour of the food is the smell rather than
+        the combination of sweet, sour, salty, bitter
+
+    Smell
+
+        Also a chemical sense
+
+        Occurs due to a chemical reaction in the olfactory membrane that creates
+        smell
+
+        We still don't know exactly how olfactory membrane receptors work
+
+        There are a tonne of different smells - way more than the 4 taste combos
+
+        Chemical in the air gets picked up by these receptors in the olfactory
+        membrane which creates a neural impulse
+
+        Odors can powerfully evoke memories and emotions
+
+            Why?
+
+            Nasal passage -> receptors in olfactory membrane - situated right
+            next to limbic system (hippocampus, amygdala)
+
+    Touch
+
+        "We know less and less as we go down this list of senses."
+
+        Organ for touch is skin
+
+        There are specialized nerve endings in the skin, but these don't seem
+        to have a relationship with what we feel - it's not an easy mapping
+
+        Our skin is sensitive to pressure, warmth (not hot), cold, and pain
+
+        These four sensitivities give rise to quite varied sensations
+
+            e.g. A tickle
+
+                Hard to explain why ticklishness is dependent on having it done
+                by someone else
+
+        The sense of touch doesn't map onto the physical sensation nearly as
+        much as some other senses
+
+        Hot = warm + cold, an interesting physical illusion
+
+        Wet = cold + pressure
+
+        Itchiness = overstimulated pain receptors
+
+    Pain
+
+        More is known about pain, but it is increasingly difficult to understand
+
+        No definable area of the brain that is related to pain
+
+        Memories tend to be of the magnitude of the pain, but not the duration
+
+        Gate control theory
+
+            Suggests that the spinal cord has a neurological gate that either
+            blocks pain signals or allows them to travel to the brain
+
+            Distractions close the gate and make pain more manageable
+
+            Brain is blocking out the pain response with lots of other responses
+
+            Endorphins, which are the body's natural pain killers, may shut that
+            gate right at the spinal cord so those signals can't get to the
+            brain
+
+    Balance
+
+        AKA kinesthetic sense
+
+        Feeling of being disoriented or fuzzy
+
+        Seems to occur through two very different sense organs
+
+        The joints and muscles tell us our body's position
+
+        Also the semi-circular canals in the ears tell us the vestibular sense
+        of balance and orientation, particularly for the head
+
+            Grains of sand rolls around on hairs in the vestibular
+
+

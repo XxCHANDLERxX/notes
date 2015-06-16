@@ -1,0 +1,291 @@
+3a1 Vision
+
+    Cornea
+
+    Pupil
+
+    Iris
+
+    Lens
+
+        Inverts the image, flashes image onto retina upside down
+
+    Fovea
+
+        Point of central focus on retina
+
+    Retina
+
+        Cross-section: 3 cells thick
+
+            Outer: ganglion cells
+
+            Middle layer: Bipolar cell
+
+            Back: Rods (smaller ones) and cones (bigger ones)
+
+                Rods are responsible for black and white
+
+                Cones are responsible for colour
+
+                Light must go through the two cell layers above before getting
+                to the rods and cones, to protect them.
+
+                The rods and cones fire to give visual signals (neural impulses)
+                to the brain.
+
+    Optic nerve to brain's visual cortex
+
+        Takes signals from retina and transmits them back to the brain
+
+    From eye to the cortex (visual cortex at the back of the brain)
+
+        Nerves cross left-right, pass through visual area of the thalmus, and
+        go to the visual cortex at the back. They cross over at the "optic
+        chiasm".
+
+        The process of turning light into shapes is "feature detection".
+
+        In the cortex, there are individual cells that respond to lines at
+        various angles.
+
+        The brain then takes the symbols of lines to create a pattern.
+
+        Cells converge to create our perception of what we see
+
+        Higher level cells provide even more perception
+
+        All of this happens virtually instantaneously
+
+        This is all done with a massive parallel processing of information,
+        currently unmatched by modern computers and arteficial intelligence
+
+        It is still not completely understood as to how the visual cortex
+        organizes all this information
+
+    Colour vision
+
+        How do we see all of these different colours and know what they look
+        like?
+
+        Two main theories:
+
+            Young-Helmholtz Trichromatic Theory
+
+                Comes from primarily studying the retina
+
+                Three types of cones in the retina, which respond to three
+                types of light; primary colours red, green, and blue
+                (like a colour printer ink cartridge).
+
+                All other colours can be made from these three
+
+                Could just the specificity of the cones produce these different
+                colours?
+
+                Consistent with this theory are colourblind individuals
+
+                    Red and green - problem with either green or red cones
+
+                    Blue and green - no distinction between blue and green cones
+
+                Theory works well until we alk about the colour yellow, which is
+                only really explained as another primary colour on its own.
+
+            The Opponent-Process Theory of Colour Vision
+
+                There are actually three sets of opposing pairs of colours
+
+                    Black and white (rods and cones)
+
+                    Red and green
+
+                    Blue and yellow
+
+                "Things that respond to yellow don't respond to blue, etc."
+
+                Afterimage effect
+
+                    Opposing colours are left behind
+
+                    Fired neurons get "worn out", so when we look at a sheet of
+                    paper after staring at something, the reverse neurons fire
+                    as if we are seeing the opposing colours.
+
+                    Like a teeter-totter
+
+            Both of these theories are probably true, but in different areas of
+            the brain. At the retinal level, you have the three types of cones
+            which work together to produce all the different colours.
+
+            Opponent-process is probably true in the thalmus, higher up in the
+            brain as it is processing things.
+
+3a2 Hearing
+
+    Outer Ear
+
+        Pinna (outermost fleshy disk)
+
+        Auditory canal (hole in the middle of the pinna)
+
+        Eardrum (back of auditory canal)
+
+            Vibrates like the top of a drum
+
+    Middle ear
+
+        Three bones transmit the eardrum vibrations mechanically
+
+        Vestibular sacs for balance
+
+    Inner ear
+
+        Stirrup attaches here and vibrates the cochlea
+
+        Cochlea turns physical stimulus into neural impulses
+            
+            Like the retina of the ear
+
+        Auditory nerve (coming out of the cochlea)
+
+    Closer look at the cochlea
+
+        Fluid "sloshes" through basilar or cochlear membrans protruding hair
+        cells - nerve fibers to auditory nerve
+
+        Sound waves -> eardrum -> hammer -> anvil -> stirrup -> oval window
+        -> cochlea
+
+        How does this fluid get turned into a neural impulse?
+
+            Place theory
+
+                Particular hairs determine pitch
+
+                Big waves are going to hit back a lot further creating one pitch
+                (lower sounds, because low sounds make big waves).
+
+                Higher sounds are going to make smaller waves, which land closer
+                in
+
+                This theory can't explain the ultra-high sounds we cannot hear
+            
+            Frequency theory
+
+                The speed of the waves determine the pitch
+
+                Big waves go slower, and little waves go faster
+
+            Both theories seem to be true
+
+            Place theory works well for high pitch sounds, and it is the
+            particular hairs that matter
+
+            Frequency theory explains low sounds, it is the frequency of the
+            waves pushing lots of hairs at once to create a richer, fuller sound
+
+3a3 The Other Senses - Taste, Smell, Touch, Pain, and Balance
+
+    Taste
+
+        Four basic tastes - sweet, sour, salty, bitter
+
+        Tongue has tastebuds that respond to these different tastes
+
+        Taste sensations are created by chemical reactions on the taste buds,
+        rather than a physical reaction as in sight and hearing
+
+        Taste is also heavily influenced by smell
+
+        Together they respond to much of the same stimuli 0 this is called
+        sensory interaction
+
+        Often what enhances the flavour of the food is the smell rather than
+        the combination of sweet, sour, salty, bitter
+
+    Smell
+
+        Also a chemical sense
+
+        Occurs due to a chemical reaction in the olfactory membrane that creates
+        smell
+
+        We still don't know exactly how olfactory membrane receptors work
+
+        There are a tonne of different smells - way more than the 4 taste combos
+
+        Chemical in the air gets picked up by these receptors in the olfactory
+        membrane which creates a neural impulse
+
+        Odors can powerfully evoke memories and emotions
+
+            Why?
+
+            Nasal passage -> receptors in olfactory membrane - situated right
+            next to limbic system (hippocampus, amygdala)
+
+    Touch
+
+        "We know less and less as we go down this list of senses."
+
+        Organ for touch is skin
+
+        There are specialized nerve endings in the skin, but these don't seem
+        to have a relationship with what we feel - it's not an easy mapping
+
+        Our skin is sensitive to pressure, warmth (not hot), cold, and pain
+
+        These four sensitivities give rise to quite varied sensations
+
+            e.g. A tickle
+
+                Hard to explain why ticklishness is dependent on having it done
+                by someone else
+
+        The sense of touch doesn't map onto the physical sensation nearly as
+        much as some other senses
+
+        Hot = warm + cold, an interesting physical illusion
+
+        Wet = cold + pressure
+
+        Itchiness = overstimulated pain receptors
+
+    Pain
+
+        More is known about pain, but it is increasingly difficult to understand
+
+        No definable area of the brain that is related to pain
+
+        Memories tend to be of the magnitude of the pain, but not the duration
+
+        Gate control theory
+
+            Suggests that the spinal cord has a neurological gate that either
+            blocks pain signals or allows them to travel to the brain
+
+            Distractions close the gate and make pain more manageable
+
+            Brain is blocking out the pain response with lots of other responses
+
+            Endorphins, which are the body's natural pain killers, may shut that
+            gate right at the spinal cord so those signals can't get to the
+            brain
+
+    Balance
+
+        AKA kinesthetic sense
+
+        Feeling of being disoriented or fuzzy
+
+        Seems to occur through two very different sense organs
+
+        The joints and muscles tell us our body's position
+
+        Also the semi-circular canals in the ears tell us the vestibular sense
+        of balance and orientation, particularly for the head
+
+            Grains of sand rolls around on hairs in the vestibular
+
+

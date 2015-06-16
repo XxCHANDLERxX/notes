@@ -1,0 +1,577 @@
+1a Introduction to Psychology
+
+    Psychology has a great breadth
+
+    Psychology isn't merely common sense, but often we thought the opposite of
+    what is true.
+
+        e.g. Opposites don't attract.
+
+    Psychology isn't about unethical studies, animal torture, etc.
+
+        Since the late 1960s much care is taken to remain ethical.
+
+    Animal sacrifice can still be done, but it is rarer nowadays.
+
+    Now, much research on the brain is done on humans, with machines that can
+    take pictures.
+
+    A way to think about psychology:
+
+        It has to do with what people think; it's about the thoughts that are
+        in our heads.
+
+        Historically, some thought that 'thoughts' should not be part of
+        psychology.
+
+        It also has to do with how we feel about things, our emotions, and
+        motivations.
+
+        Reactions, emotions, thoughts, and such are often not aligned.
+
+            e.g. Getting too nervous to ask someone out.
+
+        Psychology is also about how you act.
+
+        So, three main areas: thoughts, feelings, and actions.
+
+History of Psychology
+
+    1b1 The Three Beginnings of Psychology
+
+        Who do we think is the first psychologist?
+            1. Freud
+                The psychiatric tradition
+                Contributed important contribution to the beginnings of
+                psychology
+                Started psychoanalysis
+                Tradition more represented in medicine nowadays
+            2. Testing tradition
+                Seen most heavily in intelligence testing
+                Developed in England
+                Sir Francis Galton, a first cousing of Charles Darwin
+            3. Academic approach (laboratory psychology)
+                Wilhelm Wundt
+                    Set up the first psychology laboratory
+                    Wundt is interesting for his failure
+                    Scientific approach
+                    Chemical - 'mental atoms' of thoughts
+                William James
+                    A student of Wundt's and a contemporary of Freud's
+                    Made much ley progress
+                    Brought psychology to North America
+                John B Watson
+                    Early proponents of behaviourism
+                Gestalt pschologists in Europe
+
+    1b2 The Psychiatric Tradition
+
+        Dominated by Freud
+
+            Had a very complex theory about the way the psyche worked
+            Two primary motives driving people - sex and aggression
+            Much of what drives our behaviour is unconscious
+            Huge inner mental life that we are unaware of which is very complex
+            and very devious
+
+            One of his most famous, whacky ideas - Oedipus complex.
+
+                Influenced much of adult development.
+                Was the central problem to human psyche.
+                "As children boys want to have sex with their mother, and in
+                realizing that this is not possible, vicariously live this
+                through his father's sex life with the mother."
+                Didn't explain how women developed at all.
+
+        Carl Jung
+
+            Incredibly brilliant
+            More important for his literature
+            His psych theories not taken very seriously
+
+        Carl Adler
+
+            Had different ideas from Freud
+            Adler believed that people wanted to be powerful and in control
+            Echoed in modern psych via self esteem
+
+        Ego Psychologists
+
+            Followed in the Freudian tradition and have made an important impact
+            on modern psychology.
+
+            Erik Erickson - model of social development
+            Karen Horney and Henry Stack Sullivan - focused on the importance of
+            relationships in developing the self-concept.
+            (Social psych, social psych of relationships very contemporary.)
+
+        Major assumptions of the psychiatric tradition
+
+            Cannot rely on what people say or do to indicate anything, because
+            most mental life is unconscious.
+
+                Less emphasis on what people tell you, but on the interpretation
+                of what is said.
+
+            Emphasis on understanding each individual person comprehensively.
+
+                Studying one person at a time and knowing all details.
+
+                Most research done in the psychiatric tradition has been through
+                therapy over a number of years
+
+                Understanding the individual comprehensively as a whole
+
+            The best approach is a clinical approach
+
+                More is learned by people who are sick than those who are
+                healthy, and by doing therapy. That tells you more about what
+                is hidden beneath the psyche, what is really going on.
+
+    1b3 the Testing Tradition
+
+        Charles Darwin
+
+        Sir Francis Galton - Darwin's cousin
+
+            Naive idea of how to study what makes people "fit".
+            What makes people geniuses?
+            Underlying elitism/aristocracy - some people were better than
+            others.
+
+            Conencted his ideas to Darwin's theory of evolution.
+
+            Assumed smartest people were those who were the most fit.
+
+            Believed the first measure of intelligence was physical tests.
+            (Following a spinning disk, riding a bike fast.)
+
+            "A miserable failure. But a brilliant Mathematician!"
+
+        Spearman
+
+            Student of Galton, developed many new important statistical
+            techniques.
+
+            Factor analysis - way of figuring out what goes together.
+
+        Cattel & Eysenek
+
+            Students of Spearman
+            Famous in the trait tradition
+            Two different views ended up creating similar model
+            Two major components to personality:
+                1. Introversion vs Extroversion
+                2. Neuroticism vs Mellow
+
+        Binet
+
+            First to figure out how to actually perform an intelligence test.
+
+            Covered topics one would learn at school.
+
+            Trying to figure out age/grade level.
+
+            Very similar to what we now think of as school testing.
+
+        Major assumptions of the testing tradition
+
+            1. Psychology is primarily a product of biology
+
+                 Emphasis on nature over nurture
+
+                 If you want to know what people are about, study the
+                 evolutionary basis of behaviour.
+
+            2. There are only a few ways in which people differ
+
+                There are only a small number of traits which can explain how
+                people differ
+
+            3. People's traits can be understood through simple tests.
+
+                Questionnaires and paper and pencil tests make up almost all of
+                the research in this tradition
+
+    1b4 The Academic Tradition
+
+        Wilhelm Wundt
+
+            Psychological atomism
+
+            Would have people come in and tell him about a thought that they
+            had had; introspect
+
+            Thought he would get a nice periodic table of "psychological atoms",
+            but it made no sense
+
+        William James
+
+            Pragmatism
+
+            Believed Wundt was wrong for not studying what people really cared
+            about
+
+            Pragmatic approach - study things that are meaningful to people
+
+            Still important in North American psychology
+
+            "What does this matter?" is an important question.
+
+        Watson & Skinner
+
+            Took the approach of behaviourism, which dominated NA psych for
+            about 40 years
+
+            Believed that Wundt was not scientific enough, studying thoughts
+            which cannot be observed
+
+            If we need to be scientific, we need to study something observable,
+            like behaviour.
+
+            Defined psychology as the scientific study of behaviour.
+
+            Made progress in a number of different domains
+
+        Kurt Lewin
+
+            European
+
+            Gestalt psychology
+
+            Argued that Wundt made a wrong assumption, that the whole does not
+            equal the sum of its parts.
+
+            This was a powerful perspective.
+
+            Many times the parts don't add up to the wholes that we see and come
+            to know and understand.
+
+        Major assumptions
+
+            Psychology is best understood when the causes are understood
+                
+                We need to understand what causes a behaviour
+
+                The why is more important than the how or the when
+
+            People's thoughts and actions can be understood.
+
+                Thoughts and actions are not outside of the individual, are not
+                irrelevant.
+
+                By observing people, we can understand them
+
+            Systematic study produces the fullest understanding
+
+                Labs were set up
+
+                Wundt's lab - how long does it take to press a button?
+
+                    Reaction time
+
+    1b5 Three New Beginnings in Psychology
+
+        In the 1960s and 70s, these traditions each had a rebirth
+
+        The Psychiatric Tradition
+
+            Humanistic Approach "Third Wave"
+            
+                First was psychiatric
+                Second was behaviours
+
+            Carl Rogers
+
+                What Rogers tried to do in his therapy was very different from
+                the pschoanalytic tradition
+
+                He reflected back to the individual what they were feeling
+
+                Belief that people are basically good, and if you let them get
+                in touch with themselves and understand themselves they will get
+                better
+
+                They need to get in touch with this good inner part of who they
+                are
+            
+        The Trait Tradition
+
+            Expanded to 5 from 2 traits - OCEAN
+
+                Openness = intelligence
+                    
+                    Open to new experiences -> more education, more flexible
+                    thinking
+
+                Conscientiousness
+                
+                    people who stick to their goals and work to get things done
+
+                Extroversion
+
+                    (Above)
+
+                Agreeableness
+
+                    How positive or negative of a person are you
+
+                Neuroticism
+
+                    (Above)
+
+        The Academic Tradition
+
+            The cognitive revolution
+
+                In the 60s and 70s there was growth and changes from
+                behaviourism to cognitive psychology
+
+                Study of thought is one of the primary and important things
+                about people
+
+                Albert Bandura - observational learning
+
+                It became clear that with behaviourism, there was much that
+                could not be explained
+
+                We can learn by observing people rather than just being
+                reinforced ourselves
+
+                Changed the face of psychology
+
+    1c1 Basic Philosophy of Science
+
+        (Behind research methodologies of psychology.)
+
+        Big questions behind research methodology
+
+        Focus on academic tradition
+
+        Other traditions do not necessarily feel the same way
+
+        Our ideas can be wrong
+
+            "Healthy skepticism"
+
+            "I know my idea can be wrong"
+
+            We set out to demonstrate that our ideas are wrong
+
+                Only draw firm conclusions when we have shown that the idea is
+                wrong
+
+            We accept an idea when we can't prove that it is wrong
+
+                "The textbook should not be read as fact, but as a bunch of
+                ideas we haven't disproved yet."
+
+                This doesn't protect the idea from being disproved in the future
+
+                Good to have healthy skepticism when reading the text
+
+            We might prove everything wrong later!
+
+                True in all branches of science, including physics.
+
+        A number of things influence these ideas.
+
+            What is accepted is often what is popular rather than the data.
+
+            Also shaped by political forces and social influences.
+
+    1c2 Ways of Doing Research
+
+        Tension between discovery and explanation
+
+            When something is discovered and is brand new, does it mean
+            anything?
+
+            Some sciences are mostly about explanation; how things work, how
+            things unfold (like chemistry).
+
+                Astronomy is more abour discovery.
+
+            Psychology is in the middle - new discoveries, but explanation is
+            important
+
+            Different traditions have different emphasis on discovery and
+            explanation
+
+            Psychiatric tradition uses mostly case studies in its research.
+
+        Freud's famous case study - Anna O
+
+            Freud was Anna's therapist for many years
+            Developed an unusual sickness after a couple of years of caring for
+            her sick father
+            Was blind even though nothing was physically wrong with her
+            Also had glove paralysis - paralysis of her left hand.
+
+                Strange - it should be numb all the way up her arm!
+
+            Freud believed that Anna was having fantasies about sex with her
+            father, and that was the cause of her problems.
+
+            Many modern psychologists feel that Anna was being sexually abused
+            by her father
+
+            Freud thought her tales of abuse were part of her fantasy
+
+        Naturalistic observation
+
+            Similar to case study but usually broader
+
+            Observe, watch, and see what happens
+
+            Jane Goodall's research with chimps
+
+            Not very often done with people
+
+        Survey research
+
+            Question a sample of the population
+
+            Goal is to find out what the whole population is like
+
+            Want to represent the whole population from just a sample of people
+
+            Establishes generality
+
+            Sets up correlations between variables
+
+                When one thing happens, another thing tends to happen
+
+            Correlation between children watching violent tv and being violent
+
+            Can randomly sample children throughout all of Canada to find out
+            how much ciolent tv they wathc
+
+            Then, find out how often they use violent behaviour
+
+            What you find is a nice, reliable correlation between the two
+
+        Correlation doesn't mean causation
+
+            Just because kids who watch violent tv tend to be violent doesn't
+            necessarily mean that the tv caused the kids to be violent
+
+        Experiments
+
+            Usually about establishing causation
+
+        Example of correlation established by survey research
+
+            One possibility is that the violent television causes the violent
+            behaviour, but what is really going on?
+
+            Maybe its that violent kids like to watch violent tv
+
+            Whenever you have a correlation, you have to think about which
+            direction it goes in. Does A cause B or does B cause A?
+
+            Or maybe a third thing causes both behaviours - abuse?
+            Hyperactivity?
+
+            Maybe it's education? Parent's background?
+
+            There is always the possibility of having many variables when you
+            have a correlation
+
+            Causation establishes which one it is, which pattern is right
+
+    1c3 Research Methods - Surveys & Establishing Representativeness
+
+        Representative group of people
+
+        You want the people filling out the survey to correspond to the larger
+        group that you want to generalize and represent
+
+        Random sampling
+
+            On surveys
+
+            Survey a subset of a large group of people
+
+        Random assignment
+
+        Surveys must also be unbiased
+
+            Anchoring effects
+
+                Give people something that you know is wrong but influences the
+                way they interpret the question
+
+                Is the Mississippi river longer or shorter than 500 miles? How
+                long is it?
+
+                Will actually give a short estimate because they are still
+                influenced by the 500, even though that info is wrong.
+
+                People given that question gave answers ~2000 shorter.
+
+                Given X terrible incident, is capital punishment justified?
+                Given the legislative slowness behind capital punishment, is it
+                justified?
+
+            Framing effects
+
+            Surveys do a good job of establishing correlation between variables
+
+    1c4 Correlation is not Causation: How do you establish causation?
+
+        Correlation
+            
+            When one variable changes, the other variable changes as well
+
+        Time order
+
+            Know which "cause" comes first
+
+            Longitudinal research - over time.
+
+                e.g. Asking about tv usage/violence now then 3 years later
+
+        Elimination of all other possible causes
+
+            Were their parents more aggressive?
+            Did they come from poor families?
+            Were the children who were more aggressive likely to be hyperactive?
+
+            Experiments do this by random assignment
+
+                Randomly assign people to various conditions
+
+                Take a small group in an experiement, and randomly have one half
+                do one thing and the other half do another.
+
+            Independant variable
+
+                What we think is going to be the cause
+                Experimental group - watches television
+                Control group - doesn't watch television
+
+            Dependent variable
+
+                Behaviour that you are concerned with in the end; the effect
+                Have children play together to see if they will fight
+
+                We want the dependent variable to be:
+
+                    Valid - measures what it is supposed to measure
+
+                    Reliable - get the same outcome every time
+
+                e.g. Violent tv variable needs to measure violence, like
+                fighting. This is valid, but not reliable - kids don't always
+                fight the same amount.
+
+                Reliable = highly clustered data in the same place of a target
+                Valid = hitting the bullseye
+
+                Time order is built in
+
+                    Independent variable leads to the dependent variable
+
+            Random assignment eliminates other causes via probability theory.
+

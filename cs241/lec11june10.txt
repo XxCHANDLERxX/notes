@@ -1,0 +1,265 @@
+L = {cab} UNION {even a's}
+
+"Union is a good signal to look for non-determinism."
+
+NFA:
+
+    starting state 1 (accept)
+        -> c state 2
+            -> a state 3
+                -> b state 4
+        -> b,c state 6 (accept) (loop on b,c)
+            -> a state 5
+        -> a state 5 (loop on b,c)
+            -> a state 6
+
+    Read     Unread   States
+    EPSILLON caba     {1}
+    c        aba      {2,6}
+    ca       ba       {3,5}
+    cab      a        {4,5}
+    caba     EPSILLON {6}      --> ACCEPT
+
+    Build a DFA via the subset construction.
+
+    start with {1}
+        Ask: Where can we go from {1} on a,b,c?
+        a -> {5}
+            a -> {6}
+            b,c -> loop
+        b -> {6}
+            a -> {5}
+            b,c -> loop
+        c -> {2,6}
+            a -> {3,5}
+                a -> {6}
+                b -> {4,5}
+                    a -> {6}
+                    b,c -> {5}
+                c -> {5}
+            b,c -> {6}
+
+        At this point, how do we know that this process is going to terminate?
+
+            "At most 64 states."
+
+        Which states are accepting?
+
+            Look at the original NFA. The accepting states are 1, 4, and 6.
+            So our accepting states are any set including 1, 4, or 6.
+
+        "If we were to write down an algorithm for constructing DFAs from NFAs,
+         it would look a lot like this."
+
+    Obvious fact: Every DFA is implicitly an NFA.
+
+        Why?
+
+            An NFA is always about having a choice.
+            But DFAs just have exactly one option for each of their "choices"
+            at all times.
+
+    Also: Every NFA can be converted to a DFA for the same language. So, NFAs
+    and DFAs accept the same class of languages.
+
+    "Let's call this experiment a success. So we're motivated to try again.
+     Let's add the ability for the machine to change states without reading a
+     character."
+
+EPSILLON-NFAs
+
+    What if we can change states without reading a character?
+
+    EPSILLON-transitions:
+
+        state
+            EPSILLON -> other_state
+
+        A 'free pass' to a new state without reading a character.
+
+        Why is this a useful tool to have in our toolbox?
+
+            It acts like 'glue' to facilitate divide-and-conquer. We can glue
+            smaller machines together.
+
+            (Also, by extension, it makes our DFAs easier to read.)
+
+            e.g.
+
+                Machine for 'cab':
+
+                    -> starting state
+                        -> c
+                            -> a
+                                -> b (ACCEPT)
+
+                Machine for even a's:
+
+                    -> starting state (accept) (loop on b,c)
+                        <-> a (loop on b,c)
+
+                Gluing them together:
+                    -> starting state             1
+                        -> EPSILLON               2
+                            -> c                  3
+                                -> a              4
+                                    -> b (ACCEPT) 5
+
+                        -> EPSILLON (accept) (loop on b,c) 6
+                             <-> a (loop on b,c) 7
+
+        Read     Unread   States
+        
+        EPSILLON caba     {1,2,6}
+        c        aba      {3,6}
+        ca       ba       {4,7}
+        cab      a        {5,7}
+        caba     EPSILLON {6}      --> ACCEPT
+
+        Therefore, by the same naming trick as before, every EPSILLON-NFA has
+        an equivalent DFA.
+        "Remember the argument we made last day with the NFAs. If you take off
+         your glasses and look at the sets, we see the same thing still."
+
+        Conclusion: EPSILLON-NFAs recognize the same languages as DFAs.
+
+        In fact, the conversion from EPSILLON-NFA to DFA can be automated.
+
+        Recall the value of EPSILLON-transitions - they facilitate
+        divide-and-conquer. And since EPSILLON-NFAs are so good at
+        divide-and-conquer, if we could find an EPSILLON-NFA for every regular
+        expression, then we have proven one direction of Kleene's theorem (since
+        regular expressions can be converted to EPSILLON-NFAs, which can be
+        converted to a DFA).
+
+        "It's easier to do (and to prove) with EPSILLON-NFAs in the middle."
+
+Regular Expression Types
+
+    "Three base cases."
+
+    1) Empty language EPSILLON-NFA: -> (not accepting) "just a starting state"
+        "Every year this gives students trouble in class (and on the exam)."
+
+    2) Language consisting of EPSILLON EPSILLON-NFA: -> (accept)
+
+    3) {a} EPSILLON-NFA: -> starting state
+                            -> a (accept) (loop on a)
+
+    "Now, our recursive cases."
+
+    4) E_1 | E_2 EPSILLON-NFA: -> starting state
+                                   -> EPSILLON
+                                       -> E_1
+                                   -> EPSILLON
+                                       -> E_2
+    
+    5) E_1 * E_2 EPSILLON-NFA:
+    
+        E_1 -> EPSILLON (from each accepting state) -> E_2
+
+        AND make E_1's accepting states non-accepting.
+
+            "so we can't quit early"
+
+    6) E*
+
+        E -> EPSILLON (from every accepting state) -> back to the beginning
+
+        "But we can't simply wrap the accepting states back around. We also have
+         to accept the empty string, or zero repetitions of E. Note that we
+         don't know what the machine's innards look like - we can't just make
+         E's starting state accepting as a quick fix, because we might end up
+         unintentionally accepting incorrect words."
+
+        So let's make a new start state of (case 2).
+
+        -> starting state (accept) <--------------------------------\
+            -> EPSILLON                                             |
+                -> E                                                |
+                    -> EPSILLON (from each of E's accepting states) /
+
+    That completes the proof.
+
+    Every regular expression has an equivalent EPSILLON-NFA, and therefore an
+    equivalent DFA. So the conversion can be automated.
+
+    "You can just write down a regular expression, and have a program that
+     creates a program to recognize it for you (e.g. Unix command lex)."
+
+"Now, to talk more specifically about compilers."
+
+Scanning
+
+    Is C a regular language?
+
+        Well,
+
+            C has these tokens: keywords, ids, literals, operators, comments,
+            punctuation.
+
+            These are all regular languages, so therefore sequences of these are
+            also regular.
+
+    So we can use finite automata for tokenization (scanning).
+    "But it turns out that scanning is a harder problem."
+
+    Ordinary DFAs answer yes/no to "is w IN L?".
+
+    We need:
+
+        - An input string W
+        - break w into w_1, ..., w_n, such that each w_i IN L, else error.
+
+        "We need to know how to break up the pieces such that each piece is a
+         valid problem."
+
+    "Let's imagine our way through this problem."
+
+    Consider: L = { valid C tokens } is regular/
+
+        Let M_L be the DFA that recognizes L.
+
+            Then, take M_L's accepting states and make EPSILLON-transitions back
+            to the start state. We are now recognizing LL* (like L* but
+            non-empty). For simplicity we reject empty sequences of programs,
+            because those are generally not valid programs :P
+
+        So by the time we reach the end (an accepting state) back to the start,
+        that means we saw a valid token. So every time we make an EPSILLON-move,
+        what if we add an action to it?
+
+            Every time we use an EPSILLON-transition, we output a token!
+
+            BUT this isn't quite correct. EPSILLON-moves make the machine
+            non-deterministic, because EPSILLON-moves are always optional.
+
+        Does this scene guaruntee a unique decomposition of w = w_1, ..., w_n?
+
+            Nope. It depends on when the machine chooses to make those
+            transitions. A unique tokenization is not guarunteed.
+
+            Consider just the ID portion:
+
+                -> starting state
+                    -> a-zA-Z (accept) (loop on a-zA-Z0-9)
+                    <- EPSILLON/output token.
+
+                Input 'abab' could be 1, 2, 3, or 4 tokens. How do we decide
+                when to return a token? After 'a'? After 'ab'?
+
+            "In practice, we usually mean 'abab' to be one token."
+            So what do we do about this?
+
+                We delay taking the EPSILLON-move if there is no other choice.
+                In other words, always return the longest possible token.
+
+                However, this could mean valid matches are missed.
+
+                    e.g.
+                        
+                        L = {aa, aaa}, w = aaaa
+
+                "Programming languages are intentionally designed to be easy to
+                 scan though :)"
+

@@ -1,0 +1,120 @@
+CS 241 Tutorial 4
+
+    Topics:
+        
+        - MERL to ASM transition
+        - Unlinking MERL files
+
+1. main.asm was assembled with `java cs241.linkasm` to produce main.merl
+    [analysis merl file with xxd]
+
+    printmerl prints merl files in a human-readable format, but we don't have
+    access to it
+
+    printmerl would output:
+
+        cookie 10000002
+        length       60
+        clen         20
+        00...0c      1c
+             10      14
+             14      14
+             18      20
+             1c      00
+        REL          14      "format code 0x1 = relocation"
+        REL          0c      "REL implies label being used in a .word"
+        ESR          1c def
+        ESD          14 abc
+
+        "REL 14 tells us to go to instruction at 14, which has a value of 14"
+        "REL 0c tells us to go to instruction at 0c, which has value 1c"
+
+        0c    .word rel2
+
+        14    rel1: .word rel1
+
+        1c    rel2:
+
+        
+        "ESD 14 abc tells us that there is a label 'abc' at line 14, and we
+         export it."
+
+        .export abc
+        0c    .word rel2
+
+        14    abc: rel1: .word rel1
+
+        1c    rel2:
+
+        "ESR 1c def tells us that there is an external reference to label 'def'
+         on line 1c, plus an import."
+
+        .export abc
+        .import def
+        0c    .word rel2
+
+        14    abc: rel1: .word rel1
+
+        1c    rel2: .word def
+
+        "Fill in the other missing lines with the .words we know."
+
+        .export abc
+        .import def
+        0c    .word rel2
+              .word 0x14
+        14    abc: rel1: .word rel1
+              .word 0x20
+        1c    rel2: .word def
+
+        "Not quite there, because the labels probably weren't 'rel1', etc.
+         Also, .words were probably instructions, and could have been using
+         labels that weren't exported/imported that were converted to offsets
+         during assembly."
+
+2. Now we have linked lib.merl with main.merl to produce combined.merl, and we
+   have lost the source for lib.merl and lib.asm. We now have access to
+   printmerl, though.
+
+   cookie 10000002
+   length       90
+   clen         30
+   0000000c     24
+   00000010     18
+   00000014     14
+   00000018     24
+   0000001c     2c   |
+   00000020     14   |
+   00000024     24   | main - ignore
+   00000028     20   |
+   0000002c     10   |
+   REL          10
+   REL          1c
+   REL          24
+   REL          2c
+   REL           c
+   REL          18
+   ESD          24 abc
+   ESD          10 def
+
+   REL 10 => .word rel1 @ 10
+   REL 1c => ignore, because it's in main's section
+   REL 24 => ignore
+   REL 2c => ignore
+   REL  c => .word rel2 @ c => ESR C abc pre-linking => .word abc (matching ESD)
+     "If there wasn't a matching ESD for the value here, it would be an error."
+   REL 18 => ESR 18 abc pre-linking => .word abc at line 18
+   ESD 24 abc => used above
+   ESD 10 def => label 'def:' on line 10
+
+   .import abc
+   .export def
+   .word abc
+   def:
+     .word rel1
+     .word 0x14
+   rel1:
+     .word abc
+
+    "De-linking like this requires knowledge of at least one of the MERL files."
+

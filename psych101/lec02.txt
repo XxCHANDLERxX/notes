@@ -1,0 +1,511 @@
+Lecture 02: Behavioural Neuroscience I
+
+2a The Nervous System and the Brain
+
+    Neuron
+
+        Basic cells making up the nervous system
+
+    Peripheral nervous system
+
+        All the other nerves that run through the body which are not the brain
+        or the spinal cord
+
+    The central nervous system and the brain
+
+        Is probably one of the frontiers we understand the least in psychology
+
+    The endocrine system
+
+        Hormones
+
+        The different chemicals that float through the blood and also influence
+        us
+
+    Putting it all together - hunger example
+
+        Not separate systems, they all work together (e.g. with hunger).
+
+
+2b1 The Neuron
+
+    Picture - neuron
+
+        Myelin sheath
+
+            Little globule things - not present on neurons iside the brain
+
+            Lets the electric current bounce from node to node so the impulse
+            can travel quickly - impulses/reflexes faster than our brain
+
+            Neurons part of the peripheral system and spinal cord actually work
+            faster than in the brain
+
+        Dendrites
+
+            Branchy things found at the "back end" of the neuron
+
+        Axon
+
+            Branchy terminal things
+
+        Action potential
+        
+            Neural impulse moves from back dendrites to the front axons
+
+        Cell body
+
+            Surrounded by the dendrites
+
+            The cell's life support centre
+
+    How do you take a piece of tissue, like a cell or neuron, and have it
+    conduct electricity
+
+        Studying sea slugs - they have large neurons
+
+    Inside the neuron is chemical ions of one charge flowing in and out of the
+    cell membrane is what creates electricity and causes it to flow down the
+    neuron.
+
+    Where two neurons come together - Axon bumping into cell body/dendrites of
+    another cell - is a synapse.
+
+        There is a synaptic gap between the sending neuron's axon terminal and
+        the receiving neuron's body/dendrite.
+
+        A litle chemical flows between the two - neurotransmitters.
+
+        There are lots of potential connections - a whole bunch of synapses
+        "vote" towards firing the signal.
+
+        Some of those neurotransmitters make it a lot more likely for an impulse
+        to start, and some make it less likely. Add them all together to decide.
+
+        After the neurons dump their neurotransmitter, how do they get used
+        again?
+
+            They transfer back after a short while - reuptake.
+
+    There are lots of different types of neurotransmitters.
+
+        Dopamine
+            
+            Very common, especially in the brain
+
+            Important in two remarkably different disorders:
+
+                Parkinson's disease
+
+                    Partially caused by deficiency of dopamine
+
+                    Marked by tremors
+
+                    Important in the coordination of movement
+
+                Also important in attention and emotion
+
+                Schizophrenia
+
+                    Marked by an excess of dopamine in various parts of the
+                    brain.
+        Seratonin
+
+            Involved in mood, hunger, sleep, and arousal
+
+            It affects things widely in the brain
+
+            A deficiency of seratonin is a cause for insomnia
+
+            Deficiencies are also associated with depression
+
+            Prozac, Zoloft - eases to depression
+
+        Norepinephrine
+
+            More related to alertness and arousal
+
+            Also associated with depression
+
+            Older depression drugs used this
+
+        Acetylcholine
+
+            The most common neurotransmitters
+
+            Involved in muscle movement
+
+            Alzheimer's Disease:
+
+                The nerurons that work through acetylcholine get ruined with
+                Alzheimer's.
+
+            Also involved in learning and memory
+
+        Endorphines (a whole class of neurotransmitters)
+
+            Involved in pain regulation
+
+                When injured, the body releases these to handle more pain
+
+            Heroine and morphine mimic this neurotransmitter.
+
+2b3 How Drugs Affect Neurotransmitters
+
+    Drugs mimic the shape of a neurotransmitter
+
+    The real transmitter fits really well
+
+    Agonist mimic the neurotransmitter with "2/3 shapes"
+
+    Antagonist block neurotransmitter - it gets in the way.
+
+    So, some drugs work like the neurotransmitter (for deficiencies), while
+    others block to reduce an excessive amount.
+
+2c Divisions of the Nervous System
+
+    Nervous system - all the neurons in the body
+
+        Central - brain and spinal cord
+
+        Peripheral
+
+            Somatic - controls voluntary movements of skeletal muscles
+
+            Autonomic - controls self-regulated action of internal organs and
+            glands, like pupil dilation
+
+                Sympathetic - arousing - "gets you ready for fight or flight"
+
+                Parasympathetic - calming - "lets you build up all your energy"
+
+2c1 The Peripheral Nervous System
+
+    Autonomic nervous system
+
+        Controls the glands
+
+        Controls the muscles related to our organs
+
+        Possible to regulate with conscious thought, but often spontaneous
+
+            e.g. hiccups
+
+        Sympathetic nervous system - arousal - often stress
+
+            Pupils dilate - see more
+            Heartbeat accelerates
+            Stomach - digestion is inhibited
+            Stimulates glucose release by liver
+            Adrenal gland - burst of adrenaline
+            Kidney - stimulates secretion of epinephrine, norepinephrine
+            Bladder relaxes
+            Stimulates ejaculation in male
+
+        Parasympathetic - calming - eating and sleeping
+        
+            "classic thanksgiving afternoon"
+
+            Pupils contract
+            Heartbeat slows
+            Stimulates digestion
+            Stimulates gallbladder
+            Contracts bladder (gets bigger)
+            Stimulates erection of sex organs (part of sleep cycle)
+
+2c2 The Central Nervous System
+
+    The spinal cord
+
+        Carries information from the peripheral nervous system up to the brain
+
+        Does some "thinking" in controlling some responses
+
+            Typically refered to as reflexes
+
+            Contains some neurons that cannot only transmit things, but can
+            route things different ways, almost making some primitive decisions.
+
+    The Spinal Cord - a simple reflex
+
+        What happens if you put your finger in a flame?
+
+        People usually pull their finger out immediately.
+
+        The decision is made within the spinal cord. It has things called
+        interneurons that can "flip a switch" to contract motor neurons directly
+
+        You can override these things with your brain
+
+    The Brain
+
+        Does almost all "processing"
+
+        Three areas of the brain we need to know about
+
+            Brainstem
+
+                Controls all vital functions
+
+                Injury often leads to death
+
+                Very crucial
+
+            The lymbic system
+
+                Controls motivation and emotion
+
+                Very important for memory
+
+            Cerebral cortex
+
+                The bulk of our brain
+
+                Much larger than in animals
+
+                Separates us from animals
+
+        The Four Parts of the Brain Stem
+
+            Medulla
+
+                Absolutely critical in keeping us alive
+
+                Controls the heartbeat and breathing
+
+                On top of the spinal cord - common reason for death by broken
+                neck.
+
+                Damage = fatality!
+
+            Reticular formation
+
+                Controls attention, alertness, reactivity
+
+                Can be thought of the accelerator of the brain
+
+                Basic function that regulates the overall amount of brain
+                activity
+
+            Thalamus
+
+                Sensory switching point
+
+                Crucial for vision and other senses
+
+                Beginning processes of our senses come about here
+
+            The Cerebellum - cannopy-looking thing under the brain
+
+                Crucial for movement and coordination of movement
+
+                Crucial for balance
+
+                Big in birds
+
+            The Lymbic System - odd shaped grouping of things around brain stem
+
+                Hypothalmus
+                
+                    Crucial for hunger
+
+                    Controls the hormones of the Pituitary gland
+
+                    Some influence on other emotions as well, particularly
+                    pleasure
+
+                Amygdala
+
+                    Important for a number of things, including anger
+
+                Hippocampus
+
+                    Crucial for memory and for laying down the functions of
+                    memory
+
+                    Damage can cause severe types of memory loss
+
+            The Cerebral Cortex - basic divisions
+
+                Back part: Occipital lobe
+
+                    Heavily involved in vision
+
+                    Damage can blind - even with working eyes
+
+                Top-back: Parietal lobe
+
+                    Language and facial recognition
+
+                    Lots of things
+
+                Lower around the ear: Temporal lobe
+
+                    Involved in hearing, memory, and mood
+
+                Front: Frontal lobe
+
+                    Important in reasoning and thinking
+
+                    Close to half of the cortex
+
+                    Complex processing of information
+
+            The Cerebral Cortex Functional Divisions - Movement and Sense of
+            Touch
+
+                Motor Cortex
+
+                    laid out like a body - toes to trunk to fingers to neck
+                
+                    left hemisphere section controls the body's right side
+
+                Input: Sensory Cortex
+
+                    left hemisphere section receives from the body's right side
+
+                Motor and sensory are separated by a big groove
+
+                If there is a seizure - too much electrical activity in the
+                brain - they convulse if it goes through the motor cortex.
+
+                Epillepsy can happen that misses this - seizures without
+                convulsing.
+
+                Stroke can also paralyze here.
+
+                Often movement and touch are both lost, since they are so close.
+
+            Hearing and vision
+
+                Visual cortex - very back of brain
+
+                Auditory cortex - processed right next to ear
+
+                    Damage here can cause deafness with no possibility of
+                    correction.
+
+            Left and Right side of the brain
+
+                Left side controls right side of body and vice-versa
+
+                Corpus Callosum - big thick area connecting both sides, for
+                exchanging information
+
+                Epileptic study in the 1950s - lots of seizures is very bad, so
+                they went in and cut the corpus collosum - cutting the two sides
+                of the brain apart.
+
+                This helps to reduce the number of seizures dramaically because
+                the electrical impulses do not spread to the other side.
+
+                Odd behaviour was then discovered - the two sides of the brain
+                actually perform different functions.
+
+                Left side is more verbal and able to process language
+
+                Right side is better at visual processing and coordinating, and
+                can only understand simple language
+
+                Caveat: Left-handers have a brain structured like this, but some
+                are reversed.
+
+            Mike Gazanaga Study - helps explain "executive" function of the
+            left brain, the ability to explain and interpret what is going
+            on.
+
+                Brain is able to do this even when it is wrong
+
+                Right brain can process visual stimuli, and process commands
+
+                When he would flash "get up" to the right side, a number of
+                people would get up, and could instantaneously rationalize
+                their behaviour.
+
+                Left side is good at rationalizing.
+
+                Would the right side of the brain be better at picking up what
+                emotion is being shown on a face?
+
+2d The Endocrine System
+
+    Hypothalmus - brain region controlling Pituitary gland
+
+    Pituitary gland - secretes many different hormones, some of which affect
+    other glands
+
+    Testes/Ovaries - secrete male/female sex hormones
+
+    Affects Adrenal glands - inner part, the medulla, helps trigger the fight or
+    flight response
+
+    Pancreas - regulates insulin, blood sugar
+
+    Parathyroids - help regulate the level of calcium in the blood
+
+    Thyroid gland - affects metabolism, energy level, weight gain
+
+    Is usually longer term - hormones stick around in the blood stream and keep
+    going and going. Short term stuff is usually from the nervous system.
+
+2e Putting it All Together - The Case of Hunger
+
+    When we don't eat for a while, what makes us feel hungry?
+
+    Stomach contractions - carry hunger signal trhough the peripheral nervous
+    system to the hypothalmus
+
+    But if we drink lots of water to prevent these contractions, we still feel
+    hungry.
+
+    Blood sugar levels interpreted and controlled by the liver and pancreas to
+    send a message to the hypothalmus
+
+    Lateral hypothalmus is stimulated and releases the hormone orexin which
+    heightens hunger
+
+    fMRI (functional MRI) - shows lateral hypothalmus very active when hungry
+
+    When we eat:
+
+        Stomach expands and this message is transmitted to the hypothalmus
+
+        Blood sugar levels as interpreted and controlled by the liver and
+        pancreas send messages of higher levels to the hypothalmus
+
+        Insulin is also released
+
+        Ventromedial hypothalamus is stimulated and leads to the feeling of
+        satiation, so we stop the eating
+
+        (This is a simplified, strictly physiological version!)
+
+    Damage to the hypothalamus - rats starve to death, feel lethargic/depressed.
+
+    Damage to ventromedial - rats never stop eating and become enormous
+
+2f Overarching principles
+
+    Lots of specificity, or specialization of function in specific parts of the
+    brain.
+
+    However, it's not that simple.
+
+    The whole structure of the brain work together in coordinated, overlapping,
+    and redundant systems
+
+        e.g. Anger passes through frontal lobe - we can reason about our
+        reaction
+
+    The systems act at the same time to influence hunger
+
+    We can't say THAT part controls THAT one thing
+
+    Despite the specificity and complexity, the brain has lots of plasticity
+
+        If one area is damaged, other areas can take over
+
+            e.g. Prof's daughter had hydrocefilus - bleed in the brain - and
+            didn't do any lasting damage despite significant immediate damage.
+

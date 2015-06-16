@@ -1,0 +1,3154 @@
+Lecture 1 May 4
+Foundations of Sequential Programming
+"Baby compilers course"
+
+Two holidays this term!
+
+No textbooks!
+"A good part of this course is made up."
+"The course notes are the notes you will write down in class."
+
+Not allowed to collaborate or resubmit old solutions!
+
+What is this course supposed to be about?
+What is a sequential program?
+    An "ordinary" program.
+    What it's not:
+        Concurrent "a single CPU but back-and-forth-switching among tasks"
+            "playing a video while also listening to a pause button"
+        Parallel "doing more than one thing at once"
+    So, sequential means "single-threaded" and only one things going on at a
+    time.
+    Every program we've ever been asked to write so far at UW has been
+    sequential.
+
+Foundations
+    Looking to understand how sequential programs work.
+    "When you build a building, you start with the foundation."
+    We are going from the ground up.
+    Our starting point: bare hardware (sort of)
+        A chip!
+        For this course, we have a simulated MIPS machine.
+        We take a different perspective on MIPS than in CS251.
+        "A more simplified view of MIPS."
+        This machine only interprets ones and zeros.
+    By the end:
+        We will get programs written in a C-like language to run
+        on the MIPS.
+        What does the "run" button do in racket?
+        In this course, you will write a compiler!
+
+We will start talking about the compiler in a month, and it will
+last until the end of the term. It will be split across multiple
+assignments.
+
+Programming with ones and zeros is not fun, so we come up with an
+intermediary language - an assembler (turns assembly into 1s and 0s.
+
+Higher level languages like C can be "compiled" to assembly.
+
+Is this a "Baby" compilers course?
+    Sort of. Compilers have so many lessons built into them that
+    we can learn a lot by working with them.
+
+First topic: Binary and Hexadecimal Numbers
+    Bit - 0 or 1
+        Short for "binary digit".
+        Already an abstraction on top of hardware.
+        Equivalent to high and low voltage, or configurations
+        of magnetic media.
+
+    We group bits together.
+    Byte - 8 bits, e.g. 11001001
+        2^8 = 256 possible bytes.
+        Historically, a byte was just the number of bits needed to hold a
+        character.
+
+    Word - machine-specific grouping of bytes.
+        "The number of bytes the machine treats as a unit."
+        "How big are ints or pointers on this machine?"
+        Assume a 32-bit computer architecture.
+            So 1 word is 32 bits, or 4 bytes.
+        Nowadays 64-bit machines are more common, but we will learn the same
+        things with 32-bit machines, just with smaller numbers :)
+
+    4 bits, or half a byte, is a nibble!
+
+    Q: Given a byte (or a word) in the computer's memory, what does it mean?
+    "Reach into the computer and pick up a byte. What does it mean?"
+    E.g. 11001001 means what, exactly?
+
+    A: We don't know. It could mean many things.
+    "Could be a number"
+    "Could be an address"
+    "Could be a literal"
+    A number - what number is it? We don't know. It could be anything.
+        We want to converge on something, so we can guess using conventions,
+        such as the binary number system:
+            11001001 = 2^7 + 2^6 +2^3 + 2^0 = 128 + 64 + 8 + 1 = 201
+        How do we go the other way?
+            Keep dividing by two, and the sequence of remainders written in
+            reverse is your binary number.
+        So it's possible that this number represents 201.
+        BUT - how can we represent negative numbers?
+            Let one of the bits be a sign bit, let's say the first bit.
+            Convention states that 0 is for positive and 1 is for negative,
+            which is a "sign magnitude representation".
+        Then 11001001 = -73
+            Ignoring the first digit (which means minus) we are left with
+            -(64 + 8 + 1) = -73.
+        Sign magnitude representation has some flaws, though.
+            We can't have numbers as big as before (with unsigned), but we
+            can always do unsigned if we need that.
+
+            We have two representations of zeroes!
+                00000000, 100000000
+                This is wasteful and confusing, because comparing with
+                zero is very common.
+
+            Arithmetic on sign-magnitude numbers is tricky.
+                What happens if we add a positive and a negative?
+                Lots of work!
+
+        Better representation: 2's compliment notation.
+            A procedure for interpreting a binary number in 2's compliment:
+                1) Interpret the n-bit # as an unsigned integer.
+                2) The first bit still tells us the sign, meaning 0 means
+                   positive and 1 means negative. If the first bit is 0, we
+                   are done.
+                3) Else, subtract 2^n.
+
+            This makes sense. Let's see why with n=3 (3-bit numbers)
+                Binary: 000 001 010 011 100 101 110 111
+
+                2's co:   0   1   2   3  -4  -3  -2  -1
+
+                "Think of this as a number loop rather than a number line."
+                Cut it in a different place and get this:
+                100 101 110 111 000 001 010 011
+                111 + 1 = 000, like an odometer rolling over!
+                (We confine ourselves to 3 bits and overflow.)
+
+            n bits represent -2^n-1 ... 2^n-1 -1
+
+            Only one representation of 0.
+
+            Left bit still gives sign.
+
+            Arithmetic is cleaner.
+
+            The same circuit (e.g. addition) works for both unsigned and
+            2's compliment numbers.
+
+            In 2's compliment, 11001001 = 201 - 2^8
+                                        = 201 - 256
+                                        = -55
+
+            Now we'll introduce a convenience: Hexadecimal notation.
+                We typically work in base 16, so we use 0-9 and borrow
+                the letters A-F (where F represents 15)
+
+                This is more compact than binary.
+
+                Each hex digit = 4 bits (1 nibble)
+
+                e.g. 11001001 = Hex(1100), Hex(1001) = C9
+
+                Notation: 0xC9
+                    0x denotes a hexadecimal number.
+                    This is particularly valuable when you have a hexadecimal
+                    number with no letters in it.
+
+    Q: Given a byte 11001001, how can we tell if it's unsigned, signed, or
+    2's compliment?
+
+    A: We can't! Any computer can have all three data types in it.
+
+    The number depends on you, the programmer, to know what it means.
+    The only way to know is if you are the person who put it there, and we
+    remember our intend.
+
+    But remember - we don't even know 11001001 represents a number!
+
+    it could also be:
+        A character (but which one is it?)
+        So we need some kind of mapping between numbers and characters, a
+        convention.
+            The most common convention here is ASCII
+            "American Standard Code for Information Interchange"
+            Or, "how computers talked to each other".
+            e.g. A computer telling a printer to print a character.
+
+            But ASCII is old and American (and thus unilingual).
+            Computers were also expensive back then.
+            So the ASCII people said, "Okay, it would be nice if we could send
+            out lowercase and uppercase letters, plus whitespace and control
+            characters like EOF and the Bell and such."
+
+            This was less than 128 characters, so it's 7 bits. The first bit
+            in a byte of ASCII is typically 0.
+
+            So we know 11001001 is not an ASCII code!
+
+            IBM then came along and filled the other bits with things like
+            card suits, frame characters, and other nonsense.
+
+            So the 8th bit was typically used  for non-standard characters.
+
+    So 11001001 is not *7-bit ascii*.
+    If we ignore the first bit though, then it's ascii for 'I'
+
+    There are other encoding conventions.
+        e.g. EBCDIC (Another IBM one)
+            "Extended binary coded decimal interchange code"
+            (Mostly dead)
+            Strange design - gaps between blocks of letters, so sorting is hard.
+
+    There is also Unicode
+
+    3) an instruction (ours are 32 bits)
+
+    4) It could be nothing (garbage, unused memory)
+
+    homework: download mips reference sheet and bring it for the next two weeks
+Lecture 2 May 6 2015
+
+Machine Language
+
+    Computer programs operate on data.
+
+    Computer programs *are* data (historically not always true).
+        Von Neuman Architecture
+        "Let's put the data and the program in the same memory space."
+        Now it's possible to write programs that manipulate other programs.
+            *cough* compilers *cough*
+            Operating systems (decide which programs to run, etc.)
+            "The data that operating systems operate on are other programs."
+            Viruses operate on other programs, etc.
+
+    How does the computer know what is program and what is data? It doesn't.
+        Recall our discussion from last class about determining the meaning of a
+        byte.
+
+    What does an instruction look like? What instructions are there?
+        There are many different machine languages (processor-specific). 
+
+        For us, we have MIPS (simplified).
+        18 different 32-bit instruction types.
+
+    The MIPS Machine
+
+        CPU (Central Processing Unit) "Brain of the computer"
+            ALU 
+                Arithmetic and Logic Unit
+                "It does Math"
+            Control Unit
+                Decodes instructions and dispatches them to other parts of the
+                computer to carry them out.
+            Registers
+                Stack $0, $1, ..., $31
+            PC
+                Program Counter
+            IR
+            hi/lo
+            MAR
+            MDR
+
+        BUS
+
+        Main Memory
+
+Memory - Many kinds - in order of closeness to CPU
+
+    FAST 
+        Cache memory (close to CPU)
+        Main memory (RAM)
+        Disk memory
+        Network memory
+    SLOW
+
+    We will focus on CPU and main memory in this class.
+
+    Registers
+        On the CPU - small amounts of very fast memory
+
+        MIPS - 32 "general-purpose" registers $0, $1, ..., $31
+            They each hold 32 bits (1 word)
+
+        The CPU can only operate on data in registers (or load things into and
+        out of registers).
+
+        Register $0 is very special because it always holds zero.
+
+        Register 31 is also special because it has an intended purpose (later).
+
+        Register 30 is also sorta special (intended purpose covered later).
+
+        Example register operation:
+            Add the contents of registers $s and $t and put the result in $d.
+            $d <- $s + $t
+            This command can be found on our MIPS reference sheet.
+
+        Question: How many bits does it take to encode a register number?
+
+        Answer: 5 bits (2^5 == 32)
+
+        So we need 15 bits to encode 3 register numbers in an instruction, which
+        is 32 bits in total, so we have 17 bits left over to encode the
+        instruction.
+
+    RAM
+        A large amount of random access memory away from the CPU.
+        Data travels between CPU and RAM on the bus.
+            "The bus is not that exciting, think of it as a bundle of wires."
+        A big array of n bytes (n is in the order of 10^9+) 
+        Each cell has an address 0, ..., n-1.
+        Each 4-byte block [4k][4k+1][4k+2][4k+3] is a word.
+        Words have addresses 0, 4, 8, c, 10, 14, 18, 1c, 20, ... // Hex
+            Counting up here in hex is easier here because the lowest digit
+            cycles 0, 4, 8, c.
+        Much slower than registers.
+
+        We have two commands for communicating with RAM:
+            Load
+                Take a word of data out of RAM and bring it into a register.
+                You must tell the RAM the desired address.
+                The desired address goes into the Memory Address Register (MAR)
+                "It's no coincidence that the MAR is connected to the bus."
+                Contents of the MAR go out on the bus.
+                The data at that location comes back on the bus and is stored in
+                the Memory Data Register (MDR).
+                The value in the MDR moved to the destination register.
+
+            Store
+                Same as in Load, but in reverse.
+
+        Instructions are stored in memory (RAM), but we are oversimplifying
+        this process; future instructions can be prefetched, etc.
+
+    "Memory that is closer is faster. If I ask you about something from last
+     class, if it's in your brain you can reply pretty fast. If you have to
+     look it up in your notes, it's a bit slower. If you have to bus home to
+     pick up your notes, that's really slow!"
+
+Remember - the computer doesn't know which words contain code and which
+words contain data. Then how does it execute code?
+
+Special register called PC (Program Counter) holds the address of the next
+instruction to run.
+
+IR stands for instruction register, and holds the next instruction to be
+run.
+
+By convention, we guaruntee that a specific address (say, 0) contains code,
+then initialize PC to 0.
+
+Computer then runs the fetch-execute cycle.
+    Pc <- 0
+    Loop:
+        IR <- Mem[PC]
+        PC <- PC+4
+        decode and execute instruction in IR
+    End loop
+
+"This is the only program that your computer actually runs. This
+ fetch-execute cycle is behind everything that your computer appears to be
+ doing."
+
+ Note that PC holds the address of the *next* instruction while the
+ *current* instruction is executed.
+
+ Question: How does a program get executed?
+
+ Answer: The program gets executed because another program executes it!
+    
+    Chicken and egg problem!
+    Cop-out answer: that program is aprt of the operating system.
+    That program is called a loader, and it puts the program in memory and
+    sets PC to the address of the first instruction in the program.
+
+"When you are in the shell and type a command and type enter, the OS runs
+ the loader for that program, which loads the program into memory and runs
+ it. Same for GUIs - clicking an icon triggers a loader.
+ 
+ The operating system itself is loaded during the boot process by reading a
+ special slice of ROM (Read-Only Memory) which fetches the OS and runs it."
+
+ Question: What happens when a program ends? Does the computer just shut
+ down, or can we recover?
+
+ Answer: We go back to where we just came from and return control to the
+ loader, so we set PC to the address of the next instruction in the loader.
+
+ Follow-up questions:
+    How do we know that address?
+        That address should be sitting in register $31!
+        So we just need to set PC to $31.
+        PC <- $31
+
+    How do we set PC exactly?
+        Look at the MIPS reference sheet:
+            Jump Register instruction
+            jr $s
+            jr <- $s
+        So we simply do jr 31
+
+
+Example MIPS Machine Programs
+
+Example 1 - Add the value in $5 to the value in $7, store the result in $3
+and return.
+
+Notice the add instruction on the MIPS reference sheet.
+
+Location | Binary                                  | Hex      | Meaning
+00000000 | 0000 0000 1010 0111 0001 1000 0010 0000 | 00a71820 | add $3, $5, $7
+00000004 | 0000 0011 1110 0000 0000 0000 0000 1000 | 03e00008 | jr $31
+
+add: 0th instruction | 6 0s, s = 5, t = 7, instruction
+jr: returns execution
+
+Example 2 - Add 42 and 52, store the sum in $3 and return.
+    "If we piggy-back the previous program, we can put 42 and 52 into registers
+     and then run the above two instructions, we're done."
+
+    The number could be too big to fit into one instruction, though.
+    So UW made up this instruction:
+        lis $d "load immediate and skip"
+        "Load that in and then skip over it."
+        "Treat the next word as an immediate value and load it into $d, then
+         skip to the following instruction."
+
+    So if we encode the binary for 'lis $5' followed by the binary for 42.
+
+    To be continued next class.
+
+    We can now start the assignment. Reference instructions are on the reference
+    sheet, so feel free to work ahead, else we will give you what you need to do
+    the assignment by the end of the week.
+
+Lecture 3 May 11th 2015
+
+Recall MIPS example 1 from last class:
+
+    $3 <- $5 + $7
+
+location  binary                                   hex       meaning 
+00000000  0000 0000 1010 0111 0001 1000 0010 0000  00a71820  add $3, $5, $7
+00000004  0000 0011 1110 0000 0000 0000 0000 1000  03e00008  jr $31
+
+Example 2:
+
+    $3 <- 42 + 52
+    We can do 'lis $d' (load immediate and skip).
+
+location  binary                                   hex       meaning 
+00000000  0000 0000 0000 0000 0010 1000 0001 0100  00002814  lis $5
+00000004  0000 0000 0000 0000 0000 0000 0010 1010  0000002a  .word 42
+00000008  0000 0000 0000 0000 0010 1000 0001 0100  00003814  lis $7
+0000000c  0000 0000 0000 0000 0000 0000 0011 0100  00000034  .word 42
+// To finish, just tack on the previous example's solution!
+00000000  0000 0000 1010 0111 0001 1000 0010 0000  00a71820  add $3, $5, $7
+00000004  0000 0011 1110 0000 0000 0000 0000 1000  03e00008  jr $31
+
+Note that we need to run our assignment's 'ex.hex' program through the wordasm
+program to convert the hex into equivalent binary representation.
+
+We can't cat that! Most of it is unreadable, non-ascii data.
+So we can use xxd to print the bytes.
+
+    xxd -cols 4
+
+Gives a word at a time!
+
+    xxd -bits -cols 4
+
+Gives all the bits, like we have typed out above.
+
+Assembly language
+
+    Replace binary/hex encodings with easier-to-read shorthand.
+    Less chance of error!
+    The translation back to binary can be automated. This is an assembler!
+    One line of assembly (roughly speaking) equals one word of MIPS.
+
+    Ex2 revisited in assembly:
+
+        lis $5
+        .word 42
+        lis $7
+        .word 52
+        add $3, $5, $7
+        jr $31
+
+        Note that .word is NOT an instruction. The MIPS chip has no idea what
+        we mean when we say '.word'. It's what's called a directive.
+
+        Directives are given to the assembler, not to the machine.
+        It says, "the very next word in the file you output should be exactly
+        this number".
+
+        Recall that the whole program is stored in RAM already, so when the
+        .word is fetched it's simply treated as a value instead of an
+        instruction as usual.
+
+    Ex3 Compute the absolute value of register 1, store it in register 1, and
+    return.
+
+        We need to use instructions that modify PC in order to implement the
+        logic necessary for an absolute value function.
+
+        Branching instructions:
+
+            beq: Branch if two registers are equal.
+                 If they are equal, increment PC by the given number of words.
+                 "Skip this many instructions."
+                 The given offset can be negative, which allows us to branch
+                 backwords.
+
+            bne: Branch if two registers are not equal.
+
+            "Branching instructions are notoriously easy to get wrong, so be
+             extra careful when writing them."
+
+        Other useful instructions we can use here:
+
+            slt $a, $b, $c
+                
+                Sets a to 1 if $b < $c, else 0.
+
+        Solution:
+
+            "If register 1 is non-negative, we want to skip over the part that
+             flips the sign. If register 2 is 0, skip the part that flips the
+             sign."
+
+        location  assembly 
+        00000000  slt $2, $1, 80    ; is $1 < 0 ?
+        00000004  beq $2, $0,  1    ; if false, skip next instruction
+        00000008  sub $1, $0, $1    ; $1 = -$1
+        0000000c  jr $31            ; return
+
+    Ex4 (Looping) sum 1, ..., 13, store in $3, return.
+
+         0 lis $2            ; $2 <- 13
+         4 .word 13
+         8 add $3, $0, $0    ; $3 <- 0
+         c add $3, $2, $3    ; $3 += $2 (TOP OF LOOP)   -5
+        10 lis $1            ; $1 <- 1                  -4
+        14 .word 1                                      -3
+        18 sub $2, $2, $1    ; --$2                     -2
+        1c bne $2, $0, -5    ; if $2 != 0, loop         -1
+        ; Note that PC is pointing at 20 during the above instruction
+        20 jr $31            ; return
+
+        "Never branch backwards -1, or else you will wind up at the start of the
+         same instruction, and you will have the world's smallest infinite
+         loop!"
+
+        Note that we can refactor 'lis $1; .word 1' out of the loop to make it
+        faster. BUT that means we need to adjust the offsets. This can get
+        really tricky in nested loops.
+
+        The compiler helps us out here with instruction labels.
+
+            e.g.
+                
+                foo: add $1, $2, $3
+            
+            e.g. In a loop:
+
+                top: add $3, $2, $3
+                bne $2, $0, top
+
+            The assembler then associates the name 'foo' with the address of the
+            instruction it's labelling in memory.
+
+            The assembler is smart enough to compute negative/positive offsets
+            as needed, doing arithmetic like '(top - PC)/4'
+
+            So we should use labels from A2 onward as much as possible!
+
+RAM
+
+    lw: load word from RAM into registers.
+
+        lw $a, i($b)    ; $a <- Mem[$b + i]
+
+    sw: load word from registers into RAM.
+
+        sw $a, i($b)    ; Mem[$b + i] <- $a 
+
+    Ex5 $1 = address of an array
+        $2 = length of the array
+
+        Place element #5 (0-based) into $3.
+
+        (You can assume there are enough elements in the array.)
+
+        The only reason I told you about the length is that we get a new MIPS
+        emulator for A2 called mips.array. When passing in an array, we'll get
+        its address along with its length.
+
+        There are two ways we can do this:
+
+            The easy way:
+
+                lw $3 20($3)    ; 5 words = 20 bytes
+                jr $31
+
+                But this is a specific case. Generally we'd do a[i] instead of
+                a[5]. So we would need to calculate the address if the index is
+                not known (the hard way).
+
+            The hard way:
+
+                Suppose $5 contains the index of the item you want to fetch
+                ($5 is i).
+
+                So we multiply $5 by 4.
+                Notice that the multiply instruction is special and only has
+                two operands. The special registers hi and lo store the result
+                of mult.
+
+                    mult $a, $b    ; hi:lo <- $a * $b
+
+                We'll pretend overflows don't happen and the answer sits in lo.
+                "You didn't check for overflows when you wrote C, did you?" :P
+                Then we use:
+
+                    mflo: $a    ; move from lo $a <- lo
+                    mfhi: $a    ; move from hi $a <- hi
+
+                For division, lo holds the quotient, hi holds the remainder.
+
+                Solution:
+
+                    lis $4
+                    .word 4
+                    mult $5, $4
+                    mflo $5
+                    add $5, $1, $5
+                    lw $3, 0($5)
+                    jr $31
+Lecture 4 May 13 2015
+
+Recall this program:
+
+0  lis $2
+4  .word 13
+8  add $3, $0, $0
+c top:
+   add $3, $3, $2  ; labels can be on a new line, whitespace is ignored
+10 lis $1
+14 .word 1
+18 sub $2, $2, $1
+1c bne $2, $0, top ; PC = 0x20
+20 jr $31
+
+Procedures in MIPS
+
+    Two problems to solve:
+
+        1. Call and return - how to get into and out of a procedure f.
+
+            What if f calls a procedure g?
+
+            Parameters and results.
+
+        2. Registers - what if f overwrites our registers and destroys our data?
+
+            "MIPS won't tell us what we did wrong, we would have to spend time
+             tracing through the code and debugging it ourselves."
+
+    Naive solution for 2:
+
+        We could reserve some registers for f, and some for the mainline, then
+        they wouldn't interfere.
+
+        This is bad because a large amount of procedures would eat up all the
+        different registers and get stuck.
+
+        What if f calls g, g calls h, etc.? Or we use recursion? There just
+        aren't enough registers.
+
+    Camping analogy for a better solution:
+
+        "Take nothing but photographs, leave nothing but footprints."
+        We need to tell the procedure, "leave the registers the way they looked
+        before when you are done so that main can continue".
+
+        We must guaruntee that procedures leave registers unchanged when they
+        are done.
+
+        But how?
+
+        "We need to shove the data somewhere so that we can remember how the
+         registers looked before."
+
+    We need to use RAM.
+
+        But which RAM?
+
+        Let's say we store everything at 0x1000 in RAM. That doesn't really work
+        though, because if every procedure did that, we could have our data
+        overwritten accidentally again. Recursion and too many procedures are
+        still a problem.
+
+        How do we keep procedures from using the same RAM?
+
+        Recall that main memory looks like this:
+             ______
+            [ code ]
+            [______]
+            [      ]
+            [ free ]
+            [  ram ]
+            [______]
+                     <-- $30
+
+        We must allocate free memory from either the top or bottom of the RAM.
+
+        We also need to keep track of which RAM is free and which isn't.
+
+        The MIPS loader helps us out!
+
+        Remember how we said register 30 was special previously?
+        Register 30 tells us how much RAM we have. It tells us the first address
+        that is not available.
+        It gives us the address just past the end of RAM.
+        It's initialized by the loader to just past the last word of free RAM.
+        Anything below $30 is in use or unavailable. We can use it like a book
+        mark to separate used and unused RAM, assuming we always allocate from
+        the bottom (which we will).
+
+        Is that enough? Does that solve the problem? Just by remembering one
+        number?
+        
+        What happens if a chunk in the middle gets freed up first?
+
+            That's not possible!
+
+            Each procedure stores in RAM the registers it wants to use,
+            restores the original values on return, and updates $30.
+
+            e.g.
+
+                We have procedures f, g, and h.
+
+                If f calls g, and g calls h,
+                then h returns, then g returns, then f returns
+             __________
+           0[ code     ]
+           4[__________]
+           .[          ]
+           .[ free     ]
+           .[  ram     ]
+            [__________]
+            [ h's regs ]                 .
+            [__________] <-- $30        / \
+            [ g's regs ]      |          |
+            [__________] <-- $30         | Returns
+            [ f's regs ]      |   Calls  |
+            [__________]     \ /         |
+                         <-- $30         |
+
+            This looks like the stack abstract data type...
+
+            This is the famous runtime stack! This is where the idea of a stack
+            comes from.
+
+            Register 30 is the stack pointer. It contains the address of the top
+            of the stack.
+
+Template for writing procedures (assume f uses $2 and $3)
+
+    f: sw $2, -4($30)
+       sw $3, -8($30)
+       lis $3
+       .word 8
+       sub $30, $30, $3
+       ; ...
+       ; body of procedure
+       ; ...
+       add $30, $30, $3
+       lw $3, -8($30)
+       lw $2, -4($30)
+       ; we don't know how to return yet
+
+Now let's talk about call and return of procedures.
+
+    Call:
+
+        main: ; ...
+              ; ...
+              lis $5
+              .word f  ; address of the line labelled f
+              jr $5    ; workaround - full MIPS can do 'j f' ; actually jalr
+              ; ...
+
+    Return:
+
+        We need to return to where we came from in main.
+        So, we need to set PC to the line after the 'jr $5' above.
+        How does f know what address that is?
+
+        This sounds like the program return command 'jr $31'...
+
+        Notice the 'jalr' instruction on the MIPS reference sheet.
+
+            jalr: jump to and link to register
+
+            Like jr, but it also sets $31 to the address of the next instruction
+            before jumping.
+
+            So jalr sets $31 to the register of the next instruction to PC,
+            which already points to the next instruction.
+
+        We just need to replace 'jr $5' with 'jalr $5' above.
+
+        Then, to return, we use the familiar command 'jr $31'.
+
+        But what happens to the old value of $31? Main loses its return address
+        if jalr overwrites $31! What if we need to return to the loader? What if
+        f calls g?
+
+        Solution:
+
+            We just need to save $31 on the stack, and restore is when the call
+            returns!
+
+Full template for calling procedures:
+
+    "Procedures are notoriously easy to get wrong. It's really important to be
+     really careful here, which is why we are giving you an explicit template.
+     If you use this template exactly, you shouldn't have a problem."
+     
+    "Problems related to procedures are almost always because there is something
+     is wrong with the stack. Use the template!"
+
+    main: ...
+          lis $5
+          .word f
+          sw $31, -4($30)    ; push $31
+          lis $31
+          .word 4
+          sub $30, $30, $31  ; decrement $30
+          jalr $5            ; call f
+          lis $31
+          .word 4
+          add $30, $30, $31  ; increment $30 (stack pointer)
+          lw $31, -4($30)
+          ...
+          jr $31
+
+    f: ...    ; push registers
+       ...    ; decrement $30
+       ...
+       ...    ; body
+       ...
+       ...    ; increment $30
+       ...    ; pop regs
+       jr $31 ; return
+
+    If you don't save $31 before you use jalr, we lose it.
+    Our main (or whatever parent function) needs to handle saving its $31. The
+    function being called can't handle that itself.
+
+    Note that procedures are really just an abstraction. It's an adopted
+    convention that we use to jump around to different blocks of code. The MIPS
+    machine 
+
+    Also note that the oder of operations is reversed to follow the nature of a
+    stack - push, decrement, increment, pop.
+
+Parameters
+
+    Use registers.
+    
+    This should be documented!
+    
+    e.g.
+
+        What registers are we expecting input on?
+
+    If we have too many (>32) parameters, we must push them on the stack.
+    (Remember to take them off when you're done!)
+
+Example procedure:
+
+    "Do yourself a favour and document pretty much every line as you write
+     assembly, in case you have to go to the bathroom and end up forgetting what
+     you were doing."
+
+    Which registers below have to be saved and restored?
+
+        Registers 1 and 2 have to be saved and restored, as the caller probably
+        expects their old values to still be there.
+        
+        Register 3 is for output, do not save this one, because the caller is
+        looking for a new value there.
+
+    ; sum1ToN: sums 1, ..., N
+    ; Registers -
+    ;   $1 - working
+    ;   $2 - input (value of N)
+    ;   $3 - output
+    sw $1, -4($30)
+    sw $2, -8($30)
+    lis $1
+    .word 8
+    sub $30, $30, $1
+    top: add $3, $3, $2
+         lis $1
+         sub $2, $2, $1
+         bne $2, $0, top
+    lis $1
+    .word 8
+    add $30, $30, $1
+    lw $2, -8($30)
+    lw $1, -4($30)
+    jr $31
+
+What do we have to change to get recursion working with this design?
+
+    Nothing!
+    
+    If registers, parameters, and stack are managed properly, recursion will
+    just work! 
+
+    However, if you made even a tiny mistake, recursive functions would probably
+    explode.
+
+Output
+
+    Gee, I wonder how printf works?
+
+    How do those bytes get on the screen?
+    It calls a more primitive function called write, which writes a byte to the
+    screen.
+
+    How does write work?
+
+    It's a procedure provided by the operating system.
+
+    How is it implemented?
+
+    (It's complicated nowadays.)
+
+    But basically, imagine that there's a wire from every position on the screen
+    to memory. So if we want to print something to the string, we push the bytes
+    of the string to the corresponding bytes in graphical memory.
+
+    But here we just have one location - 0xffff000c
+
+    Use sw to store a word at address 0xffff000c
+
+        The least significant (last) byte will be printed.
+
+        e.g.
+
+            lis $1
+            .word 0xffff000c
+            lis $2
+            .word 67
+            sw $2, 0($1)
+            jr $31
+
+            Output: C
+
+No lecture monday, and no assignment due next week!
+
+Lecture 5 May 20 2015
+
+The Assembler
+
+    Encompasses assignment 3 or 4
+
+    Will be written in C++03, Racket or (if you insist) C
+
+    Part of Friday's tutorial will be coaching on C++ and common mistakes
+    students make when making the assembler.
+
+    Assembly code                      Machine Code
+    add $1, $2, $3   --> Assembler --> 1110010100111...
+    jr $31
+
+    Note that cs241.binasm is not only an assembler, it is a model for the
+    assembler that we will be creating on our assignment.
+
+    Any translation process involves two phases (even spoken languages):
+
+        1. Analysis - understand what the input means
+                     (understand what is meant by the source screen)
+
+        2. Synthesis - find an equivalent output
+                       (output the equivalent target string)
+
+    The input to our assembler is an assembly file - a stream of characters.
+
+        If you look at individual characters on their own, they don't really
+        mean anything. 'd' could mean anything.
+
+        So, generally, the first step is to take those individual characters
+        and group them into things that have meaning, or tokens.
+
+            e.g. Labels, hex numbers, register numbers, .words, are all tokens.
+
+        Tokenization deserves its own spotlight and we will spend a week or two
+        discussing it later in the course. For now, it will be done for you.
+
+        Your job is to group the tokens into instructions (if possible). That is
+        analysis.
+        Then, you will output equivalent machine code. That is synthesis.
+
+        We don't assume that the provided tokens are valid.
+        If the tokens are not arranged into sensible instructions, then we will
+        output ERROR to stderr (NOT stdout).
+
+        Advice: There are many more wrong configurations than right ones. Most
+        of the ways you can put tokens together do not represent valid
+        instructions. Trying to think of the error cases is hard. Instead, focus
+        on finding all of the *right* ones, and anything else is an ERROR.
+
+        We aren't *only* allowed to output ERROR on stderr. We can make our
+        errors more descriptive if we want as long as we say error.
+        "It doesn't even have to be on its own line, it just has to be there."
+
+        This process of grouping tokens together - parsing - will also be
+        covered in more detail later in the course. Often, this is the most
+        difficult part of the course.
+
+
+    Biggest Problem with Writing Assemblers:
+
+        How do we assemble this?
+
+            beq $0, $1, abc
+            ...
+            abc: add $3, $3, $3
+
+        The problem is that the assembler is working sequentially. It just sees
+        an instruction and outputs it, and moves on to the next instruction.
+
+        How does the assembler know what abc is before it sees the abc label?
+
+        You can't assemble the beq because you don't (yet) know what abc is.
+
+        Naive solution: scanning the whole file to find that label is very slow
+        and runs in quadratic time! Assemblers can run in linear time, though...
+
+        Better, "standard" solution: Assemble in two passes. Make two passes
+        over the program. In pass one, group the tokens into instructions and
+        make a note of any found labels by recording its address.
+
+            What we end up building is a symbol table - a list of
+            (label, address) pairs.
+
+            Note: A line of assembly may have more than one label.
+                
+                e.g.
+                        f:
+                        g:
+                            mult $1, $2
+
+            Note: We can label after the end of the program.
+
+                e.g.
+                          jr $31
+                        z:
+
+                (z would point to address of 'jr $31' + 4)
+
+        The second pass would then translate each instruction into machine code.
+
+            If an instruction refers to a label, look up the associated address
+            in the symbol table.
+
+        For full marks, our assembler must output the assembled MIPS to stdout.
+
+            Recall the advice, "if you can read it, it's wrong".
+
+            We must also print the symbol table to stderr (binasm doesn't do
+            this) so that the markers can see it.
+
+    Example:
+
+        main: lis $2
+              .word 13
+              add $3, $0, $0
+
+        top:
+             add $3, $3, $2
+             lis $1
+             .word 1
+             sub $2, $1, $2
+             bne $2, $0, top
+             jr $31
+        
+        beyond:
+
+        Pass one: Group tokens into instructions (we can do this however we
+        want, with a data structure or a class or just wing it or whatever).
+        Then, build the symbol table:
+
+            Name | Address
+
+            main   0x00
+            top    0x0c
+            beyond 0x24
+
+        Pass two: Translate each instruction. When we encounter a label, we
+        look up the label in the symbol table, and calculate (top - PC)/4.
+
+            lis $2          --> 0x00001014
+            .word 13        --> 0x0000000d
+            bne $2, $0, top --> bne $2, $0, -5 --> 0x1440fffb // hex(-5) = fffb
+
+        Note that the MIPS machine will always interpret the branch offset as a
+        twos-compliment number.
+
+        Wait, how do we get 'fffb' from -5?
+
+            To negate a two's compliment number, flip the bits and add one.
+
+                So if 5 = 0000 0000 0000 0101
+                     -5 = 1111 1111 1111 1010 + 1
+                        = 1111 1111 1111 1011
+                        =    f    f    f    b
+
+        We can't just print out '0x00001014', because we can read that!
+        Printing the hex representation would require us to print 10 bytes for
+        those 10 characters.
+
+        We need to print the bytes whose bit pattern is that hex.
+        So we need to do bit-level operations.
+
+    Bit-level Operations
+
+        To assemble 'bne $2, $0, top' (where top = (top-PC)/4 = 5), we first
+        look at the opcode: 000101 = 5
+        first register = $2 = 2
+        second register = $0 = 0
+        offset = -5
+
+        Now we must build a 32-bit word representing this.
+
+        opcode = 5 bits
+        first register = 5 bits
+        second register = 5 bits
+        offset = 16 bits
+
+        We must build up a word (an int, if you will) with that bit pattern.
+
+        Note how we can turn '27' into '27 000 000' by putting six zeroes in
+        front of it, or multiplying by 1 000 000.
+
+        To put 000101 in the first six bits, we need to append 32-6 = 26 zeroes
+        on the end, or a left shift by 26 bits.
+
+        in C: '5 << 26; // multiply by 2^26'
+        in Racket: (arithmetic-shift 5 -26) // negative means shift left 
+
+        This produces:
+
+            00010100000000000000000000000000
+
+        Then move $2 21 places to the left ('2 << 21'):
+
+            00010100010000000000000000000000
+
+        Then move $0 16 places to the left ('0 << 16'):
+
+            00010100010000000000000000000000
+        
+        The -5 at the end still needs to be shifted. But -5 as an int is a
+        32-bit number (0xfffffffb), and we only have 16 bits left!
+
+        Remember how we calculated -5 to be 0xfffb above? We don't need the
+        first 16 bits of ones. We want only the last 16 bits.
+
+    Bitwise and/or
+
+        a b | a and b | a or b
+        0 0      0        0
+        0 1      0        1
+        1 0      0        1
+        1 1      1        1
+
+        These can be extended to digit-by-digit operations.
+
+            e.g.
+                
+                    11001001
+                AND 11110000
+                  = 11000000
+
+        To AND something with 1 leaves the other value unchanged.
+        To AND something with 0 gives you a 0.
+
+            e.g.
+                
+                   11001001
+                OR 11110000
+                 = 11111001
+
+        To OR with 1 gives you a 1.
+        To OR with 0 leaves the other bit unchanged.
+
+        This means that AND can be used to turn bits off, and OR means to turn
+        bits on.
+
+    So to squish 0xfffffffb above, we do a bitwise AND with 0xffff (0x0000ffff).
+    This turns off the first 16 bits.
+
+        In C: -5 & 0xffff
+
+    Then bitwise OR the four pieces together and we get:
+
+        int x = (5<<26)|(2<<21)|(0<<16)|(-5&0xffff);
+
+    We now have our number! Now we must print it out:
+
+        cout << x << endl; // WRONG!
+
+    The number we constructed happens to be 339 804 155, so 'cout << x' will
+    print out '339804155\n', which is too many bytes.
+
+    To print out a number, we must convert the digits of the number into ASCII
+    and print them out one by one. We want to print the binary value directly
+    though, without any conversion.
+
+    Consider the following:
+        
+        int x = 65;
+        char c = 65;
+        cout << x << c; // 65A
+
+    When we print an int, C++ converts the digits to ascii.
+    When we print characters, the bits are sent directly to the screen.
+
+    So we need to break up our 32 bits into 4 characters.
+
+        int x = ...;
+        char c = x >> 24;
+        cout << c;
+        c = x >> 16;
+        cout << c;
+        c = x >> 8;
+        cout << c;
+        c = x;
+        cout << c;
+        
+    "If you have any friends in cs246 you should show them code like this, it
+     will blow their minds - on every other line the operator means output or
+     bitshift!"
+
+    When you bitshift by 16, only 8 bits are put into the character, so the
+    extra bits are chopped off.
+Lecture 6 May 25 2015
+
+Loaders
+
+    Basic OS code:
+        repeat:
+            p <- next program to run
+            copy P into memory, starting at 0    // This is the loader!
+            jalr $0
+            beq $0, $0, repeat
+
+    Our mips.twoints and mips.array are emulators as well as loaders for us.
+    They run our program.
+
+    Problems:
+
+        The OS is itself a program - where does it sit in memory?
+
+            "We know it's not at address 0, so where can it be?"
+            There are other programs in memory, and they can't all be at address
+            0.
+
+            Reminder: Some things in this course is made-up (not applicable in
+            the real world). But, "this part of the course is full of lies and
+            half-truths". We can't go into detail about how more than one
+            program runs at once. We have a course for that - operating systems.
+
+            We'll simply pretend the OS exists, and learn what we need to know
+            to run our programs in a multi-process environment.
+
+            How do we fix this?
+            Choose different starting addresses for programs at assembly time.
+            PC could be set up to start at, say, 1000.
+
+            But how will the loader know where to put them?
+            What if two programs have the same load address?
+
+            Q: Who here has used a Commodore 64?
+            *2 people raise their hands*
+            LOAD '*', 8, 1       "Load the program from where it was compiled"
+
+            Let the loader decide where to put the program.
+            
+            Loader:
+
+                Take a program P as input
+                Find a location A in memory for P
+                Copy P into memory, starting at A
+                Return A to the OS
+
+            OS 2.0:
+
+            repeat:
+                P<- next program to run
+                $3 <- loader(P)
+                jalr $3
+                beq $0, $0, repeat
+
+        Loader pseudocode:
+
+            Input: words w1, ..., wk (the machine code, P)
+            n = k + space for a stack
+            // (How much stack space? Just pick something! 1MB, or whatever.)
+            A = first address of n consecutive words of free RAM
+
+            for i=0...k-1
+                MEM[A + i*4] <- w(i+1)    // Word i + 1
+            endfor
+
+            $30 = A + 4*n
+            return A
+
+        The above code doesn't work!
+        It was based on an assumption that we hinted could be wrong - the
+        assumption that the program can just pick a place in memory and it could
+        run.
+
+        Slide:
+            
+            Relocation: What must change if not loaded at 0x0?
+
+            Assembly Lang     Address     Machine Lang   Adress v2
+
+            lis $3            0x00000000  0x00001814     0x00010000
+            .word 0xabc       0x00000001  0x00000abc     0x00010004
+            lis $1            ...
+            .word A           ...         0x00000018     ...
+            jr $1
+            B:
+              jr $31
+            A:
+              beq $0, $0, B
+              .word B
+
+        Will the code still work if we load it from 0x10000 instead of 0x0?
+        No. We still manually jump to 0x18 instead of 0x10018!
+        Oh no! That location is way above our program.
+
+        Problem: Labels may be resolved to the wrong values!
+        The loader will have to fix the problem somehow.
+        If we add the load address (0x10000) to the pointers (like 0x00000018),
+        then they will be pointing at the correct place in memory again!
+
+        So what needs to change when we relocate (move the program somewhere
+        else)?
+
+        Note the similarity - we have '.word id' in each.
+
+        But this doesn't apply to the beq instruction using label B above.
+        Branching is always relative - the offset is computed on the fly, and
+        not seen in the machine code.
+
+        So we need these adjustments:
+
+            .word id                              // add alpha to id
+            .word constant                        // no adjustment
+            anything else (including beq, bne)    // no adjustment
+
+        What do we do with the constant .word?
+
+            If we are doing math on it or something, we need to keep it.
+            What if we use it as an address?
+            If it's an address, it isn't in the program.
+            Recall how we used address 0xffff000c as-is regardless of where we
+            used it.
+
+            "If the programmer meant to use that .word as a pointer within our
+             program, they should have used a label."
+
+            Labels now are not only a convenience, they are a necessity. It's
+            how we know which values need to be adjusted.
+
+        Problem: The whole thing doesn't work.
+
+            Remember what the loader sees - the assembled file, a stream of bits
+            rather than assembly instructions with labels.
+            (Machine Lang column above)
+
+            How do we know which ones come from `.word id` and which ones are
+            instructions? It is technically possible to craft a .word constant
+            that looks exactly like another instruction.
+
+            The loader can't know which lines need to be adjusted.
+            "We could give up. Or we could say there is an opportunity for a
+            solution!"
+
+            Solution: We need more information from the assembler. The assembler
+            knows where labels are used.
+
+            However, the assembler is not around anymore, it already ran.
+
+            So we need a better understanding of what assemblers do.
+            The output of most assemblers is not pure machine code. They give
+            you what is called object code.
+            (Our assemblers output pure machine code - this isn't the norm.)
+
+            Recall the '.o' files we created in cs246.
+            An object file contains the binary code and any auxiliary
+            information needed by the loader (and later, the linker).
+
+        Our object code format: MERL
+
+            MIPS Executable Relocatable Linkable
+
+            (This version is made up for the case of simplicity, but there are
+             iron-clad, more complex object code formats out there in the real
+             world.)
+
+            In terms of design, what do we need to put in our object file?
+                
+                 - The code
+                 - Which lines (addresses) were originally `.word id`
+                   (like a bunch of indices).
+                 - Other stuff that we don't need for now.
+
+            MERL Format:
+
+            | Header
+            |
+            |_
+            | MIPS Binary
+            |
+            |_
+            | Footer
+
+            Header
+
+                The header is always three words, the first of which is
+                0x10000002.
+                Why have a constant built into the file format?
+                It's a cookie; a basic sanity check that this file really is
+                MERL.
+                This kind of first-few-bytes-sanity-check is very common.
+
+                    e.g. Executable files have cookies that differ from jpegs,
+                    etc.
+
+                Note that this cookie could be maliciously forged, or
+                accidentally come across - we aren't worrying about that, we're
+                just trying to prevent programming accidents.
+
+                Second word of header = length of .merl file.
+                Third word = code length = len(header + MIPS)
+
+            Footer
+
+                A.K.A Symbol table
+                "We use the term 'symbol table' in this course in three places,
+                but they mean three different things."
+
+                It looks like:
+
+                    Format code    // format code = 1 means this is a relocation
+                        address    // address in MIPS binary of a relocatable wd
+                    Format code
+                        address
+
+                Format code of 1 means this is a relocation entry.
+
+                One wrinkle: The MIPS code always starts at 12, or 0x0c, so it
+                was assembled for PC to start at 0x0c.
+
+                So `.word A` is 0x00000024 instead of 0x00000018. It went up by
+                twelve!
+
+            But our assembler produces raw binary, not object code...
+
+            Challenge question: Why is our cookie 0x10000002.
+            
+            A: That number is MIPS for `beq $0, $0, 2`! Or, "skip the next two
+            lines and start two down" - a command to skip the header.
+
+            So MERL files can be executed as ordinary MIPS programs (if loaded
+            at address 0). This also means that you can make your assembler code
+            up MERL if we construct our assembly right.
+
+            Header:
+                beq $0, $0, 2
+                .word endmodule
+                .word endcode
+
+            Footer:
+                endcode:
+                  .word 0x1
+                  .word reloc1
+                  .word 0x1
+                  .word reloc2
+                endmodule:
+Lecture 7 May 27 2015
+
+A3 and A4 are to make an assembler. The most important question of A3 and A4 is
+the first one (A3Q1).
+
+Recall MERL format from last class
+
+    "It sure would be nice if the assembler did this automatically, so we don't
+    have to craft special instructions to create the header and footer.
+
+    The last question of assignment 4 is to do this."
+
+    binasm doesn't relocate!
+
+    cs241.merl is a relocation tool
+
+        input: merl file and relocation address
+        output: non-relocatable MIPS file with MERL header and footer removed,
+        ready to load at the given address, not 0.
+
+    "Great, so how do I load it at a different address?"
+
+    mips.twoints and mips.array take an optional second argument:
+    
+        The load address.
+
+        e.g.
+
+            Want to load myobj.merl at 0x1000? Do:
+
+                java cs241.merl 0x1000 < myobj.merl > myobj.mips
+                java mips.twoints myobj.mips 0x1000
+
+Loader relocation algorithm:
+
+    // Read the header
+    read() // skip the cookie
+    endMod<-read() // end of Merl file
+    codeLen<-read() - 12 // subtract header length = length of code
+    // Done reading header
+
+    alpha<-findFreeRAM(codeLen + stack)
+    
+    for(i=0; i < codeLen; i+=4) {
+        Mem[alpha + i]<-read()
+    }
+    i<-codeLen + 12
+    while (i < endMod){
+        format<-read()
+        if (format == 1) {
+            rel<-read() // addr to be relocated (relative to the start of
+                        // the *header*, not the start of the code
+
+            /*  Beginning of program is at alpha
+             *  Rel is adjustment (relative to beginning of merl file)
+             *  So rel-12 is distance down from the start where the actual
+             *  memory is located.
+             */ This is the actual location because the header is not loaded.
+            Mem[alpha+rel-12] += alpha-12
+            // Everything goes forward by alpha, but then backward by the header
+            // length because we don't load the header.
+        } else {
+            ERROR
+        }
+        i+=8
+    }
+
+Linkers
+
+    Convenient to split large MIPS programs into smaller ones
+        
+        - reusable libraries
+        - team development
+
+    "My friend and I are going to write the next big thing this weekend in our
+     garage!"
+
+    Can you really just do that? Can you simply write a big assembly program
+    spanning multiple files and feed the whole thing to the assembler, no
+    problemo?
+
+    What might go wrong?
+
+        Slide: "Big" file squished into one slide
+
+            main:
+                .word fred
+                .word derf
+                ...
+            x:
+                ...
+            -----------------
+            fred:
+                .word x
+                .word y
+                ...
+            -----------------
+            derf:
+                .word x
+                ...
+            y:
+                ...
+
+        Problem: How can the assembler resolve a reference to a label if the
+        label is in a different file.
+
+        Solution 1: $cat all the .asm files together and assemble the result.
+
+            cat a.asm b.asb c.asm | java cs241.binasm > abc.mips
+
+            This actually does work! But...
+
+                What if my project is very big and has modules that don't
+                change?
+                We would have to re-assemble the entire project every time we
+                make a small change.
+                We want reusable libraries that don't have to be converted back
+                to source to be used each time. We should be able to use the
+                binaries out of the box.
+
+        Can we assemble first and then cat?
+
+            (No, the assembler would get mad about unresolved labels.)
+
+            If the assembler is more lenient on that, though, is it okay to cat
+            MERL files together?
+
+            Issues:
+
+                The binaries need to be relocatable - the addresses will
+                probably conflict - at most one of them can be at 0x00.
+
+                We would be catting MERL files together with headers and footers
+                and everything:
+
+                    [ header ]
+                    [  code  ]
+                    [ footer ]
+                    [ header ]
+                    [  code  ]
+                    [ footer ]
+                    [ header ]
+                    [  code  ]
+                    [ footer ]
+
+                    ^ This ain't no MERL file!
+
+        Solution 2: We need a tool that understands MERL files and puts them
+        together intelligently - a linker.
+
+            "We can't bribe the assembler to assemble things independantly, so
+             we must bend it to our will."
+
+             But still - what should the assembler do with references and labels
+             that aren't there?
+
+             We must change the assembler, but how?
+
+                When the assembler encounters '.word id', where label 'id' isn't
+                found, we can't let it be rejected.
+
+                It doesn't know what to put there though, so what do we put
+                there?
+
+                Zero. It outputs 0.
+
+                All it can do is tell us what the unknown is.
+
+                It must indicate that the value of 'id' is needed before the
+                program can run.
+
+                e.g.
+
+                    a.asm       b.asm
+                    --------    --------     a.asm cannot be executed until the
+                    lis $3      x: ...       value of x is known.
+                    .word x
+
+                How does the assembler notify us of the unknown value?
+
+                    It makes a note in the MERL file.
+
+                But - we've lost something we had before that we'd like to get
+                back.
+                    
+                    e.g.
+                        lis $3
+                        .word abd
+                        ...
+                        abc:
+                            ...
+
+                    When the assembler was rejecting undefined labels, it threw
+                    an error. It will ask the linker for 'abd'. Now we can't
+                    check for undefined labels.
+
+                    What if we meant 'abc' when we said 'abd'?
+
+                    Why can't the linker throw this error?
+
+                        Well, if we are linking in someone else's library then
+                        we are stuck. It's better to catch the error where it
+                        began.
+
+                    How does the assembler know what we type is intentional?
+
+                        We tell it.
+
+                New assembler directive:
+
+                    .import id
+
+                    Note: not seen by the machine; just something for the
+                    assembler.
+
+                    This tells the assembler to ask for id to be linked in.
+
+                    Does NOT assemble to a word of MIPS.
+
+                So when the assembler sees '.word abc' and 'abc:' is not present
+                and we have no '.import abc', then it can confidently raise an
+                error.
+                
+                What does that MERL entry look like?
+
+                    New format code: 0x11
+
+                    Means: External Symbol Reference (ESR)
+
+                What information should be recorded there?
+
+                    - The name of the symbol
+                    - Where it was used (i.e. the address of the blank '.word 0'
+                      to be filled in)
+
+                ESR entry:
+                    
+                    word 1: 0x11
+                    word 2: location where symbol is used
+                    word 3: length of the name in characters (n)
+                    word 4:   \
+                    word 5:    \
+                    ...         } ASCII characters in the symbol's name
+                    word 3+n: _/  (each character in a separate word)
+
+                    Note that this is not a very space-efficient sticky note. If
+                    we have repeated symbol usage, we have a whole new entry for
+                    each usage!
+
+                The other side of the coin:
+
+                    a.asm         b.asm              c.asm
+                    --------      --------           --------
+                    .import abc   abc:               ...
+                    lis $3          sw $4, -4($30)   abc:
+                    .word abc       ...                add $1, $1, $2
+                                  jr $31               ...
+                                                     beq $2, $0, abc
+
+                    Which 'abc' is the right one?
+                    We can make an educated guess.
+
+                    In a.asm, we have an external reference to abc...
+
+                    In b.asm, abc is just the name of a procedure.
+
+                    In c.asm, the beq instruction looks like a loop, so we
+                    should use the abc in that file.
+
+                We can't assume that labels won't be duplicated.
+                How can we make 'abc' in b.asm accessible to the linker, and
+                'abc' in c.asm inaccessible?
+
+                Solution: Another assembler directive! (And another MERL entry)
+
+            Directive:
+
+                .export abc
+
+                Says, "make abc available for linking".
+
+                Does not assemble to a word of MIPS; only for the assembler.
+
+                Tells the assembler to make an entry in the MERL footer.
+
+            MERL entry: External Symbol Definition (ESD)
+
+                word 1 (format code): 0x05
+                word 2: Address th symbol represents
+                word 3: length of the name (n)
+                word 4    \
+                ...        | Name in ASCII, with each char in a separate word
+                word 3+n  /
+
+            But what if two assembly files both export the same symbol?
+
+                It fails/errors.
+                (Same goes in the real world, with C++ and such.)
+                
+                
+Lecture 8 June 1 2015
+
+Recall:
+    .import + ESR
+    .export
+
+ESD (External Symbol Definition)
+    word 1 - format code 0x05
+    word 2 - address the symbol represents
+    word 3 - length of the name (n characters)
+    word 4 to word 3+n - The name in ascii, one word per character.
+
+Lecture 08 slides: fred and derf program using .export
+    .export x
+    ...
+    .export fred
+    ...
+    .export derf
+    .export y
+
+Remember how we made ADTs where we could declare a function as 'static' to make
+it so that we can only call those functions from inside that file.
+
+Now we know how static works - it doesn't provide the '.export' for that
+function.
+
+Generally, C functions are automatically exported, so the .export would be
+automatically generated, and we would have that entry in the "MERL" file
+(assuming C is compiled to a MERL-equivalent file format).
+
+The MERL file contains:
+    - The code
+    - All addresses that need relocating
+    - Addresses and names of every ESR (external symbol reference)
+    - Addresses and names of every ESD (external symbol definition)
+
+    Which is everything our linker could ever need! Success!
+
+Linker Algorithm
+    "Takes two MERL files and puts them together."
+
+    Input: MERL files m1 + m2
+    Output: Single MERL file with m2 linked after m1.
+
+    Q: What if we ahve mroe than two files to link?
+    A: Run the algorithm over and over, adding a new file each time.
+
+    First thing to do: If m2 is going after m1, we must relocate m2!
+
+    1. Let alpha = m1.codeLen - 12
+
+        "I'm just making up these field names for these files, hopefully it's
+        clear."
+
+    2. Relocate m2.code by alpha
+    3. Add alpha to every address in m2.symbolTable (the footer)
+    4. if (m1.exports.labels intersect m2.exports.labels): ERROR
+
+        "Same symbol name being used and exported twice."
+
+    "The linker is a glorified matchmaker, so that's what we'll do now."
+    5. for each (address1, label) in m1.imports: // address1 is the "blank"
+           if there exists (address2, label) in m2.exports:
+               m1.code[address1] = address2 // fill the blank
+               remove (address1, label) from m1.imports
+               add address1 to m1.relocates
+
+    "Whenever we fill a blank in like this, we essentially have a pointer to an
+     address later in the file, which we must relocate."
+
+    "Now we do the reverse - is there anything in m1 that m2 needs?"
+    
+    6. for each (address2, label) in m2.imports: // address2 is the "blank"
+           if there exists (address1, label) in m1.exports:
+               m1.code[address2] = address1 // fill the blank
+               remove (address2, label) from m0.imports
+               add address2 to m2.relocates
+
+    7. Some book-keeping...
+
+        imports = m1.imports UNION m2.imports
+        exports = m1.exports UNION m2.exports
+        relocates = m1.relocates UNION m2.relocates
+
+    8. Output the result!
+
+        output MERL cookie
+        output total codeLen + lengthOf(imports, exports, relocates) + 12
+        output total codeLen + 12
+        output m1.code
+        output m2.code
+        output imports, exports, relocates
+
+    DONE.
+
+    "We don't ask you to write a linker on your assignments for this course."
+    "It isn't necesarily hard, but we don't have time. You would also have to
+     write a MERL recognizer..."
+
+"Now to move on to the topic that will take up the rest of the course:
+ The compiler."
+
+"The assembler doesn't have to be a super long piece of code."
+
+"The compiler is a very sophisticated piece of software."
+
+"Now, the lectures will take a distinct turn from systems-level bit-handling
+ to a more mathematical approach. Compilers are so well-studied that we have
+ compilers down to a precise math."
+
+Formal Languages
+
+    Assembly languages <-- Compiler <-- High-level language
+
+    Assembly:
+
+        - simple structure
+        - easy to recognize (parse)
+        - straightforward, unambiguous translation to machine code
+            "beq $1, $5, 8" MUST mean a certain stream of ones and zeroes."
+
+        "If I ask you to write code to translate one assembly instruction to
+         machine language, you will be done in a few minutes."
+
+    High-level language:
+
+        - complex structure
+        - harder to recognize
+        - no single translation to machine language
+    
+        "If I ask you to write code to recognize a valid C function and
+         translate THAT to machine language, it will be much more difficult and
+         open to creativity."
+
+    How do we handle the complexity of a compiler?
+
+        "These problems have been around for a long time and have been studied
+         a lot, so we simply need to learn the solutions that work."
+
+        We want a formal theory of string recognition - general principles that
+        work for any programming language.
+
+    Definitions:
+
+        Alphabet:
+            Finite set of symbols (e.g. {a, b, c})
+            Typically denoted by SIGMA (the sum symbol), as in SIGMA = {a, b, c}
+
+        String (word):
+            A finite sequence of symbols (from SIGMA)
+            e.g. a, aba, cbca, abc, ...
+
+        Length of a word, |w| = # in w, e.g. |aba| = 3
+
+        "I haven't talked about another important string. You probably didn't
+         see it when I wrote it down. I just wrote it down a dozen times. I just
+         wrote it down again! The empty string!"
+
+        Empty String:
+            An empty sequence of symbols - hard to see!
+            We write EPSILLON (tiny backwards 3) to denote the empty string
+                EPSILLON is *not* a symbol! |EPSILLON| = 0, not 1
+
+        Language:
+            A set of strings (words)
+            e.g. {a^(2n)b | n >= 0} "words with an even # of a's followed by b"
+
+                "It's a set of strings, so it's a language."
+
+            Note: don't confuse EPSILLON and {}.
+                {} or (/) is the empty language
+                EPSILLON is the empty word
+                {EPSILLON} is a language with a single word (a singleton
+                    language) that contains only EPSILLON.
+
+    Our task: How can we recognize automatically (algorithmically) whether a
+    given string belongs to a given language?
+
+    "Note how that question is profoundly deep. It can encompass all of human
+     knowledge. Consider the language made up of all true Mathematical
+     statements. If you know that language, you can evaluate the truthiness of
+     all Mathematical statements. A general answer to this question would solve
+     all of the world's problems!"
+
+    Answer: It depends on how complex the language is.
+        {a^(2n)b | n >= 0} - easy!
+        {valid MIPS assembly programs} - almost as easy
+        vs. say,
+        {valid Java programs} - harder
+        Some languages = impossible
+
+    Aside: What it means for a language to be "complex" the language is an
+           interesting question as well.
+
+    Characterize languages into classes of languages based on the difficulty of
+    answering, "is a word in the language?":
+
+        finite                               // easy
+        regular
+        context-free
+        context-sensitive
+        recursive                            // harder
+        ... (more we won't talk about)
+
+
+
+    We will work at as easy a level as possible and move down as necessary.
+
+    Finite languages - have finitely many words.
+        
+        Can recognize a word by comparing with every word in the set (finite!).
+        Can we do this efficiently?
+
+        Exercise:
+            L = {cat, cow, car}
+            Write code to answer "is a word in L?", such that the word is
+            scanned exactly once, without storing previously-seen characters.
+            (You can remember the current character as many times as you want.)
+
+        Solution:
+            Scan the input, letf to right.
+            If the first character is not 'c', ERROR.
+            If the next character is a, then:
+                if the next character is 't'
+                    if input stream is empty, ACCEPT, else ERROR
+                if the next character is 'r'
+                    if input stream is empty, ACCEPT, else ERROR
+                else ERROR
+            if next character is 'o'
+                if next character is 'w'
+                    if input stream is empty, ACCEPT, else ERROR
+                else ERROR
+            else ERROR
+
+            "That's a fairly simple program that took a lot of writing, but I
+             claim that this is the most efficient solution to this problem. Now
+             let's abstract it."
+
+        An abstraction of this program:
+
+            "A representation of the configuration of the computer's memory."
+
+            "start"
+                -> c
+                "seen c"
+                    -> a
+                    "seen ca"
+                        -> t
+                        "seen cat" ACCEPT
+                        -> r
+                        "seen car" ACCEPT
+                    -> o
+                    "seen co"
+                        "seen cow" ACCEPT
+             
+            This is a state diagram, with each character is a transition between
+            states. A State with a circle in it says, "accept it here".
+
+        Finite languages are limited in their utility, but can be a good
+        stepping stone to more complex languages (next lecture!)
+
+Lecture 9 June 3rd 2015
+
+Regular Languages
+
+    Built from: 
+    
+        - finite languages
+
+            - union
+            - concatenation
+            - repetition
+
+    Union of two languages:
+
+        L1 U L2 = { x | x IN L1, or x IN L2 }
+
+    Concatenation of Languages
+
+        L1*L2 = { xy | x IN L1, y IN L2 }
+
+            e.g.
+                
+                L1 = {dog, cat}
+                L2 = {fish, ϵ}
+
+                L1L2 = {dogfish, catfish, dog, cat}
+
+    "These two operations alone aren't that special - they still produce finite
+     Languages. The next one gets us out of the finite languages."
+
+    Repetition:
+
+        L* = { ϵ } U { xy | x IN L*, y IN L }
+
+           = { ϵ } U L U LL U LLL ...
+           
+           "We know ϵ is in the next bit, so if we let x be ϵ, we
+            are left with the set L. Do this recursively, and we get infinite
+            combinations of L."
+
+           = 0 or more occurences of a word in L
+
+           e.g. with L = { a, b }
+
+            L* = {ϵ, a, b, aa, ab, ba, bb, aaa, aab, aba, ...}
+
+    Show that the language from the previous lecture is regular.
+
+        i.e. show { a^(2n)b | n >= 0 } is regular.
+
+        Consider the set {aa}, and repeat that finite set infinitely ({aa}*),
+        then concatenate {b} on the end to get ({aa}*){b}
+
+    Shorthand: regular expressions
+
+        Language            RegEx
+
+          {}                  ∅          empty language
+          {ϵ}                 ϵ          language consisting of the empty string
+          {aaa}               aaa        singleton language
+          L1 U L2             L1 | L2
+          L1*L2               L1, L2
+          L*                  L*
+
+        Note: Don't get confused - in the context of RegEx, everything is a
+        language, so the language consisting of the empty string is just the
+        empty string in RegEx.
+
+        So { a^(2n)b | n >= 0 } = (aa)*b
+
+    Seemingly unfair question: Is C regular?
+
+        A C program is a sequence of tokens (like we've seen on assignment 3).
+
+        Note: If you are basically done A3 except some blind tests, move on.
+
+        Identifiers are strings of repeated alphanumerics (regular language),
+        integer literals are bounded and thus finite (but we will consider them
+        regular), etc.
+
+        So a C program is a sequence of tokens, each of which comes from a
+        regular language.
+
+            C ⊆ { valid C tokens }*
+
+        So, maybe.
+
+    We have yet to think about what a computer program to recognize an
+    arbitrary regular language automatically.
+
+        How can we?
+
+        e.g.
+            
+            Writing a recognizer for { a^(2n)b | n >= 0 } = (aa)*b
+
+        Can we harness what we learned before about recognizin finite languages?
+
+            Recall how we had a big block of if-statements on the board.
+
+            We can tweak that to allow for infinite recognition by adding loops!
+
+        State diagram:
+
+                a
+            /\ --> /\      "Loop 'a' as much as we want until we get our result
+            \/ <-- \/       with b."
+         b  |   a
+           /.\
+           \ /
+        
+        MIPS labels:
+
+               a-zA-z   while(a-zA-Z0-9)
+        --> () ------> ()
+                        \   :
+                         ()   END
+
+        "So we have a very precise definition of a regular language, and we have
+         machines that can, as far as we know, recognize two regular languages.
+         Can they recognize more regular languages? Or is that it? Could they
+         even recognize more complex languages?"
+
+    These "machines" (state diagrams) called
+
+        Deterministic Finite Automata (DFAs)
+
+     - always start at the start state
+     - for each char in the input, follow the corresponding arc to the next step
+     - if on an accepting state when input is exhausted, accept, else reject
+
+    What if there are no transitions?
+
+        e.g. What if the input is 'ab'?
+
+               a-zA-z   while(a-zA-Z0-9)
+        --> () ------> ()
+                        \   :
+                         ()   END
+
+        If we fall off the machine, we must reject it.
+
+    But from an analytical standpoint, it's much easier if we only have one way
+    to reject a string, so we can re-word the above more formally:
+
+        There is an implicit error state and all unlabelled transitions go
+        there.
+
+               a-zA-z   while(a-zA-Z0-9)
+        --> () ------> ()
+                       /\
+                    b /  \ :
+              ERROR  ()  ()   ACCEPT
+                      \__/
+                       a,b
+
+        Note: Once you get in an error state, no input is accepted and there is
+        no escape.
+
+        There's nothing special about an error state. We will define them as
+        states that are:
+
+            - no escape
+            - non-accepting
+
+    Tricky Excercise:
+
+        Strings over { a, b } with an even # of a's and an odd # of b's, in any
+        order.
+
+        Remember: Zero is an even number (unless you are playing roulette :P)
+
+        The start state should not be accepting - 0 a's and 0 b's, so we have
+        a non-odd number of b's.
+
+        Important insight - we only have four cases:
+
+            odd a's, odd b's
+            even a's, odd b's
+            odd a's, even b's
+            even a's, even b's
+
+        Start state: even a, even b
+
+                              b
+        --> (even a, even b) --> (even a, odd b) ACCEPTING
+                             <--
+                              b
+            a     ||  /\           a ||  /\
+                  \/  ||  a          \/  || a
+
+                              b
+                             <--
+            (odd a, even b)  --> (odd a, odd b)
+                              b
+
+Formal Definition of a DFA
+
+    A DFA is a 5-tuple (SIGMA, Q, q_0, A, DELTA), where
+    
+        SIGMA is a finite, non-empty set (alphabet)
+        Q is a finite, non-empty set (states)
+        q_0 IN Q (start state)
+        A SUBSET Q (accepting state)
+        DELTA: QxSIGMA -> Q (transition function:
+                                state + input char --> next state)
+
+    DELTA consumes a single character.
+
+        - can extend DELTA to a function that consumes an entire word
+
+    Definition:
+        
+        DELTA*(q, EPSILLON) = q
+        DELTA*(q, cw) = DELTA*(DELTA(q,c), w)
+
+        We say DFA (SIGMA, Q, q_0, A, DELTA) accepts a word w if
+        DELTA*(q_0, q) IN A.
+
+    If M is a DFA, we denote by L(M) ("the language of M") the set of all
+    strings accepted by M.
+
+        In other words, L(M) = { w | M accepts w }
+
+        "The language of the machine is the set of words that it accepts."
+
+Theorem (Kleene):
+
+    Pronounced "Clean-ey". "He's dead now." *class laughs*
+
+    L is regular iff L = L(M) for some DFA M.
+    (The regular languages are exactly the languages accepted by DFAs.)
+
+    Can you come up with a regular expression for the (even a, odd b) problem
+    above?
+
+        "It exists, but it's very long, so the one you tried to come up with is
+         probably wrong."
+
+    We won't prove this explicitly - the proof will sneak up on us.
+
+Lecture 10 June 8 2015
+
+Recall: A DFA is a 5-tuple (SIGMA, Q, q_0, A, DELTA), where
+
+    SIGMA, Q are finite, empty sets (alphabet, states)
+    q_0 IN Q (start state)
+    A SUBSET Q (accepting states)
+    DELTA: Q x DELTA -> Q (transition function)
+
+    It accepts a word w if DELTA*(q_0, w) IN A
+
+Implementing a DFA
+
+    int state = q_0
+    char c
+    while not EOF, do
+        read c
+        case state of
+            q_0:
+                case c of
+                    a: state = ...
+                    b: state = ...
+                    ...
+                ...
+            q_1:
+                case c of
+                    a: state = ...
+                    b: state = ...
+                    ...
+                ...
+            ...
+
+            q_n:
+                case c of
+                    a: state = ...
+                    b: state = ...
+                    ...
+                ...
+        end case
+    end while
+
+    "This is a very large program, but it works and it's relatively fast."
+
+    OR (preferably) use a lookup table.
+
+    <-- states -->
+    ^
+    |      |     |
+    |      |     |
+    chars  |     |
+    |_____ |_____|
+    |       next
+    \/      state
+     ______|____
+           |
+
+        Note: see provided assembler starter code.
+        We will have to write a scanner in A6, this might inspire us.
+
+        Aside: A4 will be handmarked, which "may be worth marks".
+
+
+DFAs with actions
+
+    - Can attach computations to the arcs of a DFA
+
+    e.g. L = { binary numbers with no leading 0s }
+
+        - computer value of the number
+
+        Note: number 0 on its own is not a leading 0
+
+        RegEx: 1(1|0)*|0
+
+        DFA tree with only three states:
+
+            Starting state
+                -> 0 (accept)
+                -> 1 (accept) (loop on itself with 1 or 0)
+
+    What do we gain by making DFA's more complex?
+
+        e.g. L = { w IN {a, b}* | w ends with abb } (a|b)*abb
+
+        DFA for L:
+
+            Starting state (loop back on b)
+                -> a (loop back on a)
+                    -> b (back up on a)
+                        -> b (accept)
+                             (loop up two on a) (loop back to start on b)
+
+    What if we allowed more than one arc with the same char from the same state?
+
+        e.g.
+
+            Starting state
+                -> a
+                -> a
+
+        What would this mean?
+            
+            The machine gets to pick.
+        
+        The machine chooses one direction or the other (i.e. the machine is
+        non-deterministic). Accept if some set of choices leads to an accepting
+        state.
+
+            Recall: The 'D' in 'DFA' stands for deterministic
+
+            NFA: Non-deterministic Finite Automata
+
+            "The machine just knows what to do. It always makes the right choice
+             and is, depending on your view, very lucky or very smart."
+
+            How does non-deterministism help us simplify a complex deterministic
+            problem like the one above?
+
+            With non-deterministism, the above machine becomes:
+
+                Starting state (loop on a or b)
+                    -> a
+                        -> b
+                        -> b (accept)
+
+                The machine "guesses" to stay in the first state until the final
+                abb, then transitions to accepting.
+
+                NFA's are often simpler than DFA's.
+
+            "Now that we have defined an NFA, we can do some math!"
+
+Formally, an NFA is a 5-tuple (SIGMA, Q, q_0, A, S) where
+    
+    SIGMA, Q are finite, non-empty sets (alphabet, sets)
+    q_0 IN Q (start)
+    A SUBSET Q (accepting)                  // so far exactly the same as DFAs
+    DELTA: Q x SIGMA -> subsets of Q (2^Q)  // "powerset of Q"
+
+    We want to accept if some path through the NFA leads to acceptance (reject
+    if none do).
+
+    "So, we need to define acceptance."
+
+    DELTA* for NFA's:
+
+        Problem: DELTA says, "we have a word, we have a state, here's the next
+        state we need to be in", but now that we have a set of states, we have
+        a bunch of choices (that lead to more choices, etc.).
+
+        Solution: Let DELTA accept a set of states instead of just one. Then, we
+        are able to recurse and continue.
+
+        DELTA*: set of states X SIGMA -> new set of states
+
+            DELTA*(qs, EPSILLON) = qs
+            DELTA*(qs, cw) = DELTA*( BIGUNION(q IN qs) DELTA(q, c) , w)
+            "For every q in qs, DELTA(q), and put them all together."
+
+            Then, accept w if DELTA*({q_0}, w) INTERSECT A != 0
+            "Is any state here accepting?"
+
+            Note: cw is a word that starts with character c
+            Note: qs (pronounced like "queues") is our set of states
+
+    "But how do we implement a machine that never guesses wrong?"
+
+    NFA simulation procedure:
+        
+        states <- {q_0}
+        while not EOF, do:
+            // read a character
+            read c
+        
+            // update set of possible states
+            states <- BIGUNION(q IN states) DELTA(q, c)
+        end do
+
+    Example:
+
+        The one we've already been working on.
+
+            Starting state (loop on a or b)   // 1
+                -> a                          // 2
+                    -> b                      // 3
+                    -> b (accept)             // 4
+
+        Simulate: baabb
+
+        Already read input | Unread input | States
+       --------------------------------------------
+        EPSILLON           | baabb        | {1}
+        b                  | aabb         | {1}
+        ba                 | abb          | {1, 2}
+        baa                | bb           | {1, 2}
+        baab               | b            | {1, 3}
+        baabb              | EPSILLON     | {1, 4}
+
+        Now, do we accept?
+
+            Observe: {1, 4} = DELTA*({1}, baabb), {4} = A
+                     {1, 4} INTERSECT {4} = {4} != 0, so accept!
+
+        Now let's take a more obscure view of the world in this problem:
+            
+            "Take off your glasses."
+
+            We can name the states {1}, {1}, {1, 2}, {1, 2}, {1, 3}, {1, 4} as
+                                    A,   A,   B,      B,      C,      D
+
+            because you can't see clearly and don't know they are sets?
+
+            We are left with what are essentially new states.
+
+                Starting state (loop back on b)  // A
+                    -> a (loop back on a)        // B
+                        -> b (loop up on a)      // C
+                            -> b (accept)        // D
+                                 (loop up twice on a) (loop back to start on b)
+
+                By carrying this out, we got a DFA.
+                If we take the sets of states and realize these things are just
+                states, then we see that every NFA is equivalent to some DFA.
+
+                This procedure of turning an NFA into a DFA is called subset
+                construction (and yes, we are responsible for knowing how to do
+                it).
+
+        Even though NFAs look more powerful than DFAs, they are still restricted
+        to the regular languages (if you believe Kleine's theorem).
+
+        We still haven't lost out, though, because we now have a nifty tool to
+        use with the regular languages. For some languages, it is easier to come
+        up with the NFA than it is to come up with the DFA.
+
+    More complex example:
+
+        L = { cab } UNION { words over {a, b, c} with an even number of a's }
+
+        "Becuase NFAs are reliant on making choices, look for opportunities to
+         make choices (e.g. the UNION (a logical "or"))."
+
+        Naive solution:
+
+            Starting state (loop back on b or c)
+                <-> a (loop back on b or c)   
+                -> c
+                    -> a
+                        -> b
+
+            Problem: we shouldn't make a choice and then go backwards, we should
+            make a new state for our even a's.
+
+        Better (correct) solution:
+
+            Starting state (loop back on b or c)
+                -> a (loop back on b or c)
+                    <-> a (accept) (loop back on b or c)
+                -> c
+                    -> a
+                        -> b
+
+            "We can't do aabac" here, we pick one path and stick with it."
+L = {cab} UNION {even a's}
+
+"Union is a good signal to look for non-determinism."
+
+NFA:
+
+    starting state 1 (accept)
+        -> c state 2
+            -> a state 3
+                -> b state 4
+        -> b,c state 6 (accept) (loop on b,c)
+            -> a state 5
+        -> a state 5 (loop on b,c)
+            -> a state 6
+
+    Read     Unread   States
+    EPSILLON caba     {1}
+    c        aba      {2,6}
+    ca       ba       {3,5}
+    cab      a        {4,5}
+    caba     EPSILLON {6}      --> ACCEPT
+
+    Build a DFA via the subset construction.
+
+    start with {1}
+        Ask: Where can we go from {1} on a,b,c?
+        a -> {5}
+            a -> {6}
+            b,c -> loop
+        b -> {6}
+            a -> {5}
+            b,c -> loop
+        c -> {2,6}
+            a -> {3,5}
+                a -> {6}
+                b -> {4,5}
+                    a -> {6}
+                    b,c -> {5}
+                c -> {5}
+            b,c -> {6}
+
+        At this point, how do we know that this process is going to terminate?
+
+            "At most 64 states."
+
+        Which states are accepting?
+
+            Look at the original NFA. The accepting states are 1, 4, and 6.
+            So our accepting states are any set including 1, 4, or 6.
+
+        "If we were to write down an algorithm for constructing DFAs from NFAs,
+         it would look a lot like this."
+
+    Obvious fact: Every DFA is implicitly an NFA.
+
+        Why?
+
+            An NFA is always about having a choice.
+            But DFAs just have exactly one option for each of their "choices"
+            at all times.
+
+    Also: Every NFA can be converted to a DFA for the same language. So, NFAs
+    and DFAs accept the same class of languages.
+
+    "Let's call this experiment a success. So we're motivated to try again.
+     Let's add the ability for the machine to change states without reading a
+     character."
+
+EPSILLON-NFAs
+
+    What if we can change states without reading a character?
+
+    EPSILLON-transitions:
+
+        state
+            EPSILLON -> other_state
+
+        A 'free pass' to a new state without reading a character.
+
+        Why is this a useful tool to have in our toolbox?
+
+            It acts like 'glue' to facilitate divide-and-conquer. We can glue
+            smaller machines together.
+
+            (Also, by extension, it makes our DFAs easier to read.)
+
+            e.g.
+
+                Machine for 'cab':
+
+                    -> starting state
+                        -> c
+                            -> a
+                                -> b (ACCEPT)
+
+                Machine for even a's:
+
+                    -> starting state (accept) (loop on b,c)
+                        <-> a (loop on b,c)
+
+                Gluing them together:
+                    -> starting state             1
+                        -> EPSILLON               2
+                            -> c                  3
+                                -> a              4
+                                    -> b (ACCEPT) 5
+
+                        -> EPSILLON (accept) (loop on b,c) 6
+                             <-> a (loop on b,c) 7
+
+        Read     Unread   States
+        
+        EPSILLON caba     {1,2,6}
+        c        aba      {3,6}
+        ca       ba       {4,7}
+        cab      a        {5,7}
+        caba     EPSILLON {6}      --> ACCEPT
+
+        Therefore, by the same naming trick as before, every EPSILLON-NFA has
+        an equivalent DFA.
+        "Remember the argument we made last day with the NFAs. If you take off
+         your glasses and look at the sets, we see the same thing still."
+
+        Conclusion: EPSILLON-NFAs recognize the same languages as DFAs.
+
+        In fact, the conversion from EPSILLON-NFA to DFA can be automated.
+
+        Recall the value of EPSILLON-transitions - they facilitate
+        divide-and-conquer. And since EPSILLON-NFAs are so good at
+        divide-and-conquer, if we could find an EPSILLON-NFA for every regular
+        expression, then we have proven one direction of Kleene's theorem (since
+        regular expressions can be converted to EPSILLON-NFAs, which can be
+        converted to a DFA).
+
+        "It's easier to do (and to prove) with EPSILLON-NFAs in the middle."
+
+Regular Expression Types
+
+    "Three base cases."
+
+    1) Empty language EPSILLON-NFA: -> (not accepting) "just a starting state"
+        "Every year this gives students trouble in class (and on the exam)."
+
+    2) Language consisting of EPSILLON EPSILLON-NFA: -> (accept)
+
+    3) {a} EPSILLON-NFA: -> starting state
+                            -> a (accept) (loop on a)
+
+    "Now, our recursive cases."
+
+    4) E_1 | E_2 EPSILLON-NFA: -> starting state
+                                   -> EPSILLON
+                                       -> E_1
+                                   -> EPSILLON
+                                       -> E_2
+    
+    5) E_1 * E_2 EPSILLON-NFA:
+    
+        E_1 -> EPSILLON (from each accepting state) -> E_2
+
+        AND make E_1's accepting states non-accepting.
+
+            "so we can't quit early"
+
+    6) E*
+
+        E -> EPSILLON (from every accepting state) -> back to the beginning
+
+        "But we can't simply wrap the accepting states back around. We also have
+         to accept the empty string, or zero repetitions of E. Note that we
+         don't know what the machine's innards look like - we can't just make
+         E's starting state accepting as a quick fix, because we might end up
+         unintentionally accepting incorrect words."
+
+        So let's make a new start state of (case 2).
+
+        -> starting state (accept) <--------------------------------\
+            -> EPSILLON                                             |
+                -> E                                                |
+                    -> EPSILLON (from each of E's accepting states) /
+
+    That completes the proof.
+
+    Every regular expression has an equivalent EPSILLON-NFA, and therefore an
+    equivalent DFA. So the conversion can be automated.
+
+    "You can just write down a regular expression, and have a program that
+     creates a program to recognize it for you (e.g. Unix command lex)."
+
+"Now, to talk more specifically about compilers."
+
+Scanning
+
+    Is C a regular language?
+
+        Well,
+
+            C has these tokens: keywords, ids, literals, operators, comments,
+            punctuation.
+
+            These are all regular languages, so therefore sequences of these are
+            also regular.
+
+    So we can use finite automata for tokenization (scanning).
+    "But it turns out that scanning is a harder problem."
+
+    Ordinary DFAs answer yes/no to "is w IN L?".
+
+    We need:
+
+        - An input string W
+        - break w into w_1, ..., w_n, such that each w_i IN L, else error.
+
+        "We need to know how to break up the pieces such that each piece is a
+         valid problem."
+
+    "Let's imagine our way through this problem."
+
+    Consider: L = { valid C tokens } is regular/
+
+        Let M_L be the DFA that recognizes L.
+
+            Then, take M_L's accepting states and make EPSILLON-transitions back
+            to the start state. We are now recognizing LL* (like L* but
+            non-empty). For simplicity we reject empty sequences of programs,
+            because those are generally not valid programs :P
+
+        So by the time we reach the end (an accepting state) back to the start,
+        that means we saw a valid token. So every time we make an EPSILLON-move,
+        what if we add an action to it?
+
+            Every time we use an EPSILLON-transition, we output a token!
+
+            BUT this isn't quite correct. EPSILLON-moves make the machine
+            non-deterministic, because EPSILLON-moves are always optional.
+
+        Does this scene guaruntee a unique decomposition of w = w_1, ..., w_n?
+
+            Nope. It depends on when the machine chooses to make those
+            transitions. A unique tokenization is not guarunteed.
+
+            Consider just the ID portion:
+
+                -> starting state
+                    -> a-zA-Z (accept) (loop on a-zA-Z0-9)
+                    <- EPSILLON/output token.
+
+                Input 'abab' could be 1, 2, 3, or 4 tokens. How do we decide
+                when to return a token? After 'a'? After 'ab'?
+
+            "In practice, we usually mean 'abab' to be one token."
+            So what do we do about this?
+
+                We delay taking the EPSILLON-move if there is no other choice.
+                In other words, always return the longest possible token.
+
+                However, this could mean valid matches are missed.
+
+                    e.g.
+                        
+                        L = {aa, aaa}, w = aaaa
+
+                "Programming languages are intentionally designed to be easy to
+                 scan though :)"
+
+CS 241 Tutorial 1 May 15 2015
+
+Recall the definition of a fibonacci number:
+    Fn = Fn-1 + Fn-2
+    where f0 = 0 and f1 = 1 and n >= 2
+
+Topics:
+    1. MIPS Loops
+    2. Printing to stdout and using the stack
+    3. Creating and using procedures
+
+Q1: $1 contains n >= 0. Find Fn and place it in $3
+
+; fn will go in $3
+; fn+1 will go in $4   (Not fn-1 because $3 could need to be 0)
+add $3, $0, $0    ; reset $3 to 0
+lis $4            ; set $4 to fn+1 (1 initially)
+.word 0x00000001  ; (Same as 1 or 0x1, it will still compile)
+add $6, $0, $4
+top: beq $1, $0, end     ; loop condition - is $1 0? (end would be 5 w/o label)
+add $5, $0, $4    ; remember fn+1
+add $4, $3, $4    ; compute fn+2
+add $3, $5, $0    ; fn = fn+1
+sub $1, $1, $6    ; decrement $1
+beq $0, $0, top
+end: jr $31
+
+
+Q2: Turn Q1 into a procedure called fib. Any register other than register 3
+should have the same value after fib is called as it did before it was called.
+
+; we must save registers 1, 4, 5, and 6
+; we don't want to save $3 because it's our output
+fib: sw $1, -4($30)        ; push $1
+sw $4, -8($30)        ; push $4
+sw $5, -12($30)       ; push $5
+sw $6, -16($30)       ; push $6
+lis $6
+.word 16
+sub $30, $30, $6      ; update stack pointer (not necessary, but good practice)
+
+[Q1 code]
+
+end: lis $6
+.word 16
+add $30, $30, $6      ; reset stack pointer
+sw $1, -4($30)        ; pop $1
+sw $4, -8($30)        ; pop $4
+sw $5, -12($30)       ; pop $5
+sw $6, -16($30)       ; pop $6
+jr $31
+
+Tutorial 2 May 22 2015
+
+Topics
+    1) Symbol Tables
+    2) Assembly Errors
+    3) C++ Review
+
+1)
+
+Code:
+    begin:
+    label: beq $0, $0, after
+    jr $4
+
+    after:
+    sw $31, 16($0)
+    lis $4
+    abc0: abc1: .word after
+
+    loadStore:
+    lw $20, 4($0)
+    sw $20, 28($0)
+
+    end:
+
+Symbol table (lookup table of all the labels and their addresses):
+
+    Note: each line jumps the counter by 4 because each instruction is 4 bytes
+
+    A label itself doesn't take up space in the machine code.
+    Whay allow two labels on one line? Our language doesn't impose that
+    restriction, because we may want to do that.
+
+    name  | value
+    begin      0
+    after      8
+    label      0
+    loadStore  20
+    abc0       16
+    abc1       16
+    end        28
+
+Error checking
+
+    We want to weed out unwanted/confusing cases, like this in C:
+
+    int main() {
+        int a;
+        &a = 10; // lol wut
+    }
+
+
+    label: label: .word label
+    .word ;0
+    .word aaaaa
+    .word 1 2 3
+    .word 2147483648 abcde:
+    .word ,
+
+    Errors:
+        1: duplicate label definition
+        2: argument is commented (.word has no arg)
+           Warn: .word not used after lis
+        3: 'aaaaa' label undefined; did you mean '0xaaaaa'?
+        4: .word has 3 operands
+        5: Note: .word operand (2^31) is too big for unsigned [-2^31, 2^31 - 1]
+           Can be an unsigned int [0, 2^32]
+        5: label not defined at the beginning of the line, also .word has 2
+           operands
+        6: invalid argument to .word (,)
+
+    "labels must start with a letter"
+
+C++ Review
+
+    "I don't have a lot of advice for you in Racket except to not do
+    imperative style with it by doing mutation."
+
+    STL
+
+    .pair<anyType, anyType>
+    .pair<int, string> p; p.first = 5; p.second = 'foo';
+
+    .vector
+        grows for me
+        fast access
+        access any index at any time
+
+    .vector<string> v; v.push_back('hello');
+    cout << v[5];
+
+    .list<string>
+        doubly-linked list
+        "can insert at the beginning without shuffling"
+        push_front("hello");
+        push_back("bye");
+
+
+    .map<keyType, valueType>
+        dictionary data type
+        .map<string,int> m;
+        m["foo"] = 5;
+        cout << m["foo"];
+        useful for, say `symbolTable['label'] = 4;`
+
+    .set<string>
+        set of strings
+        check quickly if a particular string is in your set
+
+    Code example
+
+Note: docs available at cplusplus.com
+
+#include
+#include
+#include
+#include
+#include
+
+bool foo(vector<string> v) {
+    if v.size() > 16) {
+        return true;    // if-else statement is redundant
+    } else {
+        return false;
+    }
+}
+
+int bar(map<string, map<vector<string>, int> > m, string w) {
+    // should be passed by reference instead of value
+    // (map<...> &m
+    // should use a class or a typedef or something
+    return m[w].size();
+}
+
+bool baz(string fruit) {
+    // can use sets here instead
+    return fruit == "apple" || fruit == "pear" || fruit == "mango" ||
+        fruit == "coconut" || fruit == "pepper";
+}
+
+string temp; // avoid global variables - make a bunker (?)
+bool quz(pair<vector<string>, int> p) {
+    int count = 0;
+    for (int i = 0; i < p.second; ++i) {
+        ...
+    }
+}
+
+// also, avoid using magic variables
+// use enumerations or constants
+// `throw 143` lol what, document that or make your own exception type
+// avoid gross use of flag variables `flag1`, `flag2`, etc.
+// be consistant using tabs/spaces for indentation
+
+// improved version of program is posted
+
+CS 241 Tutorial 4
+
+    Topics:
+        
+        - MERL to ASM transition
+        - Unlinking MERL files
+
+1. main.asm was assembled with `java cs241.linkasm` to produce main.merl
+    [analysis merl file with xxd]
+
+    printmerl prints merl files in a human-readable format, but we don't have
+    access to it
+
+    printmerl would output:
+
+        cookie 10000002
+        length       60
+        clen         20
+        00...0c      1c
+             10      14
+             14      14
+             18      20
+             1c      00
+        REL          14      "format code 0x1 = relocation"
+        REL          0c      "REL implies label being used in a .word"
+        ESR          1c def
+        ESD          14 abc
+
+        "REL 14 tells us to go to instruction at 14, which has a value of 14"
+        "REL 0c tells us to go to instruction at 0c, which has value 1c"
+
+        0c    .word rel2
+
+        14    rel1: .word rel1
+
+        1c    rel2:
+
+        
+        "ESD 14 abc tells us that there is a label 'abc' at line 14, and we
+         export it."
+
+        .export abc
+        0c    .word rel2
+
+        14    abc: rel1: .word rel1
+
+        1c    rel2:
+
+        "ESR 1c def tells us that there is an external reference to label 'def'
+         on line 1c, plus an import."
+
+        .export abc
+        .import def
+        0c    .word rel2
+
+        14    abc: rel1: .word rel1
+
+        1c    rel2: .word def
+
+        "Fill in the other missing lines with the .words we know."
+
+        .export abc
+        .import def
+        0c    .word rel2
+              .word 0x14
+        14    abc: rel1: .word rel1
+              .word 0x20
+        1c    rel2: .word def
+
+        "Not quite there, because the labels probably weren't 'rel1', etc.
+         Also, .words were probably instructions, and could have been using
+         labels that weren't exported/imported that were converted to offsets
+         during assembly."
+
+2. Now we have linked lib.merl with main.merl to produce combined.merl, and we
+   have lost the source for lib.merl and lib.asm. We now have access to
+   printmerl, though.
+
+   cookie 10000002
+   length       90
+   clen         30
+   0000000c     24
+   00000010     18
+   00000014     14
+   00000018     24
+   0000001c     2c   |
+   00000020     14   |
+   00000024     24   | main - ignore
+   00000028     20   |
+   0000002c     10   |
+   REL          10
+   REL          1c
+   REL          24
+   REL          2c
+   REL           c
+   REL          18
+   ESD          24 abc
+   ESD          10 def
+
+   REL 10 => .word rel1 @ 10
+   REL 1c => ignore, because it's in main's section
+   REL 24 => ignore
+   REL 2c => ignore
+   REL  c => .word rel2 @ c => ESR C abc pre-linking => .word abc (matching ESD)
+     "If there wasn't a matching ESD for the value here, it would be an error."
+   REL 18 => ESR 18 abc pre-linking => .word abc at line 18
+   ESD 24 abc => used above
+   ESD 10 def => label 'def:' on line 10
+
+   .import abc
+   .export def
+   .word abc
+   def:
+     .word rel1
+     .word 0x14
+   rel1:
+     .word abc
+
+    "De-linking like this requires knowledge of at least one of the MERL files."
+

@@ -1,0 +1,247 @@
+Lecture 2 May 6 2015
+
+
+
+Memory
+
+    MIPS program can access 4 Gigabytes (4GB) of random access memory
+
+    Memory accessed from 0 to 2^32 - 4
+
+    Usually grouped in 4-byte blocks called words
+
+    Both MIPS program and data are stored in memory
+
+    PC (Program Counter) contains address of current instruction
+
+    Register automatically updated after executing an instruction
+        PC <- PC + 4
+
+    Some instructions such as Jump may not use PC or PC+4
+
+    Data memory is the other area of memory that we can access
+        (as opposed to instruction memory)
+
+    Picture the instruction memory as a stack indexed 0, 4, ..., 32 as above
+
+    We don't always need to explicitly supply the addresses next to the
+    instructions.
+
+Recall instruction formats:
+    
+    R-format: add dest src1 src2
+    
+        "Add two sources and store result in destination register."
+
+    I-format: addi dest src1 val "Immediate value instruction"
+
+        "Add a source value and an immediate value and store in the destination
+        register."
+
+    J-format: j val
+
+        "Jump to instruction by value."
+
+Control Flow
+
+    No looping or if-statements.
+
+    Loops are mimicked with branching and/or jumping
+    (Branching is more frequent).
+
+    Jump: "j 28"
+    Branch "bne $1 $2"
+
+    In an instruction we need to store an opcode ("j") and 26 other bits for a
+    value ("28").
+
+    How do we tell the PC where to jump to?
+
+        We multiply the offset value by 4 (28*4=112).
+
+        Here, the offset is 28.
+
+        112 is an addressable location.
+
+        We overwrite the PC with the new offset of 28, instead of the
+        usual PC+4.
+
+        PC <- 28*4 instead of PC <- PC+4
+
+    What about branching?
+
+        e.g.
+            beq $1 $2 100 "Branch if equal."
+            bne $1 $2 100 "Branch if not equal."
+
+        The offset is added relative to the current PC.
+        
+        Note that PC's current value is already PC+4, so we need
+        to take that into account.
+
+        PC <- (PC+4) + (Offset*4)
+
+    Why do we do offset*4 instead of saying 112 directly?
+
+        We have limited room to store offset values in 16 bits of memory,
+        so we let the hardware multiply by 4.
+
+    Offset can be negative, but since it's a relative movement that just means
+    we're jumping backwards. A negative value in PC would be an error, though.
+
+    Conditional Branch example
+
+        100: add $1 $0 $0
+        104: addi $2 $0 6
+        108: addi $1 $1 5
+        112: addi $2 $2 -1
+        116: bne $2 $0 -3
+        120: add $4 $6 $8
+
+        "Loops and adds five to register 1 each time until register 2 equals 0."
+
+        PC at 120 <- (-3)*4 + 120
+         = -12 + 120
+         = 108
+
+Memory Access
+
+    32 registers aren't enough to store most programs, so every assembly
+    language needs to load and store from and to RAM.
+
+    So we have special MIPS instructions to access 4GB of RAM
+
+    All memory access is handled by two I-format instructions
+
+    Load word: lw $1, 100($2) "Read word from memory and store in register."
+
+        100($2) computes an address.
+        $1 <- M[100 + $2]
+
+    Store word: sw $1, 100($2) "Take value of register and write it to memory."
+
+        The contents of $1 are stored in data memory.
+
+    lw/sw example:
+
+    // $5 is not known, assume it's useful
+
+    0 add $4, $7, $0     // Set $4 to the beginning of an array
+    4 addi $1, $0, 20    // Set register 1 to 20 ($0 is always 0)
+    8 lw $3, 0($4)       // BEGIN LOOP // Load first index of array into $3
+    12 addi $1, $1, -1   // 
+    16 sw $3, 0($5)      // Store contents of $3 into memory location from $5
+    20 addi $4, $4, 4    // Increment $4 (Must manually specify a multiple of 4)
+    24 addi $5, $5, 4    // Increment $5
+    28 bne $1, $0, -6    // END LOOP // Branch to instruction 4 (implicit -6*4)
+    32 add $8, $3, $0    // Continue after loop finished, PC auto-increments!
+
+    "Only branching and jumping instructions multiply by 4, because they are
+     updating the PC."
+
+IA:
+    Every week on Tuesday 2-3
+    Thursday 2-3 on assignment weeks
+
+    Reach via Sean's direct email, include cs251 in subject line.
+
+MIPS vs ARM
+
+    "ARM is the most popular microprocessor for embedded devices."
+
+    MIPS              ARM
+
+    lw $1, 0($2)      LDR r1, [r2]
+    add $1, $2, $3    ADD r1, r2, r3
+    addi $1, $2, 22   ADD r1, r2, #22
+    add $1, $0, $2    MOV r2, r1
+
+    The arithmetic logic unit takes time, so ARM's use of the MOV command above
+    is advantageous because it's faster.
+
+    ARM has 15 registers, MIPS has 32
+
+    ARM: r15 is PC, r14 for subroutine calls
+
+    MIPS: $0 is always 0
+
+    ARM "Advanced Risc Machine" is RISC architecture
+
+    ARM takes 1/4 the transistors as MIPS
+
+    ARM has conditional forms of instructions
+        ARM compiler takes advantage of this hardware advantage; gcc doesn't.
+        "Compiler optimization rearranges code for better performance."
+
+Performance
+
+   How do we measure it?
+   
+        Response time - start to finish speed for a task
+
+            AKA execution time
+
+            e.g. Increase response time by parallelizing repetitive computations
+
+        Throughput - how many completed jobs are done at the end of the day?
+
+            e.g. Multi-user server juggling a lot of user tasks efficiently
+
+    Analogy: Cashier line at a grocery store.
+
+        Throughput = number of customers served
+        Response time = amount of time taken for one shopper to check out
+
+    Example problems:
+
+        Would a new processor help response time?
+
+            Yes, also increased throughput (marginally, if tasks are queued).
+
+        Would adding multiple processors help response time?
+
+            Not necessarily, but we can have multiple tasks running so the
+            throughput increases!
+
+Digital Logic Design
+
+    "We'll get to clock rates and clock speed later, skip that slide."
+
+    Logic blocks
+
+        Main types of circuits we will focus on first:
+
+            Both have binary (0/1) inputs and outputs.
+
+            Combinational
+
+                No memory, no state information, no storage of bits
+
+            Sequential
+
+                Can have storage I/O
+
+    FYI: Transistors will be covered next class!
+
+    Truth tables - specifying inputs vs outputs
+
+    Inputs         Outputs
+            _____
+        X -|     |
+        Y -|     |-F
+        Z -|_____|-G
+    
+    X Y Z  F G
+
+    0 0 0  0 1
+    0 0 1  1 1
+    0 1 0  0 1
+    0 1 1  0 1
+    1 0 0  0 1
+    1 0 1  1 1
+    1 1 0  1 1
+    1 1 1  1 0
+
+    We define the behaviour of the system with a truth table.
+    Then, we try to derive an equation, and then implement it in circuitry.
+

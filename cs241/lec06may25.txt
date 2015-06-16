@@ -1,0 +1,248 @@
+Lecture 6 May 25 2015
+
+Loaders
+
+    Basic OS code:
+        repeat:
+            p <- next program to run
+            copy P into memory, starting at 0    // This is the loader!
+            jalr $0
+            beq $0, $0, repeat
+
+    Our mips.twoints and mips.array are emulators as well as loaders for us.
+    They run our program.
+
+    Problems:
+
+        The OS is itself a program - where does it sit in memory?
+
+            "We know it's not at address 0, so where can it be?"
+            There are other programs in memory, and they can't all be at address
+            0.
+
+            Reminder: Some things in this course is made-up (not applicable in
+            the real world). But, "this part of the course is full of lies and
+            half-truths". We can't go into detail about how more than one
+            program runs at once. We have a course for that - operating systems.
+
+            We'll simply pretend the OS exists, and learn what we need to know
+            to run our programs in a multi-process environment.
+
+            How do we fix this?
+            Choose different starting addresses for programs at assembly time.
+            PC could be set up to start at, say, 1000.
+
+            But how will the loader know where to put them?
+            What if two programs have the same load address?
+
+            Q: Who here has used a Commodore 64?
+            *2 people raise their hands*
+            LOAD '*', 8, 1       "Load the program from where it was compiled"
+
+            Let the loader decide where to put the program.
+            
+            Loader:
+
+                Take a program P as input
+                Find a location A in memory for P
+                Copy P into memory, starting at A
+                Return A to the OS
+
+            OS 2.0:
+
+            repeat:
+                P<- next program to run
+                $3 <- loader(P)
+                jalr $3
+                beq $0, $0, repeat
+
+        Loader pseudocode:
+
+            Input: words w1, ..., wk (the machine code, P)
+            n = k + space for a stack
+            // (How much stack space? Just pick something! 1MB, or whatever.)
+            A = first address of n consecutive words of free RAM
+
+            for i=0...k-1
+                MEM[A + i*4] <- w(i+1)    // Word i + 1
+            endfor
+
+            $30 = A + 4*n
+            return A
+
+        The above code doesn't work!
+        It was based on an assumption that we hinted could be wrong - the
+        assumption that the program can just pick a place in memory and it could
+        run.
+
+        Slide:
+            
+            Relocation: What must change if not loaded at 0x0?
+
+            Assembly Lang     Address     Machine Lang   Adress v2
+
+            lis $3            0x00000000  0x00001814     0x00010000
+            .word 0xabc       0x00000001  0x00000abc     0x00010004
+            lis $1            ...
+            .word A           ...         0x00000018     ...
+            jr $1
+            B:
+              jr $31
+            A:
+              beq $0, $0, B
+              .word B
+
+        Will the code still work if we load it from 0x10000 instead of 0x0?
+        No. We still manually jump to 0x18 instead of 0x10018!
+        Oh no! That location is way above our program.
+
+        Problem: Labels may be resolved to the wrong values!
+        The loader will have to fix the problem somehow.
+        If we add the load address (0x10000) to the pointers (like 0x00000018),
+        then they will be pointing at the correct place in memory again!
+
+        So what needs to change when we relocate (move the program somewhere
+        else)?
+
+        Note the similarity - we have '.word id' in each.
+
+        But this doesn't apply to the beq instruction using label B above.
+        Branching is always relative - the offset is computed on the fly, and
+        not seen in the machine code.
+
+        So we need these adjustments:
+
+            .word id                              // add alpha to id
+            .word constant                        // no adjustment
+            anything else (including beq, bne)    // no adjustment
+
+        What do we do with the constant .word?
+
+            If we are doing math on it or something, we need to keep it.
+            What if we use it as an address?
+            If it's an address, it isn't in the program.
+            Recall how we used address 0xffff000c as-is regardless of where we
+            used it.
+
+            "If the programmer meant to use that .word as a pointer within our
+             program, they should have used a label."
+
+            Labels now are not only a convenience, they are a necessity. It's
+            how we know which values need to be adjusted.
+
+        Problem: The whole thing doesn't work.
+
+            Remember what the loader sees - the assembled file, a stream of bits
+            rather than assembly instructions with labels.
+            (Machine Lang column above)
+
+            How do we know which ones come from `.word id` and which ones are
+            instructions? It is technically possible to craft a .word constant
+            that looks exactly like another instruction.
+
+            The loader can't know which lines need to be adjusted.
+            "We could give up. Or we could say there is an opportunity for a
+            solution!"
+
+            Solution: We need more information from the assembler. The assembler
+            knows where labels are used.
+
+            However, the assembler is not around anymore, it already ran.
+
+            So we need a better understanding of what assemblers do.
+            The output of most assemblers is not pure machine code. They give
+            you what is called object code.
+            (Our assemblers output pure machine code - this isn't the norm.)
+
+            Recall the '.o' files we created in cs246.
+            An object file contains the binary code and any auxiliary
+            information needed by the loader (and later, the linker).
+
+        Our object code format: MERL
+
+            MIPS Executable Relocatable Linkable
+
+            (This version is made up for the case of simplicity, but there are
+             iron-clad, more complex object code formats out there in the real
+             world.)
+
+            In terms of design, what do we need to put in our object file?
+                
+                 - The code
+                 - Which lines (addresses) were originally `.word id`
+                   (like a bunch of indices).
+                 - Other stuff that we don't need for now.
+
+            MERL Format:
+
+            | Header
+            |
+            |_
+            | MIPS Binary
+            |
+            |_
+            | Footer
+
+            Header
+
+                The header is always three words, the first of which is
+                0x10000002.
+                Why have a constant built into the file format?
+                It's a cookie; a basic sanity check that this file really is
+                MERL.
+                This kind of first-few-bytes-sanity-check is very common.
+
+                    e.g. Executable files have cookies that differ from jpegs,
+                    etc.
+
+                Note that this cookie could be maliciously forged, or
+                accidentally come across - we aren't worrying about that, we're
+                just trying to prevent programming accidents.
+
+                Second word of header = length of .merl file.
+                Third word = code length = len(header + MIPS)
+
+            Footer
+
+                A.K.A Symbol table
+                "We use the term 'symbol table' in this course in three places,
+                but they mean three different things."
+
+                It looks like:
+
+                    Format code    // format code = 1 means this is a relocation
+                        address    // address in MIPS binary of a relocatable wd
+                    Format code
+                        address
+
+                Format code of 1 means this is a relocation entry.
+
+                One wrinkle: The MIPS code always starts at 12, or 0x0c, so it
+                was assembled for PC to start at 0x0c.
+
+                So `.word A` is 0x00000024 instead of 0x00000018. It went up by
+                twelve!
+
+            But our assembler produces raw binary, not object code...
+
+            Challenge question: Why is our cookie 0x10000002.
+            
+            A: That number is MIPS for `beq $0, $0, 2`! Or, "skip the next two
+            lines and start two down" - a command to skip the header.
+
+            So MERL files can be executed as ordinary MIPS programs (if loaded
+            at address 0). This also means that you can make your assembler code
+            up MERL if we construct our assembly right.
+
+            Header:
+                beq $0, $0, 2
+                .word endmodule
+                .word endcode
+
+            Footer:
+                endcode:
+                  .word 0x1
+                  .word reloc1
+                  .word 0x1
+                  .word reloc2
+                endmodule:

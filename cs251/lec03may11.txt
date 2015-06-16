@@ -1,0 +1,131 @@
+Lecture 3 May 11th 2015
+
+Clarification:
+
+    We can't do 'lw $1, $2($3)'.
+    Instead, do:
+        addi $3 $2 0
+        lw $1, 0($3)
+
+Logic Blocks
+
+    Combinational: without memory
+
+        n inputs, m outputs
+
+    Sequential: with memory
+
+        inputs, outputs, and storage I/O
+
+    Inputs and outputs are 1/0 (high/low, true/false)
+
+    Truth tables
+
+        Inputs and values are binary, in increasing order.
+
+        Outputs (F): Where do we want our outputs to be true(1) or false(0)?
+
+        e.g.
+
+            X Y | F   "Let's say we want F to only be true when X and Y differ."
+            0 0 | 0       1. Define F to be 0,1 depending on input values.
+            0 1 | 1       2. F is *true* based on *2* cases.
+            1 0 | 1       3. Define output function for F: F = bar(x)y + bar(y)x
+            1 1 | 0           + is OR, bar is NOT, multiplied terms are AND
+                              "The format of this output function is important
+                               (sum of products)."
+                          4. Take this sum of products and build a circuit.
+                                We call the groups of terms that make the
+                                statement true minterms.
+
+        "Don't Cares" in truth tables
+            
+            The value could be 0 or 1, doesn't matter.
+
+            e.g.
+
+                A B C | F
+                0 0 X | 0
+                0 1 X | 1
+                1 X X | X "Having a don't care in our output is less common."
+
+                F = bar(A)BC + bar(A)Bbar(C)
+
+                Reduced: F = bar(A)B(C + bar(C))
+                         F = bar(A)B
+
+                Not quite finished, we can expand the output don't care to:
+
+                    1 X X 0
+                    1 X X 1
+
+                So the final reduced function is bar(A)B + A
+
+            We can use don't-cares when we have overlap.
+
+                e.g.
+
+                    A B C | F
+                    1 1 0 | 1
+                    1 1 1 | 1
+
+                    F = ABbar(C) + ABC = AB
+
+                e.g.
+
+                    1 0 1 | 1
+                    1 1 1 | 1
+                    1 1 1 | 1
+                    1 1 0 | 1
+
+                    1 X 1 | 1
+                    1 1 X | 1
+
+                    F = AC + AB
+                    
+    Binary number review:
+
+        1   1   1   1   == 15
+        _   _   _   _
+        2^3 2^2 2^1 2^0
+
+        n digits -> highest number is 2^n - 1
+
+        e.g.
+
+            32 bits -> highest value is 2^32 - 1
+
+    Clicker questions:
+
+        X Y Z | F
+        0 0 X | 1
+        0 1 0 | 0
+        X 1 1 | 1
+        1 0 0 | 0
+        1 X 1 | 1
+        1 1 0 | 1
+
+        Find output F reduced.
+
+        C) bar(X)bar(Y) + YZ + XZ + XYbar(Z)
+
+    Laws of Boolean Algebra
+
+        bar(bar(X)) = X
+        X + 0 = X                  X1 = X
+        X + 1 = 1                  X0 = 0
+        X + X = X                  ...
+        X + bar(X) = 1
+        X + Y = Y + X
+        X + (Y + Z) = (X + Y) + Z
+        X(Y + Z) = XY + XZ
+        bar(X + Y) = bar(X)bar(Y)
+
+        Distributive: X + YZ = (X + Y)(X + Z)
+         = XX + XZ + XY + YZ
+         = X(X + Z + Y) + YZ
+           If X is true here, it's all true.
+           If X is false, this whole term is false as well.
+           So we can drop the bracketed term.
+         = X + YZ
+

@@ -1,0 +1,287 @@
+Lecture 5 May 20 2015
+
+The Assembler
+
+    Encompasses assignment 3 or 4
+
+    Will be written in C++03, Racket or (if you insist) C
+
+    Part of Friday's tutorial will be coaching on C++ and common mistakes
+    students make when making the assembler.
+
+    Assembly code                      Machine Code
+    add $1, $2, $3   --> Assembler --> 1110010100111...
+    jr $31
+
+    Note that cs241.binasm is not only an assembler, it is a model for the
+    assembler that we will be creating on our assignment.
+
+    Any translation process involves two phases (even spoken languages):
+
+        1. Analysis - understand what the input means
+                     (understand what is meant by the source screen)
+
+        2. Synthesis - find an equivalent output
+                       (output the equivalent target string)
+
+    The input to our assembler is an assembly file - a stream of characters.
+
+        If you look at individual characters on their own, they don't really
+        mean anything. 'd' could mean anything.
+
+        So, generally, the first step is to take those individual characters
+        and group them into things that have meaning, or tokens.
+
+            e.g. Labels, hex numbers, register numbers, .words, are all tokens.
+
+        Tokenization deserves its own spotlight and we will spend a week or two
+        discussing it later in the course. For now, it will be done for you.
+
+        Your job is to group the tokens into instructions (if possible). That is
+        analysis.
+        Then, you will output equivalent machine code. That is synthesis.
+
+        We don't assume that the provided tokens are valid.
+        If the tokens are not arranged into sensible instructions, then we will
+        output ERROR to stderr (NOT stdout).
+
+        Advice: There are many more wrong configurations than right ones. Most
+        of the ways you can put tokens together do not represent valid
+        instructions. Trying to think of the error cases is hard. Instead, focus
+        on finding all of the *right* ones, and anything else is an ERROR.
+
+        We aren't *only* allowed to output ERROR on stderr. We can make our
+        errors more descriptive if we want as long as we say error.
+        "It doesn't even have to be on its own line, it just has to be there."
+
+        This process of grouping tokens together - parsing - will also be
+        covered in more detail later in the course. Often, this is the most
+        difficult part of the course.
+
+
+    Biggest Problem with Writing Assemblers:
+
+        How do we assemble this?
+
+            beq $0, $1, abc
+            ...
+            abc: add $3, $3, $3
+
+        The problem is that the assembler is working sequentially. It just sees
+        an instruction and outputs it, and moves on to the next instruction.
+
+        How does the assembler know what abc is before it sees the abc label?
+
+        You can't assemble the beq because you don't (yet) know what abc is.
+
+        Naive solution: scanning the whole file to find that label is very slow
+        and runs in quadratic time! Assemblers can run in linear time, though...
+
+        Better, "standard" solution: Assemble in two passes. Make two passes
+        over the program. In pass one, group the tokens into instructions and
+        make a note of any found labels by recording its address.
+
+            What we end up building is a symbol table - a list of
+            (label, address) pairs.
+
+            Note: A line of assembly may have more than one label.
+                
+                e.g.
+                        f:
+                        g:
+                            mult $1, $2
+
+            Note: We can label after the end of the program.
+
+                e.g.
+                          jr $31
+                        z:
+
+                (z would point to address of 'jr $31' + 4)
+
+        The second pass would then translate each instruction into machine code.
+
+            If an instruction refers to a label, look up the associated address
+            in the symbol table.
+
+        For full marks, our assembler must output the assembled MIPS to stdout.
+
+            Recall the advice, "if you can read it, it's wrong".
+
+            We must also print the symbol table to stderr (binasm doesn't do
+            this) so that the markers can see it.
+
+    Example:
+
+        main: lis $2
+              .word 13
+              add $3, $0, $0
+
+        top:
+             add $3, $3, $2
+             lis $1
+             .word 1
+             sub $2, $1, $2
+             bne $2, $0, top
+             jr $31
+        
+        beyond:
+
+        Pass one: Group tokens into instructions (we can do this however we
+        want, with a data structure or a class or just wing it or whatever).
+        Then, build the symbol table:
+
+            Name | Address
+
+            main   0x00
+            top    0x0c
+            beyond 0x24
+
+        Pass two: Translate each instruction. When we encounter a label, we
+        look up the label in the symbol table, and calculate (top - PC)/4.
+
+            lis $2          --> 0x00001014
+            .word 13        --> 0x0000000d
+            bne $2, $0, top --> bne $2, $0, -5 --> 0x1440fffb // hex(-5) = fffb
+
+        Note that the MIPS machine will always interpret the branch offset as a
+        twos-compliment number.
+
+        Wait, how do we get 'fffb' from -5?
+
+            To negate a two's compliment number, flip the bits and add one.
+
+                So if 5 = 0000 0000 0000 0101
+                     -5 = 1111 1111 1111 1010 + 1
+                        = 1111 1111 1111 1011
+                        =    f    f    f    b
+
+        We can't just print out '0x00001014', because we can read that!
+        Printing the hex representation would require us to print 10 bytes for
+        those 10 characters.
+
+        We need to print the bytes whose bit pattern is that hex.
+        So we need to do bit-level operations.
+
+    Bit-level Operations
+
+        To assemble 'bne $2, $0, top' (where top = (top-PC)/4 = 5), we first
+        look at the opcode: 000101 = 5
+        first register = $2 = 2
+        second register = $0 = 0
+        offset = -5
+
+        Now we must build a 32-bit word representing this.
+
+        opcode = 5 bits
+        first register = 5 bits
+        second register = 5 bits
+        offset = 16 bits
+
+        We must build up a word (an int, if you will) with that bit pattern.
+
+        Note how we can turn '27' into '27 000 000' by putting six zeroes in
+        front of it, or multiplying by 1 000 000.
+
+        To put 000101 in the first six bits, we need to append 32-6 = 26 zeroes
+        on the end, or a left shift by 26 bits.
+
+        in C: '5 << 26; // multiply by 2^26'
+        in Racket: (arithmetic-shift 5 -26) // negative means shift left 
+
+        This produces:
+
+            00010100000000000000000000000000
+
+        Then move $2 21 places to the left ('2 << 21'):
+
+            00010100010000000000000000000000
+
+        Then move $0 16 places to the left ('0 << 16'):
+
+            00010100010000000000000000000000
+        
+        The -5 at the end still needs to be shifted. But -5 as an int is a
+        32-bit number (0xfffffffb), and we only have 16 bits left!
+
+        Remember how we calculated -5 to be 0xfffb above? We don't need the
+        first 16 bits of ones. We want only the last 16 bits.
+
+    Bitwise and/or
+
+        a b | a and b | a or b
+        0 0      0        0
+        0 1      0        1
+        1 0      0        1
+        1 1      1        1
+
+        These can be extended to digit-by-digit operations.
+
+            e.g.
+                
+                    11001001
+                AND 11110000
+                  = 11000000
+
+        To AND something with 1 leaves the other value unchanged.
+        To AND something with 0 gives you a 0.
+
+            e.g.
+                
+                   11001001
+                OR 11110000
+                 = 11111001
+
+        To OR with 1 gives you a 1.
+        To OR with 0 leaves the other bit unchanged.
+
+        This means that AND can be used to turn bits off, and OR means to turn
+        bits on.
+
+    So to squish 0xfffffffb above, we do a bitwise AND with 0xffff (0x0000ffff).
+    This turns off the first 16 bits.
+
+        In C: -5 & 0xffff
+
+    Then bitwise OR the four pieces together and we get:
+
+        int x = (5<<26)|(2<<21)|(0<<16)|(-5&0xffff);
+
+    We now have our number! Now we must print it out:
+
+        cout << x << endl; // WRONG!
+
+    The number we constructed happens to be 339 804 155, so 'cout << x' will
+    print out '339804155\n', which is too many bytes.
+
+    To print out a number, we must convert the digits of the number into ASCII
+    and print them out one by one. We want to print the binary value directly
+    though, without any conversion.
+
+    Consider the following:
+        
+        int x = 65;
+        char c = 65;
+        cout << x << c; // 65A
+
+    When we print an int, C++ converts the digits to ascii.
+    When we print characters, the bits are sent directly to the screen.
+
+    So we need to break up our 32 bits into 4 characters.
+
+        int x = ...;
+        char c = x >> 24;
+        cout << c;
+        c = x >> 16;
+        cout << c;
+        c = x >> 8;
+        cout << c;
+        c = x;
+        cout << c;
+        
+    "If you have any friends in cs246 you should show them code like this, it
+     will blow their minds - on every other line the operator means output or
+     bitshift!"
+
+    When you bitshift by 16, only 8 bits are put into the character, so the
+    extra bits are chopped off.

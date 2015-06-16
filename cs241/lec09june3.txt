@@ -1,0 +1,241 @@
+Lecture 9 June 3rd 2015
+
+Regular Languages
+
+    Built from: 
+    
+        - finite languages
+
+            - union
+            - concatenation
+            - repetition
+
+    Union of two languages:
+
+        L1 U L2 = { x | x IN L1, or x IN L2 }
+
+    Concatenation of Languages
+
+        L1*L2 = { xy | x IN L1, y IN L2 }
+
+            e.g.
+                
+                L1 = {dog, cat}
+                L2 = {fish, ϵ}
+
+                L1L2 = {dogfish, catfish, dog, cat}
+
+    "These two operations alone aren't that special - they still produce finite
+     Languages. The next one gets us out of the finite languages."
+
+    Repetition:
+
+        L* = { ϵ } U { xy | x IN L*, y IN L }
+
+           = { ϵ } U L U LL U LLL ...
+           
+           "We know ϵ is in the next bit, so if we let x be ϵ, we
+            are left with the set L. Do this recursively, and we get infinite
+            combinations of L."
+
+           = 0 or more occurences of a word in L
+
+           e.g. with L = { a, b }
+
+            L* = {ϵ, a, b, aa, ab, ba, bb, aaa, aab, aba, ...}
+
+    Show that the language from the previous lecture is regular.
+
+        i.e. show { a^(2n)b | n >= 0 } is regular.
+
+        Consider the set {aa}, and repeat that finite set infinitely ({aa}*),
+        then concatenate {b} on the end to get ({aa}*){b}
+
+    Shorthand: regular expressions
+
+        Language            RegEx
+
+          {}                  ∅          empty language
+          {ϵ}                 ϵ          language consisting of the empty string
+          {aaa}               aaa        singleton language
+          L1 U L2             L1 | L2
+          L1*L2               L1, L2
+          L*                  L*
+
+        Note: Don't get confused - in the context of RegEx, everything is a
+        language, so the language consisting of the empty string is just the
+        empty string in RegEx.
+
+        So { a^(2n)b | n >= 0 } = (aa)*b
+
+    Seemingly unfair question: Is C regular?
+
+        A C program is a sequence of tokens (like we've seen on assignment 3).
+
+        Note: If you are basically done A3 except some blind tests, move on.
+
+        Identifiers are strings of repeated alphanumerics (regular language),
+        integer literals are bounded and thus finite (but we will consider them
+        regular), etc.
+
+        So a C program is a sequence of tokens, each of which comes from a
+        regular language.
+
+            C ⊆ { valid C tokens }*
+
+        So, maybe.
+
+    We have yet to think about what a computer program to recognize an
+    arbitrary regular language automatically.
+
+        How can we?
+
+        e.g.
+            
+            Writing a recognizer for { a^(2n)b | n >= 0 } = (aa)*b
+
+        Can we harness what we learned before about recognizin finite languages?
+
+            Recall how we had a big block of if-statements on the board.
+
+            We can tweak that to allow for infinite recognition by adding loops!
+
+        State diagram:
+
+                a
+            /\ --> /\      "Loop 'a' as much as we want until we get our result
+            \/ <-- \/       with b."
+         b  |   a
+           /.\
+           \ /
+        
+        MIPS labels:
+
+               a-zA-z   while(a-zA-Z0-9)
+        --> () ------> ()
+                        \   :
+                         ()   END
+
+        "So we have a very precise definition of a regular language, and we have
+         machines that can, as far as we know, recognize two regular languages.
+         Can they recognize more regular languages? Or is that it? Could they
+         even recognize more complex languages?"
+
+    These "machines" (state diagrams) called
+
+        Deterministic Finite Automata (DFAs)
+
+     - always start at the start state
+     - for each char in the input, follow the corresponding arc to the next step
+     - if on an accepting state when input is exhausted, accept, else reject
+
+    What if there are no transitions?
+
+        e.g. What if the input is 'ab'?
+
+               a-zA-z   while(a-zA-Z0-9)
+        --> () ------> ()
+                        \   :
+                         ()   END
+
+        If we fall off the machine, we must reject it.
+
+    But from an analytical standpoint, it's much easier if we only have one way
+    to reject a string, so we can re-word the above more formally:
+
+        There is an implicit error state and all unlabelled transitions go
+        there.
+
+               a-zA-z   while(a-zA-Z0-9)
+        --> () ------> ()
+                       /\
+                    b /  \ :
+              ERROR  ()  ()   ACCEPT
+                      \__/
+                       a,b
+
+        Note: Once you get in an error state, no input is accepted and there is
+        no escape.
+
+        There's nothing special about an error state. We will define them as
+        states that are:
+
+            - no escape
+            - non-accepting
+
+    Tricky Excercise:
+
+        Strings over { a, b } with an even # of a's and an odd # of b's, in any
+        order.
+
+        Remember: Zero is an even number (unless you are playing roulette :P)
+
+        The start state should not be accepting - 0 a's and 0 b's, so we have
+        a non-odd number of b's.
+
+        Important insight - we only have four cases:
+
+            odd a's, odd b's
+            even a's, odd b's
+            odd a's, even b's
+            even a's, even b's
+
+        Start state: even a, even b
+
+                              b
+        --> (even a, even b) --> (even a, odd b) ACCEPTING
+                             <--
+                              b
+            a     ||  /\           a ||  /\
+                  \/  ||  a          \/  || a
+
+                              b
+                             <--
+            (odd a, even b)  --> (odd a, odd b)
+                              b
+
+Formal Definition of a DFA
+
+    A DFA is a 5-tuple (SIGMA, Q, q_0, A, DELTA), where
+    
+        SIGMA is a finite, non-empty set (alphabet)
+        Q is a finite, non-empty set (states)
+        q_0 IN Q (start state)
+        A SUBSET Q (accepting state)
+        DELTA: QxSIGMA -> Q (transition function:
+                                state + input char --> next state)
+
+    DELTA consumes a single character.
+
+        - can extend DELTA to a function that consumes an entire word
+
+    Definition:
+        
+        DELTA*(q, EPSILLON) = q
+        DELTA*(q, cw) = DELTA*(DELTA(q,c), w)
+
+        We say DFA (SIGMA, Q, q_0, A, DELTA) accepts a word w if
+        DELTA*(q_0, q) IN A.
+
+    If M is a DFA, we denote by L(M) ("the language of M") the set of all
+    strings accepted by M.
+
+        In other words, L(M) = { w | M accepts w }
+
+        "The language of the machine is the set of words that it accepts."
+
+Theorem (Kleene):
+
+    Pronounced "Clean-ey". "He's dead now." *class laughs*
+
+    L is regular iff L = L(M) for some DFA M.
+    (The regular languages are exactly the languages accepted by DFAs.)
+
+    Can you come up with a regular expression for the (even a, odd b) problem
+    above?
+
+        "It exists, but it's very long, so the one you tried to come up with is
+         probably wrong."
+
+    We won't prove this explicitly - the proof will sneak up on us.
+

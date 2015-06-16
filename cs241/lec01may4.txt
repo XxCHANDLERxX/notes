@@ -1,0 +1,213 @@
+Lecture 1 May 4
+Foundations of Sequential Programming
+"Baby compilers course"
+
+Two holidays this term!
+
+No textbooks!
+"A good part of this course is made up."
+"The course notes are the notes you will write down in class."
+
+Not allowed to collaborate or resubmit old solutions!
+
+What is this course supposed to be about?
+What is a sequential program?
+    An "ordinary" program.
+    What it's not:
+        Concurrent "a single CPU but back-and-forth-switching among tasks"
+            "playing a video while also listening to a pause button"
+        Parallel "doing more than one thing at once"
+    So, sequential means "single-threaded" and only one things going on at a
+    time.
+    Every program we've ever been asked to write so far at UW has been
+    sequential.
+
+Foundations
+    Looking to understand how sequential programs work.
+    "When you build a building, you start with the foundation."
+    We are going from the ground up.
+    Our starting point: bare hardware (sort of)
+        A chip!
+        For this course, we have a simulated MIPS machine.
+        We take a different perspective on MIPS than in CS251.
+        "A more simplified view of MIPS."
+        This machine only interprets ones and zeros.
+    By the end:
+        We will get programs written in a C-like language to run
+        on the MIPS.
+        What does the "run" button do in racket?
+        In this course, you will write a compiler!
+
+We will start talking about the compiler in a month, and it will
+last until the end of the term. It will be split across multiple
+assignments.
+
+Programming with ones and zeros is not fun, so we come up with an
+intermediary language - an assembler (turns assembly into 1s and 0s.
+
+Higher level languages like C can be "compiled" to assembly.
+
+Is this a "Baby" compilers course?
+    Sort of. Compilers have so many lessons built into them that
+    we can learn a lot by working with them.
+
+First topic: Binary and Hexadecimal Numbers
+    Bit - 0 or 1
+        Short for "binary digit".
+        Already an abstraction on top of hardware.
+        Equivalent to high and low voltage, or configurations
+        of magnetic media.
+
+    We group bits together.
+    Byte - 8 bits, e.g. 11001001
+        2^8 = 256 possible bytes.
+        Historically, a byte was just the number of bits needed to hold a
+        character.
+
+    Word - machine-specific grouping of bytes.
+        "The number of bytes the machine treats as a unit."
+        "How big are ints or pointers on this machine?"
+        Assume a 32-bit computer architecture.
+            So 1 word is 32 bits, or 4 bytes.
+        Nowadays 64-bit machines are more common, but we will learn the same
+        things with 32-bit machines, just with smaller numbers :)
+
+    4 bits, or half a byte, is a nibble!
+
+    Q: Given a byte (or a word) in the computer's memory, what does it mean?
+    "Reach into the computer and pick up a byte. What does it mean?"
+    E.g. 11001001 means what, exactly?
+
+    A: We don't know. It could mean many things.
+    "Could be a number"
+    "Could be an address"
+    "Could be a literal"
+    A number - what number is it? We don't know. It could be anything.
+        We want to converge on something, so we can guess using conventions,
+        such as the binary number system:
+            11001001 = 2^7 + 2^6 +2^3 + 2^0 = 128 + 64 + 8 + 1 = 201
+        How do we go the other way?
+            Keep dividing by two, and the sequence of remainders written in
+            reverse is your binary number.
+        So it's possible that this number represents 201.
+        BUT - how can we represent negative numbers?
+            Let one of the bits be a sign bit, let's say the first bit.
+            Convention states that 0 is for positive and 1 is for negative,
+            which is a "sign magnitude representation".
+        Then 11001001 = -73
+            Ignoring the first digit (which means minus) we are left with
+            -(64 + 8 + 1) = -73.
+        Sign magnitude representation has some flaws, though.
+            We can't have numbers as big as before (with unsigned), but we
+            can always do unsigned if we need that.
+
+            We have two representations of zeroes!
+                00000000, 100000000
+                This is wasteful and confusing, because comparing with
+                zero is very common.
+
+            Arithmetic on sign-magnitude numbers is tricky.
+                What happens if we add a positive and a negative?
+                Lots of work!
+
+        Better representation: 2's compliment notation.
+            A procedure for interpreting a binary number in 2's compliment:
+                1) Interpret the n-bit # as an unsigned integer.
+                2) The first bit still tells us the sign, meaning 0 means
+                   positive and 1 means negative. If the first bit is 0, we
+                   are done.
+                3) Else, subtract 2^n.
+
+            This makes sense. Let's see why with n=3 (3-bit numbers)
+                Binary: 000 001 010 011 100 101 110 111
+
+                2's co:   0   1   2   3  -4  -3  -2  -1
+
+                "Think of this as a number loop rather than a number line."
+                Cut it in a different place and get this:
+                100 101 110 111 000 001 010 011
+                111 + 1 = 000, like an odometer rolling over!
+                (We confine ourselves to 3 bits and overflow.)
+
+            n bits represent -2^n-1 ... 2^n-1 -1
+
+            Only one representation of 0.
+
+            Left bit still gives sign.
+
+            Arithmetic is cleaner.
+
+            The same circuit (e.g. addition) works for both unsigned and
+            2's compliment numbers.
+
+            In 2's compliment, 11001001 = 201 - 2^8
+                                        = 201 - 256
+                                        = -55
+
+            Now we'll introduce a convenience: Hexadecimal notation.
+                We typically work in base 16, so we use 0-9 and borrow
+                the letters A-F (where F represents 15)
+
+                This is more compact than binary.
+
+                Each hex digit = 4 bits (1 nibble)
+
+                e.g. 11001001 = Hex(1100), Hex(1001) = C9
+
+                Notation: 0xC9
+                    0x denotes a hexadecimal number.
+                    This is particularly valuable when you have a hexadecimal
+                    number with no letters in it.
+
+    Q: Given a byte 11001001, how can we tell if it's unsigned, signed, or
+    2's compliment?
+
+    A: We can't! Any computer can have all three data types in it.
+
+    The number depends on you, the programmer, to know what it means.
+    The only way to know is if you are the person who put it there, and we
+    remember our intend.
+
+    But remember - we don't even know 11001001 represents a number!
+
+    it could also be:
+        A character (but which one is it?)
+        So we need some kind of mapping between numbers and characters, a
+        convention.
+            The most common convention here is ASCII
+            "American Standard Code for Information Interchange"
+            Or, "how computers talked to each other".
+            e.g. A computer telling a printer to print a character.
+
+            But ASCII is old and American (and thus unilingual).
+            Computers were also expensive back then.
+            So the ASCII people said, "Okay, it would be nice if we could send
+            out lowercase and uppercase letters, plus whitespace and control
+            characters like EOF and the Bell and such."
+
+            This was less than 128 characters, so it's 7 bits. The first bit
+            in a byte of ASCII is typically 0.
+
+            So we know 11001001 is not an ASCII code!
+
+            IBM then came along and filled the other bits with things like
+            card suits, frame characters, and other nonsense.
+
+            So the 8th bit was typically used  for non-standard characters.
+
+    So 11001001 is not *7-bit ascii*.
+    If we ignore the first bit though, then it's ascii for 'I'
+
+    There are other encoding conventions.
+        e.g. EBCDIC (Another IBM one)
+            "Extended binary coded decimal interchange code"
+            (Mostly dead)
+            Strange design - gaps between blocks of letters, so sorting is hard.
+
+    There is also Unicode
+
+    3) an instruction (ours are 32 bits)
+
+    4) It could be nothing (garbage, unused memory)
+
+    homework: download mips reference sheet and bring it for the next two weeks

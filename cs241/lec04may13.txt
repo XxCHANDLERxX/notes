@@ -1,0 +1,328 @@
+Lecture 4 May 13 2015
+
+Recall this program:
+
+0  lis $2
+4  .word 13
+8  add $3, $0, $0
+c top:
+   add $3, $3, $2  ; labels can be on a new line, whitespace is ignored
+10 lis $1
+14 .word 1
+18 sub $2, $2, $1
+1c bne $2, $0, top ; PC = 0x20
+20 jr $31
+
+Procedures in MIPS
+
+    Two problems to solve:
+
+        1. Call and return - how to get into and out of a procedure f.
+
+            What if f calls a procedure g?
+
+            Parameters and results.
+
+        2. Registers - what if f overwrites our registers and destroys our data?
+
+            "MIPS won't tell us what we did wrong, we would have to spend time
+             tracing through the code and debugging it ourselves."
+
+    Naive solution for 2:
+
+        We could reserve some registers for f, and some for the mainline, then
+        they wouldn't interfere.
+
+        This is bad because a large amount of procedures would eat up all the
+        different registers and get stuck.
+
+        What if f calls g, g calls h, etc.? Or we use recursion? There just
+        aren't enough registers.
+
+    Camping analogy for a better solution:
+
+        "Take nothing but photographs, leave nothing but footprints."
+        We need to tell the procedure, "leave the registers the way they looked
+        before when you are done so that main can continue".
+
+        We must guaruntee that procedures leave registers unchanged when they
+        are done.
+
+        But how?
+
+        "We need to shove the data somewhere so that we can remember how the
+         registers looked before."
+
+    We need to use RAM.
+
+        But which RAM?
+
+        Let's say we store everything at 0x1000 in RAM. That doesn't really work
+        though, because if every procedure did that, we could have our data
+        overwritten accidentally again. Recursion and too many procedures are
+        still a problem.
+
+        How do we keep procedures from using the same RAM?
+
+        Recall that main memory looks like this:
+             ______
+            [ code ]
+            [______]
+            [      ]
+            [ free ]
+            [  ram ]
+            [______]
+                     <-- $30
+
+        We must allocate free memory from either the top or bottom of the RAM.
+
+        We also need to keep track of which RAM is free and which isn't.
+
+        The MIPS loader helps us out!
+
+        Remember how we said register 30 was special previously?
+        Register 30 tells us how much RAM we have. It tells us the first address
+        that is not available.
+        It gives us the address just past the end of RAM.
+        It's initialized by the loader to just past the last word of free RAM.
+        Anything below $30 is in use or unavailable. We can use it like a book
+        mark to separate used and unused RAM, assuming we always allocate from
+        the bottom (which we will).
+
+        Is that enough? Does that solve the problem? Just by remembering one
+        number?
+        
+        What happens if a chunk in the middle gets freed up first?
+
+            That's not possible!
+
+            Each procedure stores in RAM the registers it wants to use,
+            restores the original values on return, and updates $30.
+
+            e.g.
+
+                We have procedures f, g, and h.
+
+                If f calls g, and g calls h,
+                then h returns, then g returns, then f returns
+             __________
+           0[ code     ]
+           4[__________]
+           .[          ]
+           .[ free     ]
+           .[  ram     ]
+            [__________]
+            [ h's regs ]                 .
+            [__________] <-- $30        / \
+            [ g's regs ]      |          |
+            [__________] <-- $30         | Returns
+            [ f's regs ]      |   Calls  |
+            [__________]     \ /         |
+                         <-- $30         |
+
+            This looks like the stack abstract data type...
+
+            This is the famous runtime stack! This is where the idea of a stack
+            comes from.
+
+            Register 30 is the stack pointer. It contains the address of the top
+            of the stack.
+
+Template for writing procedures (assume f uses $2 and $3)
+
+    f: sw $2, -4($30)
+       sw $3, -8($30)
+       lis $3
+       .word 8
+       sub $30, $30, $3
+       ; ...
+       ; body of procedure
+       ; ...
+       add $30, $30, $3
+       lw $3, -8($30)
+       lw $2, -4($30)
+       ; we don't know how to return yet
+
+Now let's talk about call and return of procedures.
+
+    Call:
+
+        main: ; ...
+              ; ...
+              lis $5
+              .word f  ; address of the line labelled f
+              jr $5    ; workaround - full MIPS can do 'j f' ; actually jalr
+              ; ...
+
+    Return:
+
+        We need to return to where we came from in main.
+        So, we need to set PC to the line after the 'jr $5' above.
+        How does f know what address that is?
+
+        This sounds like the program return command 'jr $31'...
+
+        Notice the 'jalr' instruction on the MIPS reference sheet.
+
+            jalr: jump to and link to register
+
+            Like jr, but it also sets $31 to the address of the next instruction
+            before jumping.
+
+            So jalr sets $31 to the register of the next instruction to PC,
+            which already points to the next instruction.
+
+        We just need to replace 'jr $5' with 'jalr $5' above.
+
+        Then, to return, we use the familiar command 'jr $31'.
+
+        But what happens to the old value of $31? Main loses its return address
+        if jalr overwrites $31! What if we need to return to the loader? What if
+        f calls g?
+
+        Solution:
+
+            We just need to save $31 on the stack, and restore is when the call
+            returns!
+
+Full template for calling procedures:
+
+    "Procedures are notoriously easy to get wrong. It's really important to be
+     really careful here, which is why we are giving you an explicit template.
+     If you use this template exactly, you shouldn't have a problem."
+     
+    "Problems related to procedures are almost always because there is something
+     is wrong with the stack. Use the template!"
+
+    main: ...
+          lis $5
+          .word f
+          sw $31, -4($30)    ; push $31
+          lis $31
+          .word 4
+          sub $30, $30, $31  ; decrement $30
+          jalr $5            ; call f
+          lis $31
+          .word 4
+          add $30, $30, $31  ; increment $30 (stack pointer)
+          lw $31, -4($30)
+          ...
+          jr $31
+
+    f: ...    ; push registers
+       ...    ; decrement $30
+       ...
+       ...    ; body
+       ...
+       ...    ; increment $30
+       ...    ; pop regs
+       jr $31 ; return
+
+    If you don't save $31 before you use jalr, we lose it.
+    Our main (or whatever parent function) needs to handle saving its $31. The
+    function being called can't handle that itself.
+
+    Note that procedures are really just an abstraction. It's an adopted
+    convention that we use to jump around to different blocks of code. The MIPS
+    machine 
+
+    Also note that the oder of operations is reversed to follow the nature of a
+    stack - push, decrement, increment, pop.
+
+Parameters
+
+    Use registers.
+    
+    This should be documented!
+    
+    e.g.
+
+        What registers are we expecting input on?
+
+    If we have too many (>32) parameters, we must push them on the stack.
+    (Remember to take them off when you're done!)
+
+Example procedure:
+
+    "Do yourself a favour and document pretty much every line as you write
+     assembly, in case you have to go to the bathroom and end up forgetting what
+     you were doing."
+
+    Which registers below have to be saved and restored?
+
+        Registers 1 and 2 have to be saved and restored, as the caller probably
+        expects their old values to still be there.
+        
+        Register 3 is for output, do not save this one, because the caller is
+        looking for a new value there.
+
+    ; sum1ToN: sums 1, ..., N
+    ; Registers -
+    ;   $1 - working
+    ;   $2 - input (value of N)
+    ;   $3 - output
+    sw $1, -4($30)
+    sw $2, -8($30)
+    lis $1
+    .word 8
+    sub $30, $30, $1
+    top: add $3, $3, $2
+         lis $1
+         sub $2, $2, $1
+         bne $2, $0, top
+    lis $1
+    .word 8
+    add $30, $30, $1
+    lw $2, -8($30)
+    lw $1, -4($30)
+    jr $31
+
+What do we have to change to get recursion working with this design?
+
+    Nothing!
+    
+    If registers, parameters, and stack are managed properly, recursion will
+    just work! 
+
+    However, if you made even a tiny mistake, recursive functions would probably
+    explode.
+
+Output
+
+    Gee, I wonder how printf works?
+
+    How do those bytes get on the screen?
+    It calls a more primitive function called write, which writes a byte to the
+    screen.
+
+    How does write work?
+
+    It's a procedure provided by the operating system.
+
+    How is it implemented?
+
+    (It's complicated nowadays.)
+
+    But basically, imagine that there's a wire from every position on the screen
+    to memory. So if we want to print something to the string, we push the bytes
+    of the string to the corresponding bytes in graphical memory.
+
+    But here we just have one location - 0xffff000c
+
+    Use sw to store a word at address 0xffff000c
+
+        The least significant (last) byte will be printed.
+
+        e.g.
+
+            lis $1
+            .word 0xffff000c
+            lis $2
+            .word 67
+            sw $2, 0($1)
+            jr $31
+
+            Output: C
+
+No lecture monday, and no assignment due next week!
+

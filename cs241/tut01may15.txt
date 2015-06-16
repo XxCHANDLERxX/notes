@@ -1,0 +1,52 @@
+CS 241 Tutorial 1 May 15 2015
+
+Recall the definition of a fibonacci number:
+    Fn = Fn-1 + Fn-2
+    where f0 = 0 and f1 = 1 and n >= 2
+
+Topics:
+    1. MIPS Loops
+    2. Printing to stdout and using the stack
+    3. Creating and using procedures
+
+Q1: $1 contains n >= 0. Find Fn and place it in $3
+
+; fn will go in $3
+; fn+1 will go in $4   (Not fn-1 because $3 could need to be 0)
+add $3, $0, $0    ; reset $3 to 0
+lis $4            ; set $4 to fn+1 (1 initially)
+.word 0x00000001  ; (Same as 1 or 0x1, it will still compile)
+add $6, $0, $4
+top: beq $1, $0, end     ; loop condition - is $1 0? (end would be 5 w/o label)
+add $5, $0, $4    ; remember fn+1
+add $4, $3, $4    ; compute fn+2
+add $3, $5, $0    ; fn = fn+1
+sub $1, $1, $6    ; decrement $1
+beq $0, $0, top
+end: jr $31
+
+
+Q2: Turn Q1 into a procedure called fib. Any register other than register 3
+should have the same value after fib is called as it did before it was called.
+
+; we must save registers 1, 4, 5, and 6
+; we don't want to save $3 because it's our output
+fib: sw $1, -4($30)        ; push $1
+sw $4, -8($30)        ; push $4
+sw $5, -12($30)       ; push $5
+sw $6, -16($30)       ; push $6
+lis $6
+.word 16
+sub $30, $30, $6      ; update stack pointer (not necessary, but good practice)
+
+[Q1 code]
+
+end: lis $6
+.word 16
+add $30, $30, $6      ; reset stack pointer
+sw $1, -4($30)        ; pop $1
+sw $4, -8($30)        ; pop $4
+sw $5, -12($30)       ; pop $5
+sw $6, -16($30)       ; pop $6
+jr $31
+

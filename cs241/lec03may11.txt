@@ -1,0 +1,204 @@
+Lecture 3 May 11th 2015
+
+Recall MIPS example 1 from last class:
+
+    $3 <- $5 + $7
+
+location  binary                                   hex       meaning 
+00000000  0000 0000 1010 0111 0001 1000 0010 0000  00a71820  add $3, $5, $7
+00000004  0000 0011 1110 0000 0000 0000 0000 1000  03e00008  jr $31
+
+Example 2:
+
+    $3 <- 42 + 52
+    We can do 'lis $d' (load immediate and skip).
+
+location  binary                                   hex       meaning 
+00000000  0000 0000 0000 0000 0010 1000 0001 0100  00002814  lis $5
+00000004  0000 0000 0000 0000 0000 0000 0010 1010  0000002a  .word 42
+00000008  0000 0000 0000 0000 0010 1000 0001 0100  00003814  lis $7
+0000000c  0000 0000 0000 0000 0000 0000 0011 0100  00000034  .word 42
+// To finish, just tack on the previous example's solution!
+00000000  0000 0000 1010 0111 0001 1000 0010 0000  00a71820  add $3, $5, $7
+00000004  0000 0011 1110 0000 0000 0000 0000 1000  03e00008  jr $31
+
+Note that we need to run our assignment's 'ex.hex' program through the wordasm
+program to convert the hex into equivalent binary representation.
+
+We can't cat that! Most of it is unreadable, non-ascii data.
+So we can use xxd to print the bytes.
+
+    xxd -cols 4
+
+Gives a word at a time!
+
+    xxd -bits -cols 4
+
+Gives all the bits, like we have typed out above.
+
+Assembly language
+
+    Replace binary/hex encodings with easier-to-read shorthand.
+    Less chance of error!
+    The translation back to binary can be automated. This is an assembler!
+    One line of assembly (roughly speaking) equals one word of MIPS.
+
+    Ex2 revisited in assembly:
+
+        lis $5
+        .word 42
+        lis $7
+        .word 52
+        add $3, $5, $7
+        jr $31
+
+        Note that .word is NOT an instruction. The MIPS chip has no idea what
+        we mean when we say '.word'. It's what's called a directive.
+
+        Directives are given to the assembler, not to the machine.
+        It says, "the very next word in the file you output should be exactly
+        this number".
+
+        Recall that the whole program is stored in RAM already, so when the
+        .word is fetched it's simply treated as a value instead of an
+        instruction as usual.
+
+    Ex3 Compute the absolute value of register 1, store it in register 1, and
+    return.
+
+        We need to use instructions that modify PC in order to implement the
+        logic necessary for an absolute value function.
+
+        Branching instructions:
+
+            beq: Branch if two registers are equal.
+                 If they are equal, increment PC by the given number of words.
+                 "Skip this many instructions."
+                 The given offset can be negative, which allows us to branch
+                 backwords.
+
+            bne: Branch if two registers are not equal.
+
+            "Branching instructions are notoriously easy to get wrong, so be
+             extra careful when writing them."
+
+        Other useful instructions we can use here:
+
+            slt $a, $b, $c
+                
+                Sets a to 1 if $b < $c, else 0.
+
+        Solution:
+
+            "If register 1 is non-negative, we want to skip over the part that
+             flips the sign. If register 2 is 0, skip the part that flips the
+             sign."
+
+        location  assembly 
+        00000000  slt $2, $1, 80    ; is $1 < 0 ?
+        00000004  beq $2, $0,  1    ; if false, skip next instruction
+        00000008  sub $1, $0, $1    ; $1 = -$1
+        0000000c  jr $31            ; return
+
+    Ex4 (Looping) sum 1, ..., 13, store in $3, return.
+
+         0 lis $2            ; $2 <- 13
+         4 .word 13
+         8 add $3, $0, $0    ; $3 <- 0
+         c add $3, $2, $3    ; $3 += $2 (TOP OF LOOP)   -5
+        10 lis $1            ; $1 <- 1                  -4
+        14 .word 1                                      -3
+        18 sub $2, $2, $1    ; --$2                     -2
+        1c bne $2, $0, -5    ; if $2 != 0, loop         -1
+        ; Note that PC is pointing at 20 during the above instruction
+        20 jr $31            ; return
+
+        "Never branch backwards -1, or else you will wind up at the start of the
+         same instruction, and you will have the world's smallest infinite
+         loop!"
+
+        Note that we can refactor 'lis $1; .word 1' out of the loop to make it
+        faster. BUT that means we need to adjust the offsets. This can get
+        really tricky in nested loops.
+
+        The compiler helps us out here with instruction labels.
+
+            e.g.
+                
+                foo: add $1, $2, $3
+            
+            e.g. In a loop:
+
+                top: add $3, $2, $3
+                bne $2, $0, top
+
+            The assembler then associates the name 'foo' with the address of the
+            instruction it's labelling in memory.
+
+            The assembler is smart enough to compute negative/positive offsets
+            as needed, doing arithmetic like '(top - PC)/4'
+
+            So we should use labels from A2 onward as much as possible!
+
+RAM
+
+    lw: load word from RAM into registers.
+
+        lw $a, i($b)    ; $a <- Mem[$b + i]
+
+    sw: load word from registers into RAM.
+
+        sw $a, i($b)    ; Mem[$b + i] <- $a 
+
+    Ex5 $1 = address of an array
+        $2 = length of the array
+
+        Place element #5 (0-based) into $3.
+
+        (You can assume there are enough elements in the array.)
+
+        The only reason I told you about the length is that we get a new MIPS
+        emulator for A2 called mips.array. When passing in an array, we'll get
+        its address along with its length.
+
+        There are two ways we can do this:
+
+            The easy way:
+
+                lw $3 20($3)    ; 5 words = 20 bytes
+                jr $31
+
+                But this is a specific case. Generally we'd do a[i] instead of
+                a[5]. So we would need to calculate the address if the index is
+                not known (the hard way).
+
+            The hard way:
+
+                Suppose $5 contains the index of the item you want to fetch
+                ($5 is i).
+
+                So we multiply $5 by 4.
+                Notice that the multiply instruction is special and only has
+                two operands. The special registers hi and lo store the result
+                of mult.
+
+                    mult $a, $b    ; hi:lo <- $a * $b
+
+                We'll pretend overflows don't happen and the answer sits in lo.
+                "You didn't check for overflows when you wrote C, did you?" :P
+                Then we use:
+
+                    mflo: $a    ; move from lo $a <- lo
+                    mfhi: $a    ; move from hi $a <- hi
+
+                For division, lo holds the quotient, hi holds the remainder.
+
+                Solution:
+
+                    lis $4
+                    .word 4
+                    mult $5, $4
+                    mflo $5
+                    add $5, $1, $5
+                    lw $3, 0($5)
+                    jr $31

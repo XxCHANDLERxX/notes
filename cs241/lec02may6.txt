@@ -1,0 +1,216 @@
+Lecture 2 May 6 2015
+
+Machine Language
+
+    Computer programs operate on data.
+
+    Computer programs *are* data (historically not always true).
+        Von Neuman Architecture
+        "Let's put the data and the program in the same memory space."
+        Now it's possible to write programs that manipulate other programs.
+            *cough* compilers *cough*
+            Operating systems (decide which programs to run, etc.)
+            "The data that operating systems operate on are other programs."
+            Viruses operate on other programs, etc.
+
+    How does the computer know what is program and what is data? It doesn't.
+        Recall our discussion from last class about determining the meaning of a
+        byte.
+
+    What does an instruction look like? What instructions are there?
+        There are many different machine languages (processor-specific). 
+
+        For us, we have MIPS (simplified).
+        18 different 32-bit instruction types.
+
+    The MIPS Machine
+
+        CPU (Central Processing Unit) "Brain of the computer"
+            ALU 
+                Arithmetic and Logic Unit
+                "It does Math"
+            Control Unit
+                Decodes instructions and dispatches them to other parts of the
+                computer to carry them out.
+            Registers
+                Stack $0, $1, ..., $31
+            PC
+                Program Counter
+            IR
+            hi/lo
+            MAR
+            MDR
+
+        BUS
+
+        Main Memory
+
+Memory - Many kinds - in order of closeness to CPU
+
+    FAST 
+        Cache memory (close to CPU)
+        Main memory (RAM)
+        Disk memory
+        Network memory
+    SLOW
+
+    We will focus on CPU and main memory in this class.
+
+    Registers
+        On the CPU - small amounts of very fast memory
+
+        MIPS - 32 "general-purpose" registers $0, $1, ..., $31
+            They each hold 32 bits (1 word)
+
+        The CPU can only operate on data in registers (or load things into and
+        out of registers).
+
+        Register $0 is very special because it always holds zero.
+
+        Register 31 is also special because it has an intended purpose (later).
+
+        Register 30 is also sorta special (intended purpose covered later).
+
+        Example register operation:
+            Add the contents of registers $s and $t and put the result in $d.
+            $d <- $s + $t
+            This command can be found on our MIPS reference sheet.
+
+        Question: How many bits does it take to encode a register number?
+
+        Answer: 5 bits (2^5 == 32)
+
+        So we need 15 bits to encode 3 register numbers in an instruction, which
+        is 32 bits in total, so we have 17 bits left over to encode the
+        instruction.
+
+    RAM
+        A large amount of random access memory away from the CPU.
+        Data travels between CPU and RAM on the bus.
+            "The bus is not that exciting, think of it as a bundle of wires."
+        A big array of n bytes (n is in the order of 10^9+) 
+        Each cell has an address 0, ..., n-1.
+        Each 4-byte block [4k][4k+1][4k+2][4k+3] is a word.
+        Words have addresses 0, 4, 8, c, 10, 14, 18, 1c, 20, ... // Hex
+            Counting up here in hex is easier here because the lowest digit
+            cycles 0, 4, 8, c.
+        Much slower than registers.
+
+        We have two commands for communicating with RAM:
+            Load
+                Take a word of data out of RAM and bring it into a register.
+                You must tell the RAM the desired address.
+                The desired address goes into the Memory Address Register (MAR)
+                "It's no coincidence that the MAR is connected to the bus."
+                Contents of the MAR go out on the bus.
+                The data at that location comes back on the bus and is stored in
+                the Memory Data Register (MDR).
+                The value in the MDR moved to the destination register.
+
+            Store
+                Same as in Load, but in reverse.
+
+        Instructions are stored in memory (RAM), but we are oversimplifying
+        this process; future instructions can be prefetched, etc.
+
+    "Memory that is closer is faster. If I ask you about something from last
+     class, if it's in your brain you can reply pretty fast. If you have to
+     look it up in your notes, it's a bit slower. If you have to bus home to
+     pick up your notes, that's really slow!"
+
+Remember - the computer doesn't know which words contain code and which
+words contain data. Then how does it execute code?
+
+Special register called PC (Program Counter) holds the address of the next
+instruction to run.
+
+IR stands for instruction register, and holds the next instruction to be
+run.
+
+By convention, we guaruntee that a specific address (say, 0) contains code,
+then initialize PC to 0.
+
+Computer then runs the fetch-execute cycle.
+    Pc <- 0
+    Loop:
+        IR <- Mem[PC]
+        PC <- PC+4
+        decode and execute instruction in IR
+    End loop
+
+"This is the only program that your computer actually runs. This
+ fetch-execute cycle is behind everything that your computer appears to be
+ doing."
+
+ Note that PC holds the address of the *next* instruction while the
+ *current* instruction is executed.
+
+ Question: How does a program get executed?
+
+ Answer: The program gets executed because another program executes it!
+    
+    Chicken and egg problem!
+    Cop-out answer: that program is aprt of the operating system.
+    That program is called a loader, and it puts the program in memory and
+    sets PC to the address of the first instruction in the program.
+
+"When you are in the shell and type a command and type enter, the OS runs
+ the loader for that program, which loads the program into memory and runs
+ it. Same for GUIs - clicking an icon triggers a loader.
+ 
+ The operating system itself is loaded during the boot process by reading a
+ special slice of ROM (Read-Only Memory) which fetches the OS and runs it."
+
+ Question: What happens when a program ends? Does the computer just shut
+ down, or can we recover?
+
+ Answer: We go back to where we just came from and return control to the
+ loader, so we set PC to the address of the next instruction in the loader.
+
+ Follow-up questions:
+    How do we know that address?
+        That address should be sitting in register $31!
+        So we just need to set PC to $31.
+        PC <- $31
+
+    How do we set PC exactly?
+        Look at the MIPS reference sheet:
+            Jump Register instruction
+            jr $s
+            jr <- $s
+        So we simply do jr 31
+
+
+Example MIPS Machine Programs
+
+Example 1 - Add the value in $5 to the value in $7, store the result in $3
+and return.
+
+Notice the add instruction on the MIPS reference sheet.
+
+Location | Binary                                  | Hex      | Meaning
+00000000 | 0000 0000 1010 0111 0001 1000 0010 0000 | 00a71820 | add $3, $5, $7
+00000004 | 0000 0011 1110 0000 0000 0000 0000 1000 | 03e00008 | jr $31
+
+add: 0th instruction | 6 0s, s = 5, t = 7, instruction
+jr: returns execution
+
+Example 2 - Add 42 and 52, store the sum in $3 and return.
+    "If we piggy-back the previous program, we can put 42 and 52 into registers
+     and then run the above two instructions, we're done."
+
+    The number could be too big to fit into one instruction, though.
+    So UW made up this instruction:
+        lis $d "load immediate and skip"
+        "Load that in and then skip over it."
+        "Treat the next word as an immediate value and load it into $d, then
+         skip to the following instruction."
+
+    So if we encode the binary for 'lis $5' followed by the binary for 42.
+
+    To be continued next class.
+
+    We can now start the assignment. Reference instructions are on the reference
+    sheet, so feel free to work ahead, else we will give you what you need to do
+    the assignment by the end of the week.
+

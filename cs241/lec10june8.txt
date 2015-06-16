@@ -1,0 +1,263 @@
+Lecture 10 June 8 2015
+
+Recall: A DFA is a 5-tuple (SIGMA, Q, q_0, A, DELTA), where
+
+    SIGMA, Q are finite, empty sets (alphabet, states)
+    q_0 IN Q (start state)
+    A SUBSET Q (accepting states)
+    DELTA: Q x DELTA -> Q (transition function)
+
+    It accepts a word w if DELTA*(q_0, w) IN A
+
+Implementing a DFA
+
+    int state = q_0
+    char c
+    while not EOF, do
+        read c
+        case state of
+            q_0:
+                case c of
+                    a: state = ...
+                    b: state = ...
+                    ...
+                ...
+            q_1:
+                case c of
+                    a: state = ...
+                    b: state = ...
+                    ...
+                ...
+            ...
+
+            q_n:
+                case c of
+                    a: state = ...
+                    b: state = ...
+                    ...
+                ...
+        end case
+    end while
+
+    "This is a very large program, but it works and it's relatively fast."
+
+    OR (preferably) use a lookup table.
+
+    <-- states -->
+    ^
+    |      |     |
+    |      |     |
+    chars  |     |
+    |_____ |_____|
+    |       next
+    \/      state
+     ______|____
+           |
+
+        Note: see provided assembler starter code.
+        We will have to write a scanner in A6, this might inspire us.
+
+        Aside: A4 will be handmarked, which "may be worth marks".
+
+
+DFAs with actions
+
+    - Can attach computations to the arcs of a DFA
+
+    e.g. L = { binary numbers with no leading 0s }
+
+        - computer value of the number
+
+        Note: number 0 on its own is not a leading 0
+
+        RegEx: 1(1|0)*|0
+
+        DFA tree with only three states:
+
+            Starting state
+                -> 0 (accept)
+                -> 1 (accept) (loop on itself with 1 or 0)
+
+    What do we gain by making DFA's more complex?
+
+        e.g. L = { w IN {a, b}* | w ends with abb } (a|b)*abb
+
+        DFA for L:
+
+            Starting state (loop back on b)
+                -> a (loop back on a)
+                    -> b (back up on a)
+                        -> b (accept)
+                             (loop up two on a) (loop back to start on b)
+
+    What if we allowed more than one arc with the same char from the same state?
+
+        e.g.
+
+            Starting state
+                -> a
+                -> a
+
+        What would this mean?
+            
+            The machine gets to pick.
+        
+        The machine chooses one direction or the other (i.e. the machine is
+        non-deterministic). Accept if some set of choices leads to an accepting
+        state.
+
+            Recall: The 'D' in 'DFA' stands for deterministic
+
+            NFA: Non-deterministic Finite Automata
+
+            "The machine just knows what to do. It always makes the right choice
+             and is, depending on your view, very lucky or very smart."
+
+            How does non-deterministism help us simplify a complex deterministic
+            problem like the one above?
+
+            With non-deterministism, the above machine becomes:
+
+                Starting state (loop on a or b)
+                    -> a
+                        -> b
+                        -> b (accept)
+
+                The machine "guesses" to stay in the first state until the final
+                abb, then transitions to accepting.
+
+                NFA's are often simpler than DFA's.
+
+            "Now that we have defined an NFA, we can do some math!"
+
+Formally, an NFA is a 5-tuple (SIGMA, Q, q_0, A, S) where
+    
+    SIGMA, Q are finite, non-empty sets (alphabet, sets)
+    q_0 IN Q (start)
+    A SUBSET Q (accepting)                  // so far exactly the same as DFAs
+    DELTA: Q x SIGMA -> subsets of Q (2^Q)  // "powerset of Q"
+
+    We want to accept if some path through the NFA leads to acceptance (reject
+    if none do).
+
+    "So, we need to define acceptance."
+
+    DELTA* for NFA's:
+
+        Problem: DELTA says, "we have a word, we have a state, here's the next
+        state we need to be in", but now that we have a set of states, we have
+        a bunch of choices (that lead to more choices, etc.).
+
+        Solution: Let DELTA accept a set of states instead of just one. Then, we
+        are able to recurse and continue.
+
+        DELTA*: set of states X SIGMA -> new set of states
+
+            DELTA*(qs, EPSILLON) = qs
+            DELTA*(qs, cw) = DELTA*( BIGUNION(q IN qs) DELTA(q, c) , w)
+            "For every q in qs, DELTA(q), and put them all together."
+
+            Then, accept w if DELTA*({q_0}, w) INTERSECT A != 0
+            "Is any state here accepting?"
+
+            Note: cw is a word that starts with character c
+            Note: qs (pronounced like "queues") is our set of states
+
+    "But how do we implement a machine that never guesses wrong?"
+
+    NFA simulation procedure:
+        
+        states <- {q_0}
+        while not EOF, do:
+            // read a character
+            read c
+        
+            // update set of possible states
+            states <- BIGUNION(q IN states) DELTA(q, c)
+        end do
+
+    Example:
+
+        The one we've already been working on.
+
+            Starting state (loop on a or b)   // 1
+                -> a                          // 2
+                    -> b                      // 3
+                    -> b (accept)             // 4
+
+        Simulate: baabb
+
+        Already read input | Unread input | States
+       --------------------------------------------
+        EPSILLON           | baabb        | {1}
+        b                  | aabb         | {1}
+        ba                 | abb          | {1, 2}
+        baa                | bb           | {1, 2}
+        baab               | b            | {1, 3}
+        baabb              | EPSILLON     | {1, 4}
+
+        Now, do we accept?
+
+            Observe: {1, 4} = DELTA*({1}, baabb), {4} = A
+                     {1, 4} INTERSECT {4} = {4} != 0, so accept!
+
+        Now let's take a more obscure view of the world in this problem:
+            
+            "Take off your glasses."
+
+            We can name the states {1}, {1}, {1, 2}, {1, 2}, {1, 3}, {1, 4} as
+                                    A,   A,   B,      B,      C,      D
+
+            because you can't see clearly and don't know they are sets?
+
+            We are left with what are essentially new states.
+
+                Starting state (loop back on b)  // A
+                    -> a (loop back on a)        // B
+                        -> b (loop up on a)      // C
+                            -> b (accept)        // D
+                                 (loop up twice on a) (loop back to start on b)
+
+                By carrying this out, we got a DFA.
+                If we take the sets of states and realize these things are just
+                states, then we see that every NFA is equivalent to some DFA.
+
+                This procedure of turning an NFA into a DFA is called subset
+                construction (and yes, we are responsible for knowing how to do
+                it).
+
+        Even though NFAs look more powerful than DFAs, they are still restricted
+        to the regular languages (if you believe Kleine's theorem).
+
+        We still haven't lost out, though, because we now have a nifty tool to
+        use with the regular languages. For some languages, it is easier to come
+        up with the NFA than it is to come up with the DFA.
+
+    More complex example:
+
+        L = { cab } UNION { words over {a, b, c} with an even number of a's }
+
+        "Becuase NFAs are reliant on making choices, look for opportunities to
+         make choices (e.g. the UNION (a logical "or"))."
+
+        Naive solution:
+
+            Starting state (loop back on b or c)
+                <-> a (loop back on b or c)   
+                -> c
+                    -> a
+                        -> b
+
+            Problem: we shouldn't make a choice and then go backwards, we should
+            make a new state for our even a's.
+
+        Better (correct) solution:
+
+            Starting state (loop back on b or c)
+                -> a (loop back on b or c)
+                    <-> a (accept) (loop back on b or c)
+                -> c
+                    -> a
+                        -> b
+
+            "We can't do aabac" here, we pick one path and stick with it."

@@ -1,0 +1,188 @@
+Lecture 01 May 4 2015
+CS 251 Computer Organization and Design
+Subject is "Computer Architecture"
+
+A0 due next Friday - optional, worth 1%
+Assignments are generally every two weeks, three around midterms.
+
+Office hours - more during assignment weeks - usually busy
+
+Two textbooks (supplementary) + Course notes (sparse) + lecture notes
+
+Assignment and midterm solutions not posted online, nor are course
+notes. We can buy course notes at media doc next Wed. Solutions
+are posted physically - 4th floor in glass case.
+
+Public questions encouraged on Piazza
+
+Instructor - Rosina Kharal, DC 2132, Office hours TBA
+    Wed 2:30-3:30
+    Th TBA
+
+IA - Sean Kauffman - 1400-1500T weekly, 1400-1500Th assignment weeks,
+    MC 4065 consulting centre
+
+Reflecting on/verifying assignment solutions is encouraged
+    "Handwritten assignments, new markers, mistakes can be made."
+    "Don't be shy!"
+
+
+TOPICS:
+    Today and Thursday - intro material (MIPS) - A0
+
+    Digital Logic
+        Very fun but very new to most students.
+
+    Data Representation and manipulation
+
+    Basic Processor design
+        "Data paths taken by the processor."
+
+    Pipelining
+
+    Memory Hierarchies (4th ed of text covers this well)
+
+    Multiprocessing
+        "Sample, old architectures, or newer architectures like x86."
+
+"Only 5 or 6 instructions used all term."
+
+Grading schemes
+    Assignments - 15% - Lots of questions, geared towards exam content
+        Due dates: May 15, 22, June 5, 26, July 10, 24 (by 1pm)
+        "Get progressively harder."
+        1 & 2 midterm material
+        3, 4, & 5 are final material
+
+    iClicker - 5% - not counted first day - 1 mark for answering, 2 for correct
+        Top 75% taken "Absent for 2 or 3 lectures? No worries."
+
+    Midterm - 25% - June 18th 4:30-6:20Th
+
+    Final - 55%
+
+Academic integrity
+    "Collaboration is fine, but don't copy assignments."
+    Submit a cover page with each assignment! 0 marks otherwise!
+    Always put it all the way into the dropbox outside MC4065 by 1pm.
+    "IA will collect at 1:05"
+    "Submit what you can, look at solutions for what you couldn't."
+    Digital drawings are fine, just make sure it's clearly your work.
+    MIPS can be typed.
+
+We need to abstract away some details.
+    e.g. Compilers vs hardware, I/O vs OS
+    "Looking at every layer of the machine would overwhelm you."
+    Start with transistors, zeroes and ones, then go higher up the layers.
+
+Instruction set architectures (ISA)
+    Conceptual structure and functional behaviour
+
+Computer organization
+    Physical implementation, components, information flow
+
+MIPS is similar to RISC (Reduced instruction set architecture)
+    CISC are more complicated
+
+Guiding prinicples of computer architecture and design
+    Use abstraction to simplify design
+    Moores Law: Expect rapid change in technology
+        IC doubles every 18-24 months.
+        The number of transistors tha can fit onto a circuit board will double.
+        3rd year course - concurrency - Peter Buer (?) developed microC.
+        Parallel computing still has a lot of room to grow. 
+    Make the common case fast
+
+Improve performance via parallelism
+    Doing multiple tasks at once, divide and conquer.
+Improve performance via pipelining
+    "Like an assembly line, with something new completed each cycle."
+Improve performance via prediction
+
+Big picture
+    Registers - the lowest level of memory
+    MIPS has 32, now we have 64, 128, etc.
+    I/O system calls to/from the OS
+        We don't focus on the OS in this course, that's CS350
+
+* These lecture slides are posted at the end of each week
+
+Instruction set architectures
+    Machine language
+
+    MIPS - 1980s
+    ARM - newer but similar to MIPS
+
+    Every architecture has similarities
+        Registers
+        Saving and loading
+    
+    High level language -> C -> compiler -> MIPS -> Assembler -> Binary
+
+    32 registers, 5 bits to determine which
+
+    OS swaps between processes, timeshares, tracks processing states, giving
+    the impression of parallel computing on a single CPU.
+
+MIPS
+    Millions of instructions per second
+    Microprocessor without interlocked pipelined stages
+
+    RISC
+        Reduced Instruction Set
+        Very basic operations
+        We look at Base MIPS 32 bit
+        MOre advanced versions of MIPS developed later (64 bit, etc.)
+
+    Intel IV Superscaler architecture
+        Tried to generate more than one instruction per clock cycle
+        by copying portions of the data path.
+
+    C code:
+        f = (g + h) - (i + j)
+        Assume f, g, h, i are assigned to $S1, ..., $S5
+
+        MIPS:
+            add destination, s, t
+            add $rd, $rs, $rt
+            add $s6, $s2, $s3
+            "Add s2 and s3 and store result in s6."
+
+            sub $s1, $s6, $s7 "Always s6 minus s7 (rs - rt)
+            "r-format instructions"
+            "Lots of arithmetic being done in these operations,
+             even just to calculate an address in memory."
+            "Primarily what you are doing is manipulating data."
+            Every register has 4 bytes (32 bits) and there are 32 registers.
+            Registers: $s0, $s1, ..., $s30
+            MIPS: $0 not written to. This is specific to MIPS, it always has the
+            value of zero.
+
+    Formats:
+        R-Format: add $1, $2, $3
+            "Adds contents and stores."
+        I-Format: addi $1, $2, 100
+            "Having some immediate value."
+            "More room in instruction for value instead of registers."
+        J-Format: j 28
+            Used for branching
+            "We will rarely look at this one"
+    
+    Example program
+        add $s1 ... // Each instruction is 32 bits
+        sub ...
+        ...
+        j 28  // Jump to instruction 28
+        ...
+        beq $s1 $s2 15 // I-Format, branch to instruction 15 if s1 == s2
+
+        "We don't have loops, just jumping and branching."
+
+    Program Counter (PC)
+        Tells us what current address we are at.
+            e.g. [100] add $s1 ...
+                 [104] sub ...
+
+        PC auto-incremented by 4 each time (4 byte jump to new instruction).
+        The beq instruction sets the PC manually.
+

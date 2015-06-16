@@ -1,0 +1,261 @@
+Lecture 8 June 1 2015
+
+Recall:
+    .import + ESR
+    .export
+
+ESD (External Symbol Definition)
+    word 1 - format code 0x05
+    word 2 - address the symbol represents
+    word 3 - length of the name (n characters)
+    word 4 to word 3+n - The name in ascii, one word per character.
+
+Lecture 08 slides: fred and derf program using .export
+    .export x
+    ...
+    .export fred
+    ...
+    .export derf
+    .export y
+
+Remember how we made ADTs where we could declare a function as 'static' to make
+it so that we can only call those functions from inside that file.
+
+Now we know how static works - it doesn't provide the '.export' for that
+function.
+
+Generally, C functions are automatically exported, so the .export would be
+automatically generated, and we would have that entry in the "MERL" file
+(assuming C is compiled to a MERL-equivalent file format).
+
+The MERL file contains:
+    - The code
+    - All addresses that need relocating
+    - Addresses and names of every ESR (external symbol reference)
+    - Addresses and names of every ESD (external symbol definition)
+
+    Which is everything our linker could ever need! Success!
+
+Linker Algorithm
+    "Takes two MERL files and puts them together."
+
+    Input: MERL files m1 + m2
+    Output: Single MERL file with m2 linked after m1.
+
+    Q: What if we ahve mroe than two files to link?
+    A: Run the algorithm over and over, adding a new file each time.
+
+    First thing to do: If m2 is going after m1, we must relocate m2!
+
+    1. Let alpha = m1.codeLen - 12
+
+        "I'm just making up these field names for these files, hopefully it's
+        clear."
+
+    2. Relocate m2.code by alpha
+    3. Add alpha to every address in m2.symbolTable (the footer)
+    4. if (m1.exports.labels intersect m2.exports.labels): ERROR
+
+        "Same symbol name being used and exported twice."
+
+    "The linker is a glorified matchmaker, so that's what we'll do now."
+    5. for each (address1, label) in m1.imports: // address1 is the "blank"
+           if there exists (address2, label) in m2.exports:
+               m1.code[address1] = address2 // fill the blank
+               remove (address1, label) from m1.imports
+               add address1 to m1.relocates
+
+    "Whenever we fill a blank in like this, we essentially have a pointer to an
+     address later in the file, which we must relocate."
+
+    "Now we do the reverse - is there anything in m1 that m2 needs?"
+    
+    6. for each (address2, label) in m2.imports: // address2 is the "blank"
+           if there exists (address1, label) in m1.exports:
+               m1.code[address2] = address1 // fill the blank
+               remove (address2, label) from m0.imports
+               add address2 to m2.relocates
+
+    7. Some book-keeping...
+
+        imports = m1.imports UNION m2.imports
+        exports = m1.exports UNION m2.exports
+        relocates = m1.relocates UNION m2.relocates
+
+    8. Output the result!
+
+        output MERL cookie
+        output total codeLen + lengthOf(imports, exports, relocates) + 12
+        output total codeLen + 12
+        output m1.code
+        output m2.code
+        output imports, exports, relocates
+
+    DONE.
+
+    "We don't ask you to write a linker on your assignments for this course."
+    "It isn't necesarily hard, but we don't have time. You would also have to
+     write a MERL recognizer..."
+
+"Now to move on to the topic that will take up the rest of the course:
+ The compiler."
+
+"The assembler doesn't have to be a super long piece of code."
+
+"The compiler is a very sophisticated piece of software."
+
+"Now, the lectures will take a distinct turn from systems-level bit-handling
+ to a more mathematical approach. Compilers are so well-studied that we have
+ compilers down to a precise math."
+
+Formal Languages
+
+    Assembly languages <-- Compiler <-- High-level language
+
+    Assembly:
+
+        - simple structure
+        - easy to recognize (parse)
+        - straightforward, unambiguous translation to machine code
+            "beq $1, $5, 8" MUST mean a certain stream of ones and zeroes."
+
+        "If I ask you to write code to translate one assembly instruction to
+         machine language, you will be done in a few minutes."
+
+    High-level language:
+
+        - complex structure
+        - harder to recognize
+        - no single translation to machine language
+    
+        "If I ask you to write code to recognize a valid C function and
+         translate THAT to machine language, it will be much more difficult and
+         open to creativity."
+
+    How do we handle the complexity of a compiler?
+
+        "These problems have been around for a long time and have been studied
+         a lot, so we simply need to learn the solutions that work."
+
+        We want a formal theory of string recognition - general principles that
+        work for any programming language.
+
+    Definitions:
+
+        Alphabet:
+            Finite set of symbols (e.g. {a, b, c})
+            Typically denoted by SIGMA (the sum symbol), as in SIGMA = {a, b, c}
+
+        String (word):
+            A finite sequence of symbols (from SIGMA)
+            e.g. a, aba, cbca, abc, ...
+
+        Length of a word, |w| = # in w, e.g. |aba| = 3
+
+        "I haven't talked about another important string. You probably didn't
+         see it when I wrote it down. I just wrote it down a dozen times. I just
+         wrote it down again! The empty string!"
+
+        Empty String:
+            An empty sequence of symbols - hard to see!
+            We write EPSILLON (tiny backwards 3) to denote the empty string
+                EPSILLON is *not* a symbol! |EPSILLON| = 0, not 1
+
+        Language:
+            A set of strings (words)
+            e.g. {a^(2n)b | n >= 0} "words with an even # of a's followed by b"
+
+                "It's a set of strings, so it's a language."
+
+            Note: don't confuse EPSILLON and {}.
+                {} or (/) is the empty language
+                EPSILLON is the empty word
+                {EPSILLON} is a language with a single word (a singleton
+                    language) that contains only EPSILLON.
+
+    Our task: How can we recognize automatically (algorithmically) whether a
+    given string belongs to a given language?
+
+    "Note how that question is profoundly deep. It can encompass all of human
+     knowledge. Consider the language made up of all true Mathematical
+     statements. If you know that language, you can evaluate the truthiness of
+     all Mathematical statements. A general answer to this question would solve
+     all of the world's problems!"
+
+    Answer: It depends on how complex the language is.
+        {a^(2n)b | n >= 0} - easy!
+        {valid MIPS assembly programs} - almost as easy
+        vs. say,
+        {valid Java programs} - harder
+        Some languages = impossible
+
+    Aside: What it means for a language to be "complex" the language is an
+           interesting question as well.
+
+    Characterize languages into classes of languages based on the difficulty of
+    answering, "is a word in the language?":
+
+        finite                               // easy
+        regular
+        context-free
+        context-sensitive
+        recursive                            // harder
+        ... (more we won't talk about)
+
+
+
+    We will work at as easy a level as possible and move down as necessary.
+
+    Finite languages - have finitely many words.
+        
+        Can recognize a word by comparing with every word in the set (finite!).
+        Can we do this efficiently?
+
+        Exercise:
+            L = {cat, cow, car}
+            Write code to answer "is a word in L?", such that the word is
+            scanned exactly once, without storing previously-seen characters.
+            (You can remember the current character as many times as you want.)
+
+        Solution:
+            Scan the input, letf to right.
+            If the first character is not 'c', ERROR.
+            If the next character is a, then:
+                if the next character is 't'
+                    if input stream is empty, ACCEPT, else ERROR
+                if the next character is 'r'
+                    if input stream is empty, ACCEPT, else ERROR
+                else ERROR
+            if next character is 'o'
+                if next character is 'w'
+                    if input stream is empty, ACCEPT, else ERROR
+                else ERROR
+            else ERROR
+
+            "That's a fairly simple program that took a lot of writing, but I
+             claim that this is the most efficient solution to this problem. Now
+             let's abstract it."
+
+        An abstraction of this program:
+
+            "A representation of the configuration of the computer's memory."
+
+            "start"
+                -> c
+                "seen c"
+                    -> a
+                    "seen ca"
+                        -> t
+                        "seen cat" ACCEPT
+                        -> r
+                        "seen car" ACCEPT
+                    -> o
+                    "seen co"
+                        "seen cow" ACCEPT
+             
+            This is a state diagram, with each character is a transition between
+            states. A State with a circle in it says, "accept it here".
+
+        Finite languages are limited in their utility, but can be a good
+        stepping stone to more complex languages (next lecture!)
+

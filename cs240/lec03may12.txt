@@ -1,0 +1,27 @@
+Lecture 3 May 12 2015
+
+Complexity and running time continued
+
+We use order notation as a shortcut to decide whether or not a given
+algorithm is worth spending time on implementing.
+
+If the complexity of A1 is lower than the complexity of A2, then A1 will run
+faster than A2 for sufficeintly large inputs. In some cases, though, A2 could be
+faster with small inputs.
+
+Linear vs quafratic growth
+
+    e.g. Matrix multiplication
+
+        High order with low constants
+
+        vs
+
+        Lower order with large constants
+
+Common gotcha:
+
+    Thinking of Big-O as Big-Theta.
+    Big-O is merely an upper bound.
+    "O(nlogn) is also O(n^2)"
+
