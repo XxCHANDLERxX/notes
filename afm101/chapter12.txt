@@ -1,0 +1,25 @@
+-------------------------------------------
+Chapter 12
+Reporting and Interpreting Shareholders' Equity
+
+Authorized Shares
+    Maximum number of shares the company can sell to the public.
+
+Issued Shares
+    Shares that have been issued.
+
+Outstanding Shares
+    Shares not issued yet.
+
+Common Shares
+    Shares for the common people.
+
+Preferred Shares
+    Shares that get the first cut.
+    Do not grant voting rights.
+    Unpaid dividends in arrears accumulate.
+
+Dividends
+    Declaration date
+    Date of record
+    Payment date

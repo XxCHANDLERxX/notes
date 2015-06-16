@@ -1,0 +1,59 @@
+---------------------------------------------
+Chapter 10
+Reporting and Interpreting Current Liabilites
+
+Liabilities are obligations or debts from past transactions to be paid in the future.
+
+Current Liabilites
+    Short term obligations to be pai within the current cycle or within one year of
+     the date of the Statement of Financial Position.
+
+Liquidity
+    The ability to pay current obligations.
+
+Quick Ratio = (Quick Assets) / (Current Liabilities)
+    Where quick (liquid) assets are cash, short-term investments, and net receivables.
+
+Trade Payables (Accounts Payable)
+    Purchases of goods and services from other businesses on credit.
+
+Accrued Liabilities
+    Expenses incurred before the end of the accounting period that haben't been paid.
+
+Employee Deductions
+    Deducted from gross earnings of each employee.
+
+    Compensation expense = Wages earned by employee + taxes/contributions owed elsewhere
+        (Salary + Income tax withheld + CPP/EI Contributions)
+        "Lump sum technically given to employee, then they would pay government, etc."
+
+    Employer must also pay equal amount of CPP and 1.40x the employee's EI contributions.
+
+Notes Payable
+    Obligations supported by written notes.
+
+Time Value of Money
+    Interest = Principal * (Annual Interest Rate) * Time
+
+Current Portion of Long-term Debt
+    Currently maturing liabilities.
+
+Deferred Revenue
+    Payment before transfer of goods.
+    e.g.
+        Gift cards
+
+Contingent Liabilities
+    Shit may happen in the future.
+    If we can reliably predict if, when, and how much, we should take note.
+
+Working Capital
+    The difference between current assets and current liabilities.
+
+Present Value of Money
+    Current cash equivalent of future payment.
+Future Value of Money
+    Value in the future of current cash payment.
+
+Annuity
+    Recurring cash payments, usually based on accumulated interest.

@@ -1,0 +1,61 @@
+---------------------------------------------------------
+Chapter 9
+Reporting and Interpreting Property, Plant, and Equipment
+
+Long lived assets
+    Tangible
+        Land - Statement of Financial Position (No depreciation - record as separate asset)
+        Buildings, Fixtures, and Equipment - Statement of Financial Position (or in notes)
+        Biological Assets (Animals or Plants)
+        Natural Resources
+    Intangible (No Physical Substance)
+        Computer Software
+        Copyrights
+        Trademarks
+        Patents
+
+Acquisition Cost
+    Based on cost principle
+        All costs incurred in acquisition of long lived asset are recorded in the asset account.
+        Including sales taxes, legal fees, transportation costs, installation costs.
+
+Use, Impairment, Disposal of PP&E
+    Decreciation
+        All long lived assets except land have a limited lifespan.
+        We must depreciate the acquisition cost over the useful life.
+        A process of cost allocation, not calculating market worth.
+
+        Dr Depreciation Expense (Expense)
+            Cr Accumulated Depreciation (Contra Asset)
+
+        Carrying Amount (AKA Book Value) = Acquisition Cost - Accumulated Depreciation
+            Appears on Statement of Financial Position.
+
+    Calculating depreciation expense
+        Involves acquisition cost, estimated useful life, estimated residual/salvage value.
+
+        Straight Line Method
+            Depreciation Expense = (Cost - Residual Value) / (Useful Life)
+
+        Units of Production Method
+            Depreciation Expense =
+                ((Cost - Residual Value) / (Estimated Total Units)) * Units Produced
+
+        (Double) Declining Balance Method
+            Depreciation Expense = (Cost - Accumulated Depreciation) * (2 / (Useful Life))
+                                 = (Carrying Amount) * (Declining Balance Rate)
+
+    Changes in Depreciation Estimates
+        Distribute difference between carrying amount and new residual value,
+         over the rest of the new remaining useful life.
+
+    Impairment
+        Carrying Amount > Recoverable Amount
+        (expected future cash flows) > (market value less cost to sell)
+
+    Disposal
+        When a company voluntarily decides to let an asset go before end of useful life.
+        Journal Entry:
+            Cost of asset and accumulated depreciation removed,
+             Record difference between carrying value and resources gained from removal of asset as gain or loss on disposal of the asset.
+        This gain or loss is recorded as revenue or expense in peripheral/incidental activites.

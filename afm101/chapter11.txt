@@ -1,0 +1,29 @@
+--------------------------------------
+Chapter 11
+Reporting and Interpreting Non-current Liabilities
+
+Bonds!
+
+Recall: Stock is equity
+
+Bonds are debt/liability (the company owes you).
+
+Bond principle OR par value OR face amount OR maturity value
+    Bond issue price if not issued at a premium or a discount.
+    (The principle, if bond stated rate = market rate)
+
+Discount
+    Offered rate < Market rate
+
+Effective interest method
+    Interest expense for bond computed by multiplying carrying amount by market rate.
+
+Premium
+    Offered rate > Market rate
+
+Debt-to-equity Ratio
+    (Total Liabilities) / (Shareholders' Equity)
+
+On Statement of Cash Flows
+    Issuance of long-term debt: cash inflow from financing activities
+    Repayment of principal: cash outflow

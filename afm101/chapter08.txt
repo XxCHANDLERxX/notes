@@ -1,0 +1,100 @@
+---------------------------------
+Chapter 8
+Reporting and Interpreting Cost of Sales and Inventory
+
+Why do we need inventory management?
+    Avoid selling out of popular items and losing sales and disappointing customers.
+    Avoid overstocking unpopular goods and losing money producing unwanted goods.
+    Accounting for the flow of inventory in order to optimize the above.
+
+Items included in inventory:
+    Merchandise businesses (purchase and resell goods):
+        Merchandise inventory
+            Sellable goods acquired in finished condition.
+
+    Manufacturing businesses:
+        Raw materials inventory
+            Ingredients waiting to be used for producing finished goods.
+        Work-in-process inventory
+            Goods currently being produced from raw materials, but not yet finished.
+        Finished goods inventory
+            Goods that are done being manufactured and are available for sale.
+
+Costs included in inventory
+    Based on cost principle (accounting the cash-equivalent cost).
+
+    Cost for manufactured goods includes
+        Direct labour
+        Raw materials
+        Mannufacuring costs
+        Distribution centre costs
+        Transportation costs
+
+    Cost for merchandise goods includes
+        Cost of purchase
+        Duty and brokerage
+        Quality assurance costs
+        Distribution centre costs
+        Transportation costs
+
+Cost of Sales
+    Revenue = (units sold) * (sale price)
+    Cost of Sales = (units sold) * (unit cost)
+
+    Note: Unit cost accounts for all costs of the merchandised/manufactured goods.
+
+    BI - beginning inventory
+    P - new purchases
+    EI - ending inventory remaining unsold
+
+    Cost of Goods Available for Sale = Cost of BI + P
+
+    Cost of Sales Equation:
+        BI + P - EI = COS
+
+Perpetual vs Periodic Inventory Systems
+    Purchases for the period are always accumulated.
+
+    Cost of sales and ending inventory are determined in two ways.
+
+    Perpetual Inventory System
+        Detailed record of all goods in stock.
+        Modified with each transaction throughout each period.
+            Purchases and sales recorded directly in inventory account.
+            Sales and cost of sales recorded directly and simultaneously.
+        Information is available perpetually.
+
+    Periodic Inventory System
+        Don't keep track of goods during the year.
+        Instead, count physical goods at the end of each year.
+            Multiply units by unit cost for ending inventory.
+            Cost of sales calculated with Cost of Sales Equation.
+            Temporary Purchase account is used.
+            Revenues are recorded at time of sale.
+            Cost of sales not recorded until final inventory count.
+        Lower cost than perpetual (until cheap computers and barcodes happened).
+        Information is available periodically.
+
+Inventory Errors
+    Overestimated Ending Inventory?
+        Underestimated cost of sales...
+            Earnings before tax overstated in current year!
+        Overstated beginning inventory next year...
+        Cost of sales overstated next year!
+            Earnings before tax understated next year!
+
+Inventory Costing Methods
+    Specific Identification Method
+        Cost of each item is accounted for individually.
+        IFRS does not allow this for large amounts of similar goods.
+        This method is also impractical for large quantities of similar goods.
+        This method works well with expensive items like planes.
+
+    FIFO
+        First goods purchased are the first ones sold.
+        A queue of goods.
+
+    Weighted Average
+        Computes weighted average unit cost of goods available for sale.
+        Weighted average unit cost of goods available for sale is used for
+         cost of sales and ending inventory.

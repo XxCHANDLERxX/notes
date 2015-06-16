@@ -1,0 +1,23 @@
+Chapter 7
+Reporting and Interpreting Sales Revenue, Receivables, and Cash
+
+    Gross Profit Percentage
+        (Gross Profit) / (Net Sales)
+
+        Indicates management's effectiveness at selling goods for more than they were purchased/produced for.
+        Want: High percentage (selling low-cost things for a high price).
+
+    Receivables Turnover Ratio
+        (Net Credit Sales) / (Average Net Trade Receivables)
+
+        Assesses how effective our company's credit granting and collecting are.
+        Want: High ratio (fast collection of credit).
+
+    Average Collection Period
+        365 / (Receivables Turnover Ratio)
+
+Chapter 10
+Reporting and Interpreting Current Liabilites
+
+    Quick Ratio = (Quick Assets) / (Current Liabilities)
+        Where quick (liquid) assets are cash, short-term investments, and net receivables.

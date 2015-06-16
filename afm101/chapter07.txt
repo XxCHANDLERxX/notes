@@ -1,0 +1,105 @@
+---------------------------
+Chapter 7
+Reporting and Interpreting Sales Revenue, Receivables, and Cash
+
+Recall from chapter 3:
+    Revenue principle
+        Revenue is recorded when the goods/services have been given to the customer,
+        regardless of when payment is received.
+
+Free on Board Shipping
+    FOB Shipping Point
+        Title transferred when goods are shipped; buyers generally pay for shipping.
+
+    FOB Destination Point
+        Title transferred when goods arrive at destination; seller pays for shipping.
+
+Credit Card (CC) Sales
+    Increase customer traffic
+    Avoid costs of direct customer credit
+    Avoid bad cheques
+    Avoid losses from fraud (CC companies usually absorb losses)
+    Receive money faster
+
+    Credit Card Discounts
+        Implicit 'discount' on price of goods recorded to account for CC processing.
+
+Sales/Cash Discounts
+    Discount to encourage fast payment.
+    e.g.
+        2/10, n/30
+
+        Two percent discount if payed within ten days, else full payment is due in thirty days.
+        Note: Full amount minus any discounts are due within thirty days.
+
+Sales Returns and Allowances
+    Reduces gross sales revenue to account for returns and allowances for faulty goods.
+
+Note: CC Discounts, Sales Discounts, and Returns/Allowances are all contra revenue accounts.
+
+Gross Profit Percentage
+    (Gross Profit) / (Net Sales)
+
+    Indicates management's effectiveness at selling goods for more than they were purchased/produced for.
+
+Reporting Receivables
+    Trade Receivables
+        Open accounts that trade customers owe to our company due to sale of goods/services on credit.
+
+    Non-trade Receivables
+        Receivables not related to normal sale of goods/services.
+        e.g.
+            Helping to finance a new hire's relocation.
+
+    Note Receivables
+        Written promises to pay money (principal) to our company by a specific maturity date,
+        along with a specified amount of interest paid on future date(s).
+
+    Note: On a classified Statement of Financial Position, receivables can be current or non-current.
+
+Bad Debts
+    Customers who don't pay up.
+    Handled with a credit policy that balances a trade-off of attracting customers with credit sales offers with the possibility of bad debts.
+
+    Note: A customer defaulting on receivables leads to a write-off of trade receivables.
+
+    Allowance Method
+        Estimates bad debt expenses.
+        Allowance for Doubtful Accounts
+            Contra asset account.
+            Esitmated uncollectable trade receivables.
+        Related account: Bad Debt Expense (or Doubtful Accounts Expense)
+            Note: Recorded as adjusting entry at end of accounting period.
+
+        e.g.
+            Customer defaults on $500 of credit owed...
+                Dr Allowance for doubtful accounts (contra asset) 500
+                    Cr Trade receivables (asset)                        500
+
+            Note: Did not change carrying amount of Trade Receivables or any other statement of earnings accounts.
+
+        Note: If a customer who was written off suddenly forks over the cash,
+            we reverse the write-off then debit cash and credit trade receivables as normal.
+
+    Aging of Trade Receivables Method
+        "It's been awhile, I don't think that guy's coming back."
+
+    Receivables Turnover Ratio
+        (Net Credit Sales) / (Average Net Trade Receivables)
+
+        Assesses how effective our company's credit granting and collecting are.
+        Want: High ratio (fast collection of credit).
+
+    Average Collection Period
+        365 / (Receivables Turnover Ratio)
+
+Handling Cash
+    Accurate accounting of cash flows.
+    Enough cash on hand to pay for operating fees, liabilities, and any emergencies.
+    Don't hold on to too much cash at once (invest it instead of letting it collet dust).
+
+    Separation of duties for handling cash
+        ...
+
+    Bank Reconciliation.
+        ...
