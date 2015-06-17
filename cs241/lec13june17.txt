@@ -1,0 +1,269 @@
+Recall:
+
+    S -> S OP S | a | b | c
+    OP -> + | - | * | /
+
+    S => S OP S => a + S => a + b
+
+    Leftmost, rightmost derivation
+
+Derivations can be expressed naturally and succinctly as a tree structure.
+
+    e.g. a + b
+
+      S
+    / | \
+    S OP S
+    | |  |
+    a +  b
+
+    e.g. Palindrome abcba
+
+      S
+    / | \
+    a S a
+    / | \
+    b S b
+      |
+      M
+      |
+      c
+
+    These are called parse trees.
+
+        For every leftmost (or rightmost) derivation, there is a unique parse
+        tree.
+
+    Example:
+
+        Leftmost derivation for a + b * c
+
+        "So we replace the leftmost S with something first."
+
+        S => S OP S => a OP S => a + S => a + S OP S => a + b OP S => a + b * S
+        => a + b * c
+
+        "But hey, couldn't we have replaced the first S with S OP S?"
+
+        S => S OP S OP S => a OP S OP S => a + S OP S =? a + b OP S => a + b * S
+        => a + b * c
+
+        "This string has two leftmost derivations, so it must have two different
+         parse trees."
+
+        These correspond to different parse trees.
+
+        S
+        | \ \
+        S OP S
+        | | / \ \
+        a + S OP S
+            | |  |
+            b *  c
+
+        S-----,,.
+        |      \ \
+        S-,.   OP S
+        | \ \  |  |
+        S OP S *  c
+        | |  |
+        a +  b
+
+    A grammar for which some word has more than one distinct leftmost derivation
+    (equivalent to >1 distinct parse tree) is called ambiguous.
+
+    So the grammar defined (using S and OP) above is an ambiguous grammar.
+
+    If we only care whether w IN L(G), ambiguity does not matter.
+    But, as compiler writers, we want to know WHY w is in L(G).
+
+        i.e. The derivation/parse tree matters.
+
+    Why does it matter to us?
+
+        The shape of the parse tree gives you the meaning of the string with
+        respect to the grammar.
+
+        If a string has two parse trees, then there is a good chance that that
+        string also has two meanings.
+
+        We have two differen parse trees above for a + b * c above, which can
+        give two different meanings.
+
+        The groupings of the nodes in the tree matter.
+
+    If you think of the nodes as parts as a family tree, it changes the family.
+
+    In the first parse tree, b and c are grouped more tightly, suggesting that
+    we should multiply b and c first.
+    In the second parse tree, a and b are grouped more tightly, suggesting that
+    we should add a and b first.
+
+    So a + b * c could mean (a + b) * c or a + (b * c).
+
+    "We don't want our compiler to guess, so ambiguity isn't good."
+
+    So what to we do?
+
+        1) Use heuristics ("precedence") to guide derivation process.
+        2) "Fix the grammar." Make the grammar unambiguous.
+
+    Notice how when we had S OP S and we had another operator, we had to choose
+    between adding the operator to the first S or to the second S. So somehow we
+    have to make it so that we have no choice here. It would be better if we
+    could specify expressions that can't expand vs. expressions that can.
+
+    Let E be an expression and T be a term.
+
+    E -> E OP T | T
+    T -> a | b | c | (E)
+    OP -> + | - | * | /
+
+    We claim that this new grammar is unambiguous, but must convince ourselves.
+
+    a + b * c: E => E OP T => E OP T OP T => T OP T OP T => a OP T OP T
+               => a + T OP T => a + b OP T => a + b * T => a + b * c
+
+    It's important to realize that there was no choice at each step of this
+    derivation.
+
+    This grammar is enforcing a strict left-to-right order of evaluation.
+
+    What if we want to give * and / precedence over + and -?
+
+        "This would be a perfectly reasonable exam question."
+
+        Notice how things that are grouped more closely are grouped more closely
+        are farther down on the parse tree.
+
+        But how do we set * and / to be at the bottom of the parse tree?
+
+            We look for the + and - first, and the operators left are where the
+            * and / are.
+
+        Let PM be "plus or minus" and TD be "times or divide".
+
+        E -> E PM T | T
+        PM -> + | -
+        T -> T TD F | F
+        F -> a | b | c | (E)
+        PM -> + | -
+        TD -> * | /
+
+        a + b * c: E => E PM T => T PM T => F PM T => a PM T => a + T
+                   => a + T TD F => a + F TD F => a + b TD F => a + b * F
+                   => a + b * c
+
+        Again, we had absolutely no choice about how to expand things. So we
+        have some degree of confidence that our grammar is unambiguous.
+
+        But does this derivation give us the precedence we were looking for?
+
+    Draw the parse tree to find out:
+
+          E
+        / | \
+        E PM T-,.
+        | |  |\  \
+        T +  T TD F
+        |    | |  |
+        F    F *  c
+        |    |
+        a    b
+
+    Success! We now have b and c grouped more tightly, and our meaning becomes
+    a + (b * c).
+
+    Q: "Is it always going to be this easy?" If L is context-free, is there
+       always an unambiguous grammar such that L = L(G). "Can you always remove
+       the ambiguity?"
+
+    A: No! There are what are known as inherently ambiguous languages that only
+       have ambiguous grammars. "This is a nightmare to prove, but it's true."
+
+    "Wouldn't it be nice if we had a tool that looks at a provided grammar for
+     a programming language and tells us whether or not it's ambiguous or not?"
+
+    Q: Can we construct a tool that will tell us whether a grammar is
+       unambiguous? "Can you think of an algorithm that takes a grammar as input
+       and outputs whether or not it is ambiguous?"
+
+    A: No! This problem is undecidable.
+
+    "One more question that you might think is interesting - I call this the
+     Marmoset problem."
+
+    Q: Can we determine whether two grammars G1 and G2 are equivalent?
+       i.e. L(G1) =? L(G2)
+
+    A: No! This problem is also undecidable.
+
+    "Note that even though a problem is undecidable, we can solve most of the
+     problem practically."
+
+    Note: A full grammar to the WLP4 language is given in the A6 documentation,
+    and it would be worth our while to get very familiar with it.
+
+    Note: We haven't solved any problem yet, we have simply given a notation
+    that describes a language. We haven't discussed what a program would look
+    like that recognizes a context-free language. That's next!
+
+
+Recognizer - What class of computer program is needed to recognize a
+context-free language (CFA)?
+
+    For regular languages, we had DFAs - essentially these are programs with a
+    finite amount of memory.
+
+    For CFLs, we need more than a finite amount of memory - an NFA + a stack. In
+    principle, this gives us infinite memory, but its use is limited to LIFO
+    order.
+
+    DFAs/NFAs just give yes or no answers, though, but we need more than a
+    yes/no answer - we need the derivation (parse tree). That's if the answer
+    is yes. If the answer is no, we need an informative error message.
+
+    "Imagine if it was 2AM and you were writing a thousand-line assigment that
+     was due at 8AM. You try to compile it and the compiler just says, 'no'."
+
+    The problem of finding the derivation is called parsing.
+
+    Given a grammar G, start symbol S, terminal string w, find:
+        
+        s => ... => w (the steps)
+
+    Or, report that there is no derivation.
+
+    How can we do this?
+
+        2 choices:
+
+            1) Forwards "top-down parsing"
+
+                Start at S, expand non-terminals until you produce w.
+
+            2) Backwards "bottom-up parsing"
+
+                Start at w, apply the rules in reverse, produce S.
+
+        Both seem hard.
+
+        "For those of you that owned colouring books as children and completed
+         the mazes, wasn't it always easier to start at the end of the maze and
+         work backwards?"
+
+The next couple of weeks of the course covers parsing, and is often the most
+technically chellenging part of the course.
+
+Top-Down Parsing
+
+    Start at S, apply grammar rules, produce w.
+
+    S => ALPHA1 => ALPHA2 => ... => w
+
+    Use the stack to store intermediate ALPHAi, in reverse, match against
+    characters in w.
+
+    Invariant (statement that is always true):
+    
+        Consumed input + reverse(stack contents) = ALPHAi for some i.
