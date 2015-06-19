@@ -1,0 +1,172 @@
+CS 241 Tutorial 6
+
+Topics
+
+    Non-Derterministic Finite Automata (NFAs)
+    Context-Free Languages
+
+NFAs
+
+    SIGMA - input alphabet
+    Q - finite set of states
+    q_0 IN Q - starting state
+    A SUBSET Q - set of accepting states
+    DELTA: QxSIGMA -> 2^Q - transition function
+        (where 2^Q is some subset of states)
+    DELTA: QxSIGMA -> Q
+
+CFGs
+
+    SIGMA/T - finite set of terminals
+    V/N - finite set of rewrite/production rules
+    S - starting non-terminal
+
+NFA Problems
+
+    1) SIGMA = { a, b, c }
+       L = { strings ending in abc or cab }
+
+       start state -> c -> a -> b (accept)
+                   -> a -> b -> c (accept)
+                   (start loops on itself on a, b, c)
+
+       "It always guesses right."
+       "It keeps all options open until it hits a snag."
+
+    2) Convert the previous NFA into a DFA using subset construction.
+
+        "On each possible state, know where we can go, and keep track of a
+         possible set of states we can be in."
+        "Assume there aren't any error states - the NFA made correct choices."
+        "Start by numbering all of our original states."
+
+        start (1) -> 5 -> 6 -> 7
+                  -> 1 -> 2 -> 3
+
+        Start: we can only be in the starting state 1.
+
+        {1}
+
+        On input a, we can be in {1,2}.
+        On input b, we loop back to {1}.
+        On input C, we go to {1,5}.
+        
+        From {1,2}:
+            a: {1,2} (loop back)
+            b: {1,3}
+            c: {1,5}
+
+        From {1,5}:
+            a: {1,2,6}
+            b: {1}
+            c: {1,5} (loop back)
+
+        From {1,3}:
+            a: {1,2}
+            b: {1}
+            c: {1,4,5} (accepting)
+
+        From {1,2,6}:
+            a: {1,2}
+            b: {1,3,7} (accepting)
+            c: {1,5}
+
+        From {1,4,5}:
+            a: {1,2,6}
+            b: {1}
+            c: {1,5}
+
+        From {1,3,7}:
+            a: {1,2}
+            b: {1}
+            c: {1,4,5} (accepting)
+
+        "We know we're done because we have three edges on every possible state.
+         Every state has handled every possible input."
+        "Any state with a 4 or a 7 is accepting."
+
+        "We can do this by filling in a table for all possible inputs."
+
+        DELTA 1    2    3    4    5    6    7
+        a     1,2 ...
+        b     1
+        c     1,5
+
+    "How do we make an NFA again?"
+
+        Build the simple pieces that have to be there (like a->b->c) and then
+        let the non-determinism speak for itself and make the correct choices.
+
+Context-Free Grammars (CFGs)
+
+    1) Construct a CFG that generates the same language as the NFA above.
+
+        "Start with the things you need - cab and abc."
+        "Start with a start symbol S and an arrow to the important bits."
+
+        S -> abc | cab (shorthand for S -> abc; S -> cab)
+
+        "Trivia: If we separate the letters, it's called Chomsky-Normal Form."
+        "We aren't done yet, we need the rest of the leading cahracters of the
+         string."
+
+        S -> abc | cab | TS
+        T -> a|b|c
+
+        Note: This expands infinitely to handle all sizes of strings.
+        S -> TS -> TTS -> TTTS etc.
+
+    2) SIGMA = { 0, 1 }
+       L = { 0^n 1^n | n >= 0 }
+       "n zeros followed by n ones"
+
+       S -> EPSILLON | 0S1
+
+    "Midterm review session next... Wednesday? Check Piazza."
+
+    3) Similar CFG problem we're skipping
+
+4) 1 S -> F(A)
+   2 S -> g(A,A)
+   3 A -> x
+   4 A -> y
+   5 A -> S
+
+   Leftmost derivation of g(f(x),g(x,y)) and parse tree.
+   "Left canonical means the same thing."
+
+   s =2> g(A,A) =5> g(S,A) =1> g(f(A),A) =3> g(f(x),A) =5> g(f(x),S)
+   =2> g(f(x),g(A,A)) =3> g(f(x),g(x,A)) =4> g(f(x),g(x,y))
+
+   Parse Tree:
+
+   "Another representation of the derivation."
+
+    S
+    |\\\\
+    g(A,A)
+      | \_
+    //|\  |\\\\
+    f(A)  g(A,A)
+      |     | |
+      x     x y
+
+5) Given a CFG:
+    S -> (S)
+    S -> SS
+    S -> EPSILLON
+
+    Give pseudocode to return the maximum level of nesting in a string.
+
+        e.g. (()())() == 2
+
+    Note: It has to terminate eventually - we are dealing with finite strings.
+
+    "Structure our code based on the three rules - we can get away with three
+     lines of code."
+
+    eval(tree):
+        if(rule == "S -> EPSILLON") return 0;
+        else if (rule == "S -> (S)") return 1 + eval(S);
+        else if (rule == "S -> SS) return max(eval(S1), eval(S2));
+
