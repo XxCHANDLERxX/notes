@@ -1,0 +1,222 @@
+"This lecture is probably the hardest one this term."
+
+Top-Down Parsing
+
+S => ALPHA1 => ALPHA2 => ... => w
+
+Invariant: consumed input + reverse(stack contents) = ALPHAi
+
+Example:
+
+    1) S' -> |-S-|
+    2) S -> AyB
+    3) A -> ab
+    4) B -> z
+    5) B -> wx
+
+For simplicity, we use augmented grammars.
+Invent two new symbols, turnstyle (|-) and reverse turnstyle (-|), to represent
+beginning of file and end of file.
+
+"Pop stack, and push right hand side of the rule in reverse."
+"Top of stack is a non-terminal? Apply a rule."
+
+Stack    Read input    Unread input    Action
+S'       EPSILLON      |-abywx-|       Pop S'; push -|, S, |-
+-|S|-    EPSILLON      |-abywx-|       Match |-
+-|S      |-            abywx-|         pop S, push B,y,a
+-|ByA    |-            abywx-|         pop A, push b,a
+-|Byba   |-            abywx-|         Match a
+-|Byb    |-a           bywx-|          Match b
+-|By     |-ab          ywx-|           Match y
+-|B      |-aby         wx-|            Pop B, push x,w
+-|xw     |-aby         wx-|            Match w
+-|x      |-abyw        x-|             Match x
+-|       |-abywx       -|              Match -|
+         |-abywx-|     EPSILLON        Accept
+
+When top of stack (TOS) is a terminal, pop and match against input.
+When TOS is a non-terminal A, pop A and push ALPHA^R (ALPHA reversed), where
+A -> ALPHA is a grammar rule.
+Accept when stack and input are both empty.
+
+BUT "What was so hard? We glossed over something tricky..."
+
+What if there is more than one production with A on the left hand side? How do
+we know which one to pick?
+
+We could brute force it (try all combinations), but what happens when these
+choices lead to more choices? We could have exponential, or even infinite
+runtime. Brute forcing is not efficient.
+
+We want a more efficient, deterministic procedure.
+
+Our solution:
+
+    Use the next character of input (lookahead) to help decide.
+
+    Construct what we call a predictor table. Given a non-terminal on the stack,
+    and an input symbol, it tells us which grammar rule to use.
+
+  | |- a b c d w x y z -|
+--|-----------------------
+S'|  1 
+S |    2   2
+A |    3   4
+B |            6     z
+
+"First row: We must get a '|-' first."
+"Second row: An 'S' will eventually start with a c or an a, but we must use rule
+ 2 because it's the only one with S on the left hand side."
+"Third row: How do we choose between rule 3 and rule 4? It depends on whether
+ we see an a or a c."
+"Fourth row: The only rules we can use now are 5 or 6, depending on whether we
+ see a w or a z."
+"Notice how there is no rule that starts with x, so it doesn't appear in our
+ table."
+
+Empty cell => parse error!
+
+    We can actually give a very specific error, like 'Parse error at row, column
+    of next input character: expecting one of _, _, _'.
+
+    How do we fill in those blanks in the error message?
+
+        We look at characters for which the current top of stack has an entry.
+
+        e.g. If top of stack = A, we are expecting a or c.
+
+        What if a cell contains more than one rule?
+
+            e.g. A->ad and A->ab rules, so one cell has (3,4).
+
+            Then this doesn't work! The method breaks down. This problem is
+            exactly the kind of inefficent choice-making that we were trying to
+            avoid.
+
+            "But that's annoying - algorithms are supposed to work! How do we
+             recover? By being a slick car-salesperson. A grammar is called
+             LL(1) if each cell of the predictor table has at most one entry."
+            "In other words, the algorithm works when it works." :P
+
+        LL(1) = Left-to-right-scan-of-input Left-most-derivations-produced
+                1-symbol-of-look-ahead
+
+Automatically Computing the Predictor Table
+
+    "What follows is some very subtle algorithms."
+
+    Predict(A,a) - rules that apply when A is on the stack, and a is the next
+    input character.
+
+    Predict(A,a) = { A -> B | a IN First(B) }
+
+    First(B) - the set of characters that can be the first letter of a string
+    derived from B.
+
+    First(B) = { a | B =>* a GAMMA }
+
+    "If we take those two definitions and smash them together, we get the
+     following."
+
+    So Predict(A,a) = {A -> B | B =>* a GAMMA }
+
+        But this is not quite right. We have left out some steps.
+
+        What if A can go to EPSILLON? i.e. A =>* EPSILLON
+        "What if I can make A disappear?"
+        "Then little a might not come from A, but instead from something after
+         A."
+
+    So really, Predict(A,a) = { A -> B | a IN First(B) } UNION
+                              { A -> B | Nullable(B), a IN Follow(A) }
+    
+    "What if we have 'AA', and A could be either 'a' or EPSILLON? That's not
+     LL(1)!" :P
+
+    Nullable(B) = true IFF B =>* EPSILLON
+    Follow(A) = { b | S' =>* ALPHA AbB } - terminal symbols that can come
+    immediately after A in a derivation.
+
+    Note: This lecture will only go over the algorithm; an example will be given
+    on Wednesday.
+
+    Computing Nullable:
+
+        "Assume nothing is nullable until we learn that something is."
+
+        initialize Nullable[A] = false for all A
+        for each rule B -> B_1, ..., B_k:
+            if (k == 0 || Nullable(B_i) for all i):
+                Nullable[B] <- true // B is nullable
+        
+        Are we done now?
+        Consider the grammar:
+
+            A -> B
+            B -> C
+            C -> EPSILLON
+
+            Here, A and B are not nullable, but we find out that it is later.
+            What could we do about that? Run the algorithm again, and keep
+            running it until things stop changing.
+
+            How do we know this terminates?
+
+                The number of rules is finite, and we can only change from false
+                to true, so we will eventually run out of moves.
+
+    Computing First:
+
+        initialize First[A] = {} for all A
+            repeat
+                for each rule B -> B_1, ..., B_k:
+                    for i = 1 to k:
+                        if (B_i is a terminal a):
+                            First[B] U= { a }
+                            break
+                        elif (non-terminal):
+                            First[B] U= First[B_i]
+                            if not Nullable[B_i]:
+                                break
+            until nothing changes
+
+    "If the first character is nullable, consider the second character, until we
+     come across something non-nullable."
+
+    Recall: a IN First(B)
+
+        We should really say First*(B) = first set of a string of symbols.
+
+        e.g.
+            
+            First*(Y_1, ..., Y_n)
+                result <- PHI
+                for i = 1 to n:
+                    if Y_i NOT IN (non-terminals):
+                        result U= First[y_i]
+                        if not Nullable[Y_i]:
+                            break
+                    else (term):
+                        result U= { Y_i }
+                        break
+                return result
+
+    Follow:
+
+        initialize Follow[A] = {} for all A != S'
+            repeat
+            for each rule B -> B_1, ..., B_k:
+                for i = 1 to k:
+                    if B_i IN N:
+                        Follow[B_i] U= First*(B_(i+1), ..., B_n)
+                        // "Follow at B_i can contain whatever after it can
+                        //  start with."
+                    if all of B_(i+1), ..., B_n is nullable (including the case \
+                        i=n):
+                        Follow[B_i] U= Follow[B]
+            until nothing changes
+
+        "Can we learn anything about B_k?"
+        We could have A->Bc, where B can be any of B_i through B_k.
+

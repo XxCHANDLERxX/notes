@@ -2824,6 +2824,779 @@ Scanning
                 "Programming languages are intentionally designed to be easy to
                  scan though :)"
 
+Recall:
+
+    Start
+        a-zA-Z -> ACCEPT (loop while a-zA-Z0-9)
+        <- EPSILLON (output token here)
+
+    - input abab could be 1, 2, 3, or 4 tokens
+    - take the EPSILLON move only when there is no other choice
+      (always return the longest possible token)
+
+    Could miss valid matches, e.g. L = {aa, aaa} word = aaaa
+
+Concrete realization: Maximal Munch Algorithm
+
+    "Take the largest bite out of the input as you can."
+
+    Run the DFA (no EPSILLON-moves) until no non-error move is available.
+    If in an accepting state:
+        token found
+    Else:
+        Back up to most recent accepting state (use a variable to track this).
+        Input up until that point is the next token.
+        Resume scanning from there.
+    Endif.
+    Output token; EPSILLON-move back to start.
+
+Simplified Maximal Munch Algorithm
+
+    As above, but:
+        
+        If you are not in an accepting state when no transitions are possible,
+        error. In other words, no backtracking.
+
+    Note that this simplification is language-dependant, rather than a matter of
+    personal preference. Only certain languages support Simplified MM.
+
+    "This example should make everyone happy - we're combining the best parts of
+     Scheme and the best parts of C!"
+
+    Example: Identifiers begin and end with a letter, and can include dashes.
+
+    "I love typing dashes in Scheme!"
+
+    Operator: --
+
+    "Who doesn't love operator-- and operator++ in C?"
+
+    Input: ab--,
+
+    Machine thinks:
+        
+        "a" is a valid identifier
+        "ab" is a valid identifier
+        "ab-" is a valid identifer (dashes are allowed)
+        "ab--" is a valid identifer, but at this point we have no further valid
+        characters to be consumed without falling off.
+
+        But "ab--" isn't a valid token (doesn't end with a letter), and our
+        machine isn't in an accepting state.
+
+        Simplified MM: ERROR!
+
+        MM: back up to previous accepting state ("ab"), output that token, and
+        scan from there ("--,").
+
+    In practice, SMM is very often good enough.
+
+        "Our WLP4 scanner can be Simplified MM."
+
+    Languages are usually designed for easy scanning.
+
+    "What logical person would intentionally make the problem harder when
+     designing a language?"
+
+        Example: C++ ;)
+
+            vector<vector <int>> v; // won't compile!
+
+        C++'s longest-match scanner sees ">>" as one token, a bitshift operator,
+        rather than as two ">" tokens.
+
+        C++ solution (pre-C++11):
+
+            "Let's make it the programmer's fault!"
+
+            vector<vector <int> > v; // compiles!
+
+            This makes it look like two tokens.
+
+            Tangent: they did "fix" this problem in C++11, such that ">>" above
+            will be recognized as two ">" tokens. The scanner has been hacked to
+            look for close-angled brackets, but wait - the bitshift operator can
+            be used legally here in some places.
+
+                e.g.
+
+                    Template <int n> T;
+                    T<44 >> 3> // incorrect
+                    T<(44 >> 3)> // correct
+
+                "Don't write this down."
+
+    Recall the question we covered already (now stated in reverse):
+
+        What (if any) specific features of C (or Scheme) cannot be verified with
+        a DFA?
+
+            "If you had to explain Scheme in lamen terms you would say -
+            parenthesis!"
+
+            Consider the alphabet SIGMA = {(, )}
+            L = { w in SIGMA* | w is a string of balanced parens }
+
+                e.g. EPSILLON IN L, () IN L, ()() IN L, (()) IN L, (())() IN L,
+                )( NOT IN L
+
+            Can we build a DFA for L?
+
+                Start state (Accepting)
+                    -> ( (not accepting)
+                    <- ) (back home)
+
+                This accepts '()' and '()()' but not '(())'.
+                Improved:
+
+                Start state (Accepting)
+                    -> ( (not accepting)
+                        -> ( (not accepting)
+                        <- ) (back home)
+                    <- ) (back home)
+
+                Now we support '(())' but not '((()))' etc.
+
+            But we can't assume that there is an upper bound on the number of
+            parenthesis that a Scheme program can be nested.
+
+            Each new state lets us recognize one more level of nesting. But no
+            finite number of states recognizes all levels of nesting, and DFAs
+            have finitely many states.
+            
+                (We haven't proven this, but it's true.)
+
+            "That's our signal to move on to a more complex languages."
+
+Context-free Languages
+
+    Context-free languages are languages that can be described by a context-free
+    grammar.
+
+    Intuition: balanced parens problem
+
+        "A word in the language is either empty or a word in the language
+         surrounded by '()', or the concatenation of two words in the
+         language."
+
+        S -> EPSILLON
+        S -> (S)
+        S -> SS
+
+    Shorthand:
+        
+        S -> EPSILLON | (S) | SS
+        
+        (Where '|' means 'or'.)
+
+    Show that this system generates '(())()'
+
+        S => SS => (S)S => (S)(S) => ((S))(S) => (())(S) => (())()
+
+        Note: in the final steps we replace S with EPSILLON.
+        Note: Read "=>" as "derives".
+
+            So ALPHA => BETA means that BETA can be optained from ALPHA by one
+            application of a grammar rule.
+
+        Note: If we ask you for a derivation and your notation is wrong, you
+        will get the question wrong. don't confuse single-arrows in the
+        definition with the double-arrow derivation notation.
+
+    Formal definition:
+
+        A context-free grammar consists of:
+
+            - An alphabet, SIGMA, of terminal symbols.
+            - A finite, non-empty set N of non-terminal symbols.
+              
+                  SIGMA UNION N = GAMMA (We use V, as in vocabulary, to denote
+                  N UNION EPSILLON).
+
+            - A finite set P of productions.
+
+                  Productions have the form A -> B, where A IN N and B IN V*
+                  "A is non-terminal and B is terminal."
+
+            - An element S IN N (start symbol).
+
+        Q: What are the terminal symbols in the above parens example?
+        A: '(' and ')'
+
+        Q: What are our non-terminal symbols?
+        A: 'S'
+
+    Conventions:
+
+        When I use letters like a, b, c, etc. (letters near the beginning of the
+        alphabet) - typically denote elements of SIGMA (characters).
+
+        Letters like w, x, y (near the end of the alphabet) denote elements of
+        SIGMA* (strings/words).
+
+        Capital letters like A, B, C typically denote elements of N.
+        
+        S - Denotes start symbol.
+
+        ALPHA, BETA, GAMMA - Denotes elements of V* = (SIGMA UNION N)*
+
+        We write ALPHA A BETA => ALPHA GAMMA BETA if there is a production
+        A -> GAMMA in P (right hand side is derivable from left hand side in one
+        step).
+
+        ALPHA =>* BETA means ALPHA => ... => BETA (0 or more steps)
+
+    Definition:
+    
+        L(G) = { w IN SIGMA* | S => *w }
+
+        Where L(G) is a language specified by G, and SIGMA* is the strings of
+        terminals derivable from S.
+
+    Definition:
+        
+        A language L is context-free if L = L(G) for some context-free grammar
+        G.
+
+    Example: Palindromes over {a, b, c}.
+
+        S -> aSa | bSb | cSc | M
+        M -> a | b | c | EPSILLON
+
+        "This is our first example of a context-free grammar with more than one
+         non-terminal."
+
+        Q: Show S =>* abcba
+
+            S => aSa => abSba => abMba => abcba
+
+            This process is called a derivation.
+
+    Expressions:
+
+        SIGMA = { a, b, c, +, -, *, / }
+        L = { arithmetic expressions over SIGMA }
+
+        "Assume variable names are single-variable."
+
+        S -> S OP S | a | b | c
+        OP -> + | - | * | /
+
+        "An expression can be thought of as two expressions with an operator in
+         between."
+
+    Now how would we need to modify that to allow us to use parens?
+
+        SIGMA = { a, b, c, +, -, *, /, (, ) }
+        L = { arithmetic expressions over SIGMA }
+
+        S -> S OP S | a | b | c | (S)
+        OP -> + | - | * | /
+                                                    
+    Show: S =>* a + b
+
+        S => S OP S => a OP S => a + S => a + b
+
+    Notice how we had a choice of which symbol to expand.
+
+        Leftmost derivation - always expand the leftmost symbol.
+        Rightmost derivation - always expand the rightmost symbol.
+
+A5 is due tomorrow; we have 2 weeks to do A6 because of the midterm.
+Don't wait 2 weeks to start A6! It will be good prep for the midterm.
+A7 is a historically difficult assigment - please do it! It isn't that bad!
+
+Recall:
+
+    S -> S OP S | a | b | c
+    OP -> + | - | * | /
+
+    S => S OP S => a + S => a + b
+
+    Leftmost, rightmost derivation
+
+Derivations can be expressed naturally and succinctly as a tree structure.
+
+    e.g. a + b
+
+      S
+    / | \
+    S OP S
+    | |  |
+    a +  b
+
+    e.g. Palindrome abcba
+
+      S
+    / | \
+    a S a
+    / | \
+    b S b
+      |
+      M
+      |
+      c
+
+    These are called parse trees.
+
+        For every leftmost (or rightmost) derivation, there is a unique parse
+        tree.
+
+    Example:
+
+        Leftmost derivation for a + b * c
+
+        "So we replace the leftmost S with something first."
+
+        S => S OP S => a OP S => a + S => a + S OP S => a + b OP S => a + b * S
+        => a + b * c
+
+        "But hey, couldn't we have replaced the first S with S OP S?"
+
+        S => S OP S OP S => a OP S OP S => a + S OP S =? a + b OP S => a + b * S
+        => a + b * c
+
+        "This string has two leftmost derivations, so it must have two different
+         parse trees."
+
+        These correspond to different parse trees.
+
+        S
+        | \ \
+        S OP S
+        | | / \ \
+        a + S OP S
+            | |  |
+            b *  c
+
+        S-----,,.
+        |      \ \
+        S-,.   OP S
+        | \ \  |  |
+        S OP S *  c
+        | |  |
+        a +  b
+
+    A grammar for which some word has more than one distinct leftmost derivation
+    (equivalent to >1 distinct parse tree) is called ambiguous.
+
+    So the grammar defined (using S and OP) above is an ambiguous grammar.
+
+    If we only care whether w IN L(G), ambiguity does not matter.
+    But, as compiler writers, we want to know WHY w is in L(G).
+
+        i.e. The derivation/parse tree matters.
+
+    Why does it matter to us?
+
+        The shape of the parse tree gives you the meaning of the string with
+        respect to the grammar.
+
+        If a string has two parse trees, then there is a good chance that that
+        string also has two meanings.
+
+        We have two differen parse trees above for a + b * c above, which can
+        give two different meanings.
+
+        The groupings of the nodes in the tree matter.
+
+    If you think of the nodes as parts as a family tree, it changes the family.
+
+    In the first parse tree, b and c are grouped more tightly, suggesting that
+    we should multiply b and c first.
+    In the second parse tree, a and b are grouped more tightly, suggesting that
+    we should add a and b first.
+
+    So a + b * c could mean (a + b) * c or a + (b * c).
+
+    "We don't want our compiler to guess, so ambiguity isn't good."
+
+    So what to we do?
+
+        1) Use heuristics ("precedence") to guide derivation process.
+        2) "Fix the grammar." Make the grammar unambiguous.
+
+    Notice how when we had S OP S and we had another operator, we had to choose
+    between adding the operator to the first S or to the second S. So somehow we
+    have to make it so that we have no choice here. It would be better if we
+    could specify expressions that can't expand vs. expressions that can.
+
+    Let E be an expression and T be a term.
+
+    E -> E OP T | T
+    T -> a | b | c | (E)
+    OP -> + | - | * | /
+
+    We claim that this new grammar is unambiguous, but must convince ourselves.
+
+    a + b * c: E => E OP T => E OP T OP T => T OP T OP T => a OP T OP T
+               => a + T OP T => a + b OP T => a + b * T => a + b * c
+
+    It's important to realize that there was no choice at each step of this
+    derivation.
+
+    This grammar is enforcing a strict left-to-right order of evaluation.
+
+    What if we want to give * and / precedence over + and -?
+
+        "This would be a perfectly reasonable exam question."
+
+        Notice how things that are grouped more closely are grouped more closely
+        are farther down on the parse tree.
+
+        But how do we set * and / to be at the bottom of the parse tree?
+
+            We look for the + and - first, and the operators left are where the
+            * and / are.
+
+        Let PM be "plus or minus" and TD be "times or divide".
+
+        E -> E PM T | T
+        PM -> + | -
+        T -> T TD F | F
+        F -> a | b | c | (E)
+        PM -> + | -
+        TD -> * | /
+
+        a + b * c: E => E PM T => T PM T => F PM T => a PM T => a + T
+                   => a + T TD F => a + F TD F => a + b TD F => a + b * F
+                   => a + b * c
+
+        Again, we had absolutely no choice about how to expand things. So we
+        have some degree of confidence that our grammar is unambiguous.
+
+        But does this derivation give us the precedence we were looking for?
+
+    Draw the parse tree to find out:
+
+          E
+        / | \
+        E PM T-,.
+        | |  |\  \
+        T +  T TD F
+        |    | |  |
+        F    F *  c
+        |    |
+        a    b
+
+    Success! We now have b and c grouped more tightly, and our meaning becomes
+    a + (b * c).
+
+    Q: "Is it always going to be this easy?" If L is context-free, is there
+       always an unambiguous grammar such that L = L(G). "Can you always remove
+       the ambiguity?"
+
+    A: No! There are what are known as inherently ambiguous languages that only
+       have ambiguous grammars. "This is a nightmare to prove, but it's true."
+
+    "Wouldn't it be nice if we had a tool that looks at a provided grammar for
+     a programming language and tells us whether or not it's ambiguous or not?"
+
+    Q: Can we construct a tool that will tell us whether a grammar is
+       unambiguous? "Can you think of an algorithm that takes a grammar as input
+       and outputs whether or not it is ambiguous?"
+
+    A: No! This problem is undecidable.
+
+    "One more question that you might think is interesting - I call this the
+     Marmoset problem."
+
+    Q: Can we determine whether two grammars G1 and G2 are equivalent?
+       i.e. L(G1) =? L(G2)
+
+    A: No! This problem is also undecidable.
+
+    "Note that even though a problem is undecidable, we can solve most of the
+     problem practically."
+
+    Note: A full grammar to the WLP4 language is given in the A6 documentation,
+    and it would be worth our while to get very familiar with it.
+
+    Note: We haven't solved any problem yet, we have simply given a notation
+    that describes a language. We haven't discussed what a program would look
+    like that recognizes a context-free language. That's next!
+
+
+Recognizer - What class of computer program is needed to recognize a
+context-free language (CFA)?
+
+    For regular languages, we had DFAs - essentially these are programs with a
+    finite amount of memory.
+
+    For CFLs, we need more than a finite amount of memory - an NFA + a stack. In
+    principle, this gives us infinite memory, but its use is limited to LIFO
+    order.
+
+    DFAs/NFAs just give yes or no answers, though, but we need more than a
+    yes/no answer - we need the derivation (parse tree). That's if the answer
+    is yes. If the answer is no, we need an informative error message.
+
+    "Imagine if it was 2AM and you were writing a thousand-line assigment that
+     was due at 8AM. You try to compile it and the compiler just says, 'no'."
+
+    The problem of finding the derivation is called parsing.
+
+    Given a grammar G, start symbol S, terminal string w, find:
+        
+        s => ... => w (the steps)
+
+    Or, report that there is no derivation.
+
+    How can we do this?
+
+        2 choices:
+
+            1) Forwards "top-down parsing"
+
+                Start at S, expand non-terminals until you produce w.
+
+            2) Backwards "bottom-up parsing"
+
+                Start at w, apply the rules in reverse, produce S.
+
+        Both seem hard.
+
+        "For those of you that owned colouring books as children and completed
+         the mazes, wasn't it always easier to start at the end of the maze and
+         work backwards?"
+
+The next couple of weeks of the course covers parsing, and is often the most
+technically chellenging part of the course.
+
+Top-Down Parsing
+
+    Start at S, apply grammar rules, produce w.
+
+    S => ALPHA1 => ALPHA2 => ... => w
+
+    Use the stack to store intermediate ALPHAi, in reverse, match against
+    characters in w.
+
+    Invariant (statement that is always true):
+    
+        Consumed input + reverse(stack contents) = ALPHAi for some i.
+"This lecture is probably the hardest one this term."
+
+Top-Down Parsing
+
+S => ALPHA1 => ALPHA2 => ... => w
+
+Invariant: consumed input + reverse(stack contents) = ALPHAi
+
+Example:
+
+    1) S' -> |-S-|
+    2) S -> AyB
+    3) A -> ab
+    4) B -> z
+    5) B -> wx
+
+For simplicity, we use augmented grammars.
+Invent two new symbols, turnstyle (|-) and reverse turnstyle (-|), to represent
+beginning of file and end of file.
+
+"Pop stack, and push right hand side of the rule in reverse."
+"Top of stack is a non-terminal? Apply a rule."
+
+Stack    Read input    Unread input    Action
+S'       EPSILLON      |-abywx-|       Pop S'; push -|, S, |-
+-|S|-    EPSILLON      |-abywx-|       Match |-
+-|S      |-            abywx-|         pop S, push B,y,a
+-|ByA    |-            abywx-|         pop A, push b,a
+-|Byba   |-            abywx-|         Match a
+-|Byb    |-a           bywx-|          Match b
+-|By     |-ab          ywx-|           Match y
+-|B      |-aby         wx-|            Pop B, push x,w
+-|xw     |-aby         wx-|            Match w
+-|x      |-abyw        x-|             Match x
+-|       |-abywx       -|              Match -|
+         |-abywx-|     EPSILLON        Accept
+
+When top of stack (TOS) is a terminal, pop and match against input.
+When TOS is a non-terminal A, pop A and push ALPHA^R (ALPHA reversed), where
+A -> ALPHA is a grammar rule.
+Accept when stack and input are both empty.
+
+BUT "What was so hard? We glossed over something tricky..."
+
+What if there is more than one production with A on the left hand side? How do
+we know which one to pick?
+
+We could brute force it (try all combinations), but what happens when these
+choices lead to more choices? We could have exponential, or even infinite
+runtime. Brute forcing is not efficient.
+
+We want a more efficient, deterministic procedure.
+
+Our solution:
+
+    Use the next character of input (lookahead) to help decide.
+
+    Construct what we call a predictor table. Given a non-terminal on the stack,
+    and an input symbol, it tells us which grammar rule to use.
+
+  | |- a b c d w x y z -|
+--|-----------------------
+S'|  1 
+S |    2   2
+A |    3   4
+B |            6     z
+
+"First row: We must get a '|-' first."
+"Second row: An 'S' will eventually start with a c or an a, but we must use rule
+ 2 because it's the only one with S on the left hand side."
+"Third row: How do we choose between rule 3 and rule 4? It depends on whether
+ we see an a or a c."
+"Fourth row: The only rules we can use now are 5 or 6, depending on whether we
+ see a w or a z."
+"Notice how there is no rule that starts with x, so it doesn't appear in our
+ table."
+
+Empty cell => parse error!
+
+    We can actually give a very specific error, like 'Parse error at row, column
+    of next input character: expecting one of _, _, _'.
+
+    How do we fill in those blanks in the error message?
+
+        We look at characters for which the current top of stack has an entry.
+
+        e.g. If top of stack = A, we are expecting a or c.
+
+        What if a cell contains more than one rule?
+
+            e.g. A->ad and A->ab rules, so one cell has (3,4).
+
+            Then this doesn't work! The method breaks down. This problem is
+            exactly the kind of inefficent choice-making that we were trying to
+            avoid.
+
+            "But that's annoying - algorithms are supposed to work! How do we
+             recover? By being a slick car-salesperson. A grammar is called
+             LL(1) if each cell of the predictor table has at most one entry."
+            "In other words, the algorithm works when it works." :P
+
+        LL(1) = Left-to-right-scan-of-input Left-most-derivations-produced
+                1-symbol-of-look-ahead
+
+Automatically Computing the Predictor Table
+
+    "What follows is some very subtle algorithms."
+
+    Predict(A,a) - rules that apply when A is on the stack, and a is the next
+    input character.
+
+    Predict(A,a) = { A -> B | a IN First(B) }
+
+    First(B) - the set of characters that can be the first letter of a string
+    derived from B.
+
+    First(B) = { a | B =>* a GAMMA }
+
+    "If we take those two definitions and smash them together, we get the
+     following."
+
+    So Predict(A,a) = {A -> B | B =>* a GAMMA }
+
+        But this is not quite right. We have left out some steps.
+
+        What if A can go to EPSILLON? i.e. A =>* EPSILLON
+        "What if I can make A disappear?"
+        "Then little a might not come from A, but instead from something after
+         A."
+
+    So really, Predict(A,a) = { A -> B | a IN First(B) } UNION
+                              { A -> B | Nullable(B), a IN Follow(A) }
+    
+    "What if we have 'AA', and A could be either 'a' or EPSILLON? That's not
+     LL(1)!" :P
+
+    Nullable(B) = true IFF B =>* EPSILLON
+    Follow(A) = { b | S' =>* ALPHA AbB } - terminal symbols that can come
+    immediately after A in a derivation.
+
+    Note: This lecture will only go over the algorithm; an example will be given
+    on Wednesday.
+
+    Computing Nullable:
+
+        "Assume nothing is nullable until we learn that something is."
+
+        initialize Nullable[A] = false for all A
+        for each rule B -> B_1, ..., B_k:
+            if (k == 0 || Nullable(B_i) for all i):
+                Nullable[B] <- true // B is nullable
+        
+        Are we done now?
+        Consider the grammar:
+
+            A -> B
+            B -> C
+            C -> EPSILLON
+
+            Here, A and B are not nullable, but we find out that it is later.
+            What could we do about that? Run the algorithm again, and keep
+            running it until things stop changing.
+
+            How do we know this terminates?
+
+                The number of rules is finite, and we can only change from false
+                to true, so we will eventually run out of moves.
+
+    Computing First:
+
+        initialize First[A] = {} for all A
+            repeat
+                for each rule B -> B_1, ..., B_k:
+                    for i = 1 to k:
+                        if (B_i is a terminal a):
+                            First[B] U= { a }
+                            break
+                        elif (non-terminal):
+                            First[B] U= First[B_i]
+                            if not Nullable[B_i]:
+                                break
+            until nothing changes
+
+    "If the first character is nullable, consider the second character, until we
+     come across something non-nullable."
+
+    Recall: a IN First(B)
+
+        We should really say First*(B) = first set of a string of symbols.
+
+        e.g.
+            
+            First*(Y_1, ..., Y_n)
+                result <- PHI
+                for i = 1 to n:
+                    if Y_i NOT IN (non-terminals):
+                        result U= First[y_i]
+                        if not Nullable[Y_i]:
+                            break
+                    else (term):
+                        result U= { Y_i }
+                        break
+                return result
+
+    Follow:
+
+        initialize Follow[A] = {} for all A != S'
+            repeat
+            for each rule B -> B_1, ..., B_k:
+                for i = 1 to k:
+                    if B_i IN N:
+                        Follow[B_i] U= First*(B_(i+1), ..., B_n)
+                        // "Follow at B_i can contain whatever after it can
+                        //  start with."
+                    if all of B_(i+1), ..., B_n is nullable (including the case \
+                        i=n):
+                        Follow[B_i] U= Follow[B]
+            until nothing changes
+
+        "Can we learn anything about B_k?"
+        We could have A->Bc, where B can be any of B_i through B_k.
+
 CS 241 Tutorial 1 May 15 2015
 
 Recall the definition of a fibonacci number:
@@ -3151,4 +3924,176 @@ CS 241 Tutorial 4
      .word abc
 
     "De-linking like this requires knowledge of at least one of the MERL files."
+
+CS 241 Tutorial 6
+
+Topics
+
+    Non-Derterministic Finite Automata (NFAs)
+    Context-Free Languages
+
+NFAs
+
+    SIGMA - input alphabet
+    Q - finite set of states
+    q_0 IN Q - starting state
+    A SUBSET Q - set of accepting states
+    DELTA: QxSIGMA -> 2^Q - transition function
+        (where 2^Q is some subset of states)
+    DELTA: QxSIGMA -> Q
+
+CFGs
+
+    SIGMA/T - finite set of terminals
+    V/N - finite set of rewrite/production rules
+    S - starting non-terminal
+
+NFA Problems
+
+    1) SIGMA = { a, b, c }
+       L = { strings ending in abc or cab }
+
+       start state -> c -> a -> b (accept)
+                   -> a -> b -> c (accept)
+                   (start loops on itself on a, b, c)
+
+       "It always guesses right."
+       "It keeps all options open until it hits a snag."
+
+    2) Convert the previous NFA into a DFA using subset construction.
+
+        "On each possible state, know where we can go, and keep track of a
+         possible set of states we can be in."
+        "Assume there aren't any error states - the NFA made correct choices."
+        "Start by numbering all of our original states."
+
+        start (1) -> 5 -> 6 -> 7
+                  -> 1 -> 2 -> 3
+
+        Start: we can only be in the starting state 1.
+
+        {1}
+
+        On input a, we can be in {1,2}.
+        On input b, we loop back to {1}.
+        On input C, we go to {1,5}.
+        
+        From {1,2}:
+            a: {1,2} (loop back)
+            b: {1,3}
+            c: {1,5}
+
+        From {1,5}:
+            a: {1,2,6}
+            b: {1}
+            c: {1,5} (loop back)
+
+        From {1,3}:
+            a: {1,2}
+            b: {1}
+            c: {1,4,5} (accepting)
+
+        From {1,2,6}:
+            a: {1,2}
+            b: {1,3,7} (accepting)
+            c: {1,5}
+
+        From {1,4,5}:
+            a: {1,2,6}
+            b: {1}
+            c: {1,5}
+
+        From {1,3,7}:
+            a: {1,2}
+            b: {1}
+            c: {1,4,5} (accepting)
+
+        "We know we're done because we have three edges on every possible state.
+         Every state has handled every possible input."
+        "Any state with a 4 or a 7 is accepting."
+
+        "We can do this by filling in a table for all possible inputs."
+
+        DELTA 1    2    3    4    5    6    7
+        a     1,2 ...
+        b     1
+        c     1,5
+
+    "How do we make an NFA again?"
+
+        Build the simple pieces that have to be there (like a->b->c) and then
+        let the non-determinism speak for itself and make the correct choices.
+
+Context-Free Grammars (CFGs)
+
+    1) Construct a CFG that generates the same language as the NFA above.
+
+        "Start with the things you need - cab and abc."
+        "Start with a start symbol S and an arrow to the important bits."
+
+        S -> abc | cab (shorthand for S -> abc; S -> cab)
+
+        "Trivia: If we separate the letters, it's called Chomsky-Normal Form."
+        "We aren't done yet, we need the rest of the leading cahracters of the
+         string."
+
+        S -> abc | cab | TS
+        T -> a|b|c
+
+        Note: This expands infinitely to handle all sizes of strings.
+        S -> TS -> TTS -> TTTS etc.
+
+    2) SIGMA = { 0, 1 }
+       L = { 0^n 1^n | n >= 0 }
+       "n zeros followed by n ones"
+
+       S -> EPSILLON | 0S1
+
+    "Midterm review session next... Wednesday? Check Piazza."
+
+    3) Similar CFG problem we're skipping
+
+4) 1 S -> F(A)
+   2 S -> g(A,A)
+   3 A -> x
+   4 A -> y
+   5 A -> S
+
+   Leftmost derivation of g(f(x),g(x,y)) and parse tree.
+   "Left canonical means the same thing."
+
+   s =2> g(A,A) =5> g(S,A) =1> g(f(A),A) =3> g(f(x),A) =5> g(f(x),S)
+   =2> g(f(x),g(A,A)) =3> g(f(x),g(x,A)) =4> g(f(x),g(x,y))
+
+   Parse Tree:
+
+   "Another representation of the derivation."
+
+    S
+    |\\\\
+    g(A,A)
+      | \_
+    //|\  |\\\\
+    f(A)  g(A,A)
+      |     | |
+      x     x y
+
+5) Given a CFG:
+    S -> (S)
+    S -> SS
+    S -> EPSILLON
+
+    Give pseudocode to return the maximum level of nesting in a string.
+
+        e.g. (()())() == 2
+
+    Note: It has to terminate eventually - we are dealing with finite strings.
+
+    "Structure our code based on the three rules - we can get away with three
+     lines of code."
+
+    eval(tree):
+        if(rule == "S -> EPSILLON") return 0;
+        else if (rule == "S -> (S)") return 1 + eval(S);
+        else if (rule == "S -> SS) return max(eval(S1), eval(S2));
 

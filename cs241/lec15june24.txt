@@ -1,0 +1,289 @@
+To summarize from last class:
+
+// initialize nullable array to all false (nothing is nullable until proven
+// otherwise).
+Nullable[A] <- false FOR ALL a
+repeat
+    for each rule B -> B_1, ..., B_k         
+        if k == 0 or Nullable[B_i] FOR ALL i
+            // if everything on the right is nullable, then the left hand side
+            // is nullable
+            Nullable[B] <- true
+until nothing changes
+
+First[A] <- {} FOR ALL A
+repeat
+    for each B -> B_1, ..., B_k
+        for i = 1 to k
+            // loop through all characters on right hand side
+            if B_i is a terminal a
+                // if the first character is a terminal, it definitely has to
+                // start with that character, so we are done
+                First[B] U= { a }; break
+            else
+                First[B] U= First[B_i]
+                if not Nullable[B_i]; break
+until nothing changes
+
+Follow[A] <- {} FOR ALL A != S'
+repeat
+    for each B -> B_1, ..., B_k
+        for i = 1 to k
+            if B_i IN N
+                Follow[B_i] U= First*(B_i+1, ..., B_k)
+                if all of B_i+1, ..., B_k nullable (including i=k)
+                    // if everything after bi is nullable, including if nothing
+                    // is after bi, then anything that can follow b can follow
+                    // bi
+                    Follow[B_i] U= Follow[B]
+until nothing changes
+
+Concrete example:
+
+1 S' -> |-S-|
+2 S -> bSd
+3 S -> pSq
+4 S -> C
+5 S -> lC
+6 C -> EPSILLON
+
+Nullable
+
+    iteration    0      1      2      3
+    S'           false  false  false  false
+    S            false  false  true   true
+    C            false  true   true   true
+
+    "Rules 1 to 3 are not nullable - their right hand sides have terminals."
+    "Rule 4 could possibly be nullable, but we don't know yet."
+    "Rule 6 tells us that C is nullable."
+    "0th iteration is all false because we start with everything false."
+    "Stop after iteration 3 because the table didn't change."
+
+First
+
+    iteration    0    1       2          3
+    S'           {}   {|-}    {|-}       {|-}
+    S            {}   {b, p}  {b, p, l}  {b, p, l}
+    C            {}   {l}     {l}        {l}
+
+    First Iteration:
+
+        "Rule 1 tells us that S' starts with |-."
+        "Rules 2 and 3 tell us that S can start with b or p."
+        "Rule 4 says S can start with anything C can start with. We don't know
+         what C starts with yet, though. So at this point in time (iteration 1),
+         rule 4 tells us nothing."
+        "Rule 5 tells us that C can start with l. I wish we knew that in the
+         last step!"
+        "Rule 6 tells us nothing."
+
+    Second Iteration:
+
+        "Rules 1, 2, and 3 don't tell us anything *new* about our first-sets."
+        "Rule 4 now tells us that S can start with l as well."
+
+    Third Iteration:
+
+        "We learn nothing new, so stop."
+
+Follow
+
+    iteration    0   1           2
+    S            {}  {-|, d, q}  {-|, d, q}
+    C            {}  {-|, d, q}  {-|, d, q}
+
+    First Iteration:
+
+        "Rule 1 tells us that EOF can come after S."
+        "Rule 2 tells us that d can come after S."
+        "Rule 3 tells us that q can come after S."
+        "Rule 4 tells us that anything that follows S can follow C. i.e. since
+         S can become C, then C can be followed by anything in S's follow-set.
+         Note that this rule triggers the last if-statement in the follow
+         algorithm. Also note that this outcome is easy to get backwards."
+        "Rule 5 triggers that last if-statement again, but ends up telling us
+         that anything that follows C can follow C, which tells us nothing new."
+
+    Second Iteration:
+
+        Do any of these rules teach us anything new? No. We are done.
+
+"Why are we doing all of this?"
+
+    This information lets us build the predictor table automatically.
+
+    Where Predict(A,a) = { A -> B | a IN First*(B) } U
+                         { A -> B | Nullable(B), a IN Follow(A) }
+
+    "Follow(A) is the follow set of A."
+
+    Predict    |-  -|  b  d  p  q  l
+    
+    S'         1
+    S              4   2  4  3  4  4
+    C              6      6     6  5
+
+
+    S':
+        "First row - look for rules with S' on the left. So we can only use rule
+         1 here. Now (as defined by the Predict function) we look at the first
+         of the right hand side of rule 1 - |-. So put 1 under |-. It's not
+         nullable, so we are done."
+
+    S:
+        "Rule 2: first of right hand side is b."
+        "Rule 3: first of right hand side is p."
+        "Rule 4: first of the right hand side is l."
+        
+        Is S nullable? Yes. It could disappear.
+        "So for each character in S's follow set, we can make S disappear by
+         applying rule 4. Fill in 4 under -|, d, and q."
+
+    C:
+        "We can apply rule 5 - first of the right hand side is l."
+        "We can make C disappear - as -|, d, or q."
+
+So now we have a clearer idea of what makes a grammar LL(1).
+
+    A grammar is LL(1) if:
+
+     - No two distinct productions (rules) with the same LHS can generate the
+       same first symbol. "If they have the same left hand side, the right hand
+       side had better start with different things."
+
+     - No nullable symbol A can have the same terminal symbol a in both its
+       first set and its follow set. "We won't know whether to match a or make a
+       disappear."
+
+     - There is only one way to send a nullable symbol to EPSILLON. "If a is
+       nullable, then we better have only one way to make it disappear.
+       Otherwise the grammar is ambiguous, which is definitely LL(1)."
+
+"Now we have spent a lecture and a half going over LL(1), and you might be
+ excited to move on. But wait! This might take the wind out of your sails."
+
+e.g. Not LL(1):
+
+    E -> E + T | T
+    T -> T * F | F
+    F -> id
+
+    "This is *obviously* not LL(1). Why?"
+
+    Imagine we had E on our stack and id on our input.
+    Which rule do we use? E -> E+t, or E -> T?
+    E => T => F => id
+    E => E + T => T + T => F + T => id + T
+    "Same first symbol id"
+    Oh no! Two ways to get to id! This is ambiguous!
+
+    This is a phenomenon known as left-recursion.
+    The recrusiveness of these rules is on the left side of the rule.
+    Replacing E with E+T will put E on the top of our stack again. We can use
+    the rule lots of times without getting anywhere.
+
+    Left recursion is always not LL(1).
+
+So, let's make the grammar right-recursive.
+
+    E -> T + E | T
+    T -> F * T | F
+    F -> id
+
+    "Flip the rules around. This generates the same strings, but jsut not the
+     same way."
+
+    Now, this is even more obviously not LL(1). We have two right hand sides
+    that start with the same thing (T or F).
+
+    How do we fix this? Factor the grammar.
+
+    E -> TE'
+    E' -> EPSILLON | +E
+    T -> FT'
+    T' -> EPSILLON | *T
+    F -> id
+
+    (Where E' is the rest of E)
+
+    This grammar is, in fact, LL(1)!
+    "But look at it. It's hideous! It's disgusting! Think of what a mess the
+     parse tree is going to be!"
+
+    The lesson here is that LL(1) doesn't play well with left-associativity.
+    "LL(1) conflicts with let-associativity."
+
+Bottom-up Parsing
+
+    "Didn't I tell you that once we got to the end of top-down parsing you would
+     forget about bottom-up?" :P
+
+    Go from w to S.
+    Stack stores partially-reduced input read so far.
+    "Start from w and work your way back."
+    w <= ALPHA_k <= ALPHA_k-1 <= ... <= ALPHA_1 <= S
+
+    Invariant: stack + unread input = ALPHA_i (or w or S)
+
+    e.g.
+
+        S' -> |-S-|
+        S -> AyB
+        A -> ab
+        A -> cd
+        B -> z
+        B -> wx
+
+        w = |-abywx-|
+
+        "This is what we will code for A7. We are asked to code a bottom up
+         parser, not all the confusing stuff above."
+
+        Stack    Read      Unread     Action
+        []       EPSILLON  |-abywx-|  Shift |- "take it off input, put in stack"
+        [|-]     |-        abywx-|    Shift a
+        [|-a]    |-a       bywx-|     Shift b
+        [|-ab]   |-ab      ywx-|      Reduce A -> ab "pop b,a, push A"
+        [|-A]    |-ab      ywx-|      Shift y
+        [|-Ay]   |-aby     wx-|       Shift w
+        [|-Ayw]  |-abyw    x-|        Shift x
+        [|-Aywx] |-abywx   -|         Reduce B -> wx "pop x,w, push B"
+        [|-AyB]  |-abywx   -|         Reduce S -> AyB "pop B,y,A, push S"
+        [|-S]    |-abywx   -|         Shift -|
+        [|-S-|]  |-abywx-| EPSILLON   Reduce S' -> |-S-|
+        [S']     |-abywx-| EPSILLON   Accept
+
+    Choice at each step:
+
+        1) Shift a character from the input to the stack.
+        2) Reduce - top of the stack is the right hand side of a grammar rule - 
+           replace with left hand side.
+
+    Accept if stack contains S' when input is EPSILLON (empty).
+    Ignoring the final formal step, we could equivalently accept |-S-| on empty
+    input.
+    We could also ignore the second-to-last step, and accept when we shift -|.
+
+    The hard part is deciding between the two options.
+
+    How do we know whether to shift or reduce?
+     - Use next input char to help decide.
+     - Problem is still hard.
+
+    Our first instinct is to say, "if the stack looks like the right hand side
+    of a grammar rule, reduce".
+    BUT if we add the grammar rule C->x, we can make a mistake.
+
+    Knowing what to do when is a HARD problem, but it is solved.
+
+    "Who has heard of Donald Knuth? It was his idea to analyze algorithms with
+     big-O notation, and decided to write a 7-volume book about CS (The Art of
+     Computer Programming). He also invented TeX."
+
+    Theorem (Donald Knuth, 1965):
+
+        The set { wa | THERE EXISTS x. S' =>* wax } is a regular language.
+        (Where w is a stack and a is the next input character.)
+        So DFAs will play a role in bottom-up parsing!
+
