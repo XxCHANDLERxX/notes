@@ -1,0 +1,147 @@
+CS 241 Tutorial 7
+
+Topics: Top-down parsing
+
+Definitions:
+
+LL(1): "The kind of top down parsing that we are talking about in this course."
+    - Left-to-right scan of input
+    - Left-to-right canonical derivation
+    - 1 symbol of lookahead
+
+    Top-down parser: begins at start symbol and finds a derivation for the input
+    string.
+
+    An LL(1) grammar is a grammar that can be parsed by an LL(1) parser.
+
+Predict function:
+
+    A grammar is LL(1) only when the output of the Predict function is of size
+    at most 1.
+
+    Predict(A,a) = { A -> GAMMA | a IN First(GAMMA) OR
+                                  (GAMMA =>* EPSILLON AND a IN Follow(A)}
+    "GAMMA is the right hand side of the rule."
+
+    First(GAMMA) = { b | GAMMA =>* bB for some B }
+    "Possible first terminal symbols that can be eventually derived from GAMMA."
+
+
+Ex. Grammar:
+
+    1) S' |-S-|
+    2) S -> aXYb
+    3) S -> XY
+    4) X -> pX
+    5) X -> EPSILLON
+    6) Y -> q
+    7) Y -> EPSILLON
+
+
+    Step 1: Create predict table
+
+    First(|-S-|) = {|-}
+    First(aXYb) {a}
+    First(XY) = {P,q}
+    First(pX) = {p}
+    First(EPSILLON) = {}
+    First(q) = {q}
+
+    Follow(S') = {} "Nothing can come after the entire string"
+    Follow(S) {-|} "Only rule 1 has S on the right hand side."
+    Follow(X) = {b, -|, q} "Y can become q or EPSILLON"
+    Follow(Y) = {b, -|} "EOF because it can come after S (on left hand side)
+
+    Three things to look for when creating the follow sets:
+    
+        non-terminal followed by something - add First(something)
+    
+        terminal at the end of the rule -> add parent's follow set
+    
+        followed by something that can be empty -> add that something's follow
+        set
+
+    Constructing predict table:
+
+        Rule 1 has |- in first list - put a 1 at (S', |-)
+        2 in (S,a)
+        3 in (S,p) and (S,q)
+        4 in (X,q)
+        6 in (Y,q)
+        "that handles all of our first sets"
+
+        5 in X,P X,q X,-|
+        7 in Y,b Y,=|
+        "that's our follow set part"
+
+        So our grammar is LL(1) because Predict only put at most one rule in
+        each cell.
+
+Parsing example:
+
+    Action     |  Consumed Input  |  Stack  |  Remaining input
+    ----------------------------------------------------------
+    Initialize    EPSILLON           S'        |-appqb-|
+
+    "Our symbol on the stack is S' and our upcoming input is |-, so our predict
+     table tells us to apply rule 1."
+
+    expand 1      EPSILLON           |-S-|     |-appqb-|
+
+    "First symbol on the stack and first on remaining input are the same, so we
+     match it."
+
+    match |-      |-                 S-|       appqb-|
+    expand 2      |-                 aXYb-|    appqb-|
+    match a       |-a                XYb-|     PPqb-|
+    expand 4      |-a                pXYb-|    PPqb-|
+    match p       |-ap               XYb-|     Pqb-|
+    expand 4      |-ap               pXYb-|    Pqb-|
+    match p       |-app              XYb-|     qb-|
+    expand 5      |-app              Yb-|      qb-|
+    ...
+    "We are done when we see EOF"
+
+    Now how do we recover the derivation?
+
+        Read off the rules applied.
+        In this case: 1, 2, 4, 4, 5, ...
+        S' => |-S-| => |-aXYb-| ...
+
+        This is a left-most derivation (this property is a byproduct of the
+        algorithm).
+
+        We can also build a parse tree by applying each rule in the list to the
+        leftmost non-terminal leaf, starting with S'.
+
+        S'
+        |\\
+        |-S-|
+        //|\
+        aXYb
+        /| ...
+        PX
+        /|
+        PX
+         |
+         EPSILLON
+
+    If we change rule 2 to "S -> Sab", is our grammar still LL(1)?
+
+        No.
+
+        Recompute the predict table, see if there are no two entries in the same
+        cell.
+        In order to prove that it is LL(1) you have to compute the whole table.
+
+        First(Sab) = {p,q,a}
+        Follow(S) = {a,-|}
+        In table: 2 and 3 in (S,a)
+        So parsing |-ab-| is difficult, since the parser only sees 'a' and
+        doesn't know how many 'ab's to create before continuing.
+
+        Notice that here we also have left-recursion.
+
+            S is on our stack, and S is the first on the right hand side of the
+            rule (we can expand forever to infinitely many S's without reading
+            any new input).
