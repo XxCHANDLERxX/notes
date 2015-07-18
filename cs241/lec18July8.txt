@@ -1,0 +1,283 @@
+Recall: Deduction rules for contextual analysis
+
+
+<id.name, TAU> IN dcls   -   if id.name declared to have type TAU
+----------------------
+       id: TAU           -   then id has type TAU
+
+
+string typeOf(Tree &t) {
+    if t.rule == "ID name"
+        return symtbl.lookup(name)
+        ...
+}
+
+Singleton Productions
+
+    expr->term     \
+    term->factor    |- Type of LHS = type of RHS 
+    factor->id     /
+
+    -----------    -------------
+      NUM:int        NULL: int*
+
+
+       E: TAU
+    -----------   "If E has type TAU, then (E) also has type TAU."
+      (E): TAU
+
+Address-of
+
+        E: int 
+    --------------
+       &E: int*
+
+Deref
+
+       E: int*
+    ------------
+       *E: int
+
+Alloc
+
+       E: int
+    -----------------
+    new int [E]: int*
+
+Multiplication
+
+    E1: int, E2: int
+    -----------------
+       E1*E2: int
+
+    (Same for division and modulo)
+
+Addition
+
+    int + int -> int (valid!)
+    int* + int -> int* (valid!) "pointer arithmetic"
+    int + int* -> int* (valid) "communitive - pointer arithmetic again"
+    int* + int* -> invalid! "But what if..?" "No. It's illegal!"
+
+    E1: int, E2: int
+    ----------------
+       E1+E2: int
+
+    E1: int*, E2: int
+    ----------------
+       E1+E2: int*
+
+    E1: int, E2: int*
+    -----------------
+       E1+E2: int*
+
+Subtraction
+
+    int - int -> int (valid!)
+    int* - int -> int* (valid!) "pointer arithmetic"
+    int - int* -> invalid!
+    int* - int* -> int (valid!) "The difference between two values is a
+                                 distance (array slots)!"
+                                "Subtracting two houses is the number of
+                                 houses apart they are."
+
+    E1: int, E2: int
+    ----------------
+       E1-E2: int
+
+    E1: int*, E2: int
+    ----------------
+       E1-E2: int*
+
+    E1: int*, E2: int*
+    -----------------
+       E1-E2: int
+
+Function call
+
+    "Argument types must match the signature."
+
+    <f,(TAU1, ..., TAUn)> IN procedures E1: TAU1, ..., En: TAUn
+    -----------------------------------------------------------
+                  f(E1, ..., En): int
+
+^The above rules solve A8P5
+Below solves A8P6
+
+"Things in the language that don't have types but impose restrictions."
+
+Loops, If statements
+
+    Test T should be boolean, not int or int*.
+    But wait - WLP4 doesn't have a boolean type!
+    "Just because the user can't be type bool, we can have type bool."
+    The grammar ensures that T is a comparison.
+    So we just need to check that the comparison is well-typed - i.e. it may not
+    have a type but it obeys the rules.
+
+Tests
+
+     E1: TAU, E2: TAU
+    ------------------   "If they have the same type, they can be compared."
+    well-typed(E1==E2)
+
+    (Same for !=)
+
+     E1: TAU, E2: TAU
+    ------------------
+    well-typed(E1<E2)
+
+    (Same for >, <=, >=)
+
+Assignment
+
+     E1: TAU, E2: TAU   "They still have to have the same type."
+    -----------------
+    well-typed(E1==E2)
+
+Print
+
+          E: int
+    -----------------
+    well-typed(E1==E2)
+
+Dealloc
+
+          E: int*
+    -----------------------
+    well-typed(delete [] E)
+
+If statement
+
+    well-typed(T) well-typed(S1) well-typed(S2) 
+    -------------------------------------------
+         well-typed(if(T) {S1} else {S2})
+
+Sequences of statements
+                                "Empty sequence is always well-typed."
+    --------------------        "Nothing there to cause an error!"
+    well-typed(EPSILLON)        "Empty sequence of statements."
+
+
+    well-typed(S1), well-typed(S2)
+    ------------------------------
+            well-typed(S1S2)
+
+Declarations (dcls)
+
+    
+    ------------------------
+    well-typed(INT ID = NUM)
+
+
+    --------------------------
+    well-typed(INT* ID = NULL)
+
+
+Procedures
+
+          well-typed(dcls) well-typed(stmnts) E:int
+    -----------------------------------------------------
+    well-typed(INT ID(params) {dcls statements return E;}
+
+Wain
+
+    "With mips.twoints we have wain(int,int), with mips.array we have
+     wain(int*, int). So dcl1 can be anything, but dcl2 has to be an int."
+
+    dcl2 = INT ID well-typed(dcls) well-typed(stmnts) E:int
+    -------------------------------------------------------
+    well-typed(INT WAIN(dcl1, dcl2) {dcls stmts return E;})
+
+"This is your assignment 8. We have now covered all possible compile errors."
+
+Now, we know everything we can about the code - all the loops, declarations,
+etc. Now it's time to generate MIPS code.
+
+Recall: Code generation steps
+
+    Source
+    Lexical Analysis (tokens!)
+    Parsing (parse tree!)
+    Semantic Analysis (parse tree and symbol table)
+    Code Generation (assembly)
+
+    By the time we have reached code generation, we know the program has no
+    compile-time errors.
+
+    Now, output equivalent MIPS assembly.
+
+    There are infinitely many equivalent MIPS programs. Which do we choose?
+
+    In order of importance, for this course:
+     - correct (essential!)
+     - easy (to write) "Debuggable, easy to communicate."
+     - shortest possible program?
+     - fastest possible program (to run)?
+     - fastest to compile?
+
+    For bonus marks on A10, we can optimize for short code (Marmoset assumes
+    short code = fast code).
+    If we have the shortest output, we get a prize!
+    "Just look at the output at the end, and you will have plenty of ideas for
+     optimization. I will discuss some optimization tricks after we are done
+     code generation."
+
+    e.g. "Shortest possibl WLP4 program."
+
+        int wain (int a, int b) {return a;}
+
+        Convention: The parameters of wain are in $1 and $2, and the output is
+        in $3.
+
+        Shortest MIPS solution:
+
+            add $3, $1, $0
+            jr $31
+
+    e.g. "Tied for shortest possible WLP4 program."
+
+        int wain (int a, int b) {return b;}
+
+        Shortest MIPS solution:
+
+            add $3, $2, $0
+            jr $31
+
+    Note: These two programs have the same parse trees.
+    How do you match the use of an ID with the proper dcl?
+    Symbol table! Add a field that indicates where each id is stored.
+
+    Name Type Location (extra field on top of A8)
+    a    int  $1
+    b    int  $2
+
+    When traversing for code generation, you look up the ID in the symbol table.
+
+    a -> $1
+    b -> $2
+
+    What about local declarations? What register can they go in?
+    What if we declare 50 local variables?
+     - They can't all be in registers (probably not enough)
+    For simplicity:
+     - Put all variables on the stack, including the parameters of wain.
+
+    int wain(int a, int b) {return a;}
+    => sw $1, -4($30)
+       sw $2, -8($30)
+       lis $4
+       .word 8
+       sub $30, $30, $4
+       lw $3, 4($30)
+       add $30, $30, $4
+       jr $31
+
+    Now, the symbol table has an offset from $30 instead of a location.
+
+    Name Type Offset from $30
+    a    int  4
+    b    int  0
+
+A9 and A10 will be published a bit early, and at the same time.
+

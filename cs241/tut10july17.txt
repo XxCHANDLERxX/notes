@@ -1,0 +1,90 @@
+CS 241 Tutorial 10
+
+Topics:
+    Code generation
+    Expressions
+    Switch statement
+    Test code
+
+Code gen tips and conventions
+    - store all results in $3
+    - store intermediate results on the stack
+    - write implementation-level helper functions (e.g. push.pop)
+    - store 4 in $4, 1 in $11
+    - output comments with assembly code
+
+Expressions
+    code(factor -> ++lvalue) =
+        // an lvalue is something you can assign to, so code(lvalue) should return an address
+        code(lvalue); // assume this returns an address into $3 to the var
+        add $5, $3, $0
+        lw $3, 0($3)
+        add $3, $3, $11
+        sw $3, 0($5)
+    
+    code(factor -> lvalue++) =
+        code(lvalue);
+        add $5, $3, $0
+        lw $3, 0($5)
+        add $6, $3, $11
+        sw $6, 0($5)
+
+Switch statements
+    switch(expr) {
+        case (expr) {
+            statements
+        }
+        case (expr) {
+            statements
+        }
+        ...
+        default {
+            statements
+        }
+    }
+
+    code(statement -> switch(expr) {cases default}) =
+        code(expr)
+        // add $6, $3, $0 - don't! Could be overwritten by nested switch statement!
+        cases.label = endSwitchX;
+        code(cases)
+        code(default)
+        endSwitchX:
+    
+    
+    code(cases -> cases2 case) =
+        cases2.label = cases.label;
+        case.label = cases.label;
+        code(cases)
+        code(case)
+    
+    code(cases -> EPSILLON) =
+    
+    code(default -> default {statements}) =
+        pop($5) // get rid of comparison value off the stack
+        code(statements)
+
+    code(case -> case(expr) {statements} =
+        code(expr) // $3 <- eval(expr)
+        pop($5) // get value to compare
+        bne $5, $3, endCaseY
+        code(statements)
+        beq $0, $0, case.label
+        endCaseY:
+            push $5
+            
+    "This was essentially a big if-statement."
+    e.g. if(expr1 == expr2) {
+            statements1
+         } else {
+            if (expr1 == expr3) {
+                statements2
+            } ...
+    
+    "Except we would only want to evaluate expr1 once, to avoid any extra side effects."
+    "A general C switch looks different."
+    
+    switch (expr1) {
+        case NUM: statements1
+        case NUM: statements2; break
+        default: statementN

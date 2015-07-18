@@ -1,0 +1,172 @@
+CS 241 lec July 15 2015
+
+test -> expr1 < expr2
+    code(test) = code(expr1) ($3 <- expr1)
+               add $6, $3, $0 ($6 <- expr2)
+               code(expr2) ($3 <- expr2)
+               slt $3, $6, $3
+    
+test -> expr1 > expr2 - treat as expr2 < expr1
+
+    Does it make a difference swapping expr1 and expr2 above vs
+    swapping $3 and $6 above?
+
+    Issue: side effects.
+
+    expr1 and expr2 could contain functions that print things.
+    In C and C++, the programmer shouldn't rely on whether expr1 or expr2
+    to expect one behaviour or another.
+    It can make an observable difference,but we can't expect that to matter.
+        
+
+test -> expr1 != expr2
+    code(test) = code(expr1) ($3 <- expr1)
+    add $6, $3, $0 ($6 <- expr1)
+    code(expr2) ($3 <- expr2)
+    slt $5, $3, $6 ($5 = $3 < $6) \
+    slt $6, $6, $3 ($6 = $6 < $3) / at most one of these will be 1
+    add $3, $5, $6 ($3 = $5 OR $6)
+    
+test -> expr1 == expr2
+    Treat as !(expr1 != expr2) as before, and then:
+    sub $3, $11, $3 ($3 <- 1-3
+    
+    >=, <= - exercise
+    
+If stmt -> if(test) {stmts1} else {stmts2}
+    code(stmt) =
+        code(test) ($3 <- test)
+        beq $3, $11, true
+        code(stmts2)
+        beq $0, $0, endif
+        true:
+            code(stmts1)
+        endif:
+        
+    BUT if there are multiple if statements, we need unique label names.
+        The easiest way to do that is to keep some kind of a counter running, and
+        append the count to each new label.
+        
+        e.g. counter x
+        => elsex, endifx, truex, for labels, and x++ for each new stmt
+        
+        Watch out for nested if statements, though!
+            Generate your labels before you recurse.
+
+While stmmt -> while(test){stmts}
+    Use a counter Y for while labels (if we so choose).
+    code(stmt) =
+        loopY:
+        code(test) ($3 <- test)
+        beq $3, $0, doneY
+        code(stmts)
+        beq $0, $0, loopY
+        doneY:
+
+Up until this point, this solves assignment 9.
+Advice: If at first you don't succeed, you must debug your compiler,
+and look at your generated MIPS assembly. To help yourself out, generate
+comments!
+
+"We move on now to the beginnings of assignment 10."
+"Now we need to support procedures and pointers."
+
+7 things needed to support pointers:
+- NULL
+- dereferencing
+- addressOf
+- pointer comparison
+- pointer arithmatic
+- allocation/deallocation
+- assignment through pointers
+
+NULL
+    Can use 0 (in C and C++, it is mapped to NULL)
+    BUT that doesn't mean the compiled code must use a bunch of zeroes to represent it.
+    Note: 0 is a valid memory address!
+    
+    e.g.
+        int *p = (int*)(x - x) is not necessarily zero, but undefined
+    
+    Idea: use 1 to represent NULL so that dereferencing it will crash.
+    
+    factor -> NULL:
+        codE(factor) = add $3, $11, $0
+
+Dereference
+    factor1 -> *factor2
+        code(factor1) = code(factor2) ($3 <- factor2)
+                        lw $3, 0($3)
+
+Comparison - same as int comparison
+    Except that there are no negative pointers.
+    So pointer comparison should be unsigned.
+    Use sltu instead of slt.
+    
+    So, for generating code for, e.g.,
+        test -> expr1 < expr2
+    use slt if expr1, expr2: int
+    and use sltu if expr1, expr2: int*
+    
+    Re-run your typeOf function on expr 1 or expr2 to recompute the types!
+    Or, add a type field to each tree node.
+    Your typeOf procedure records each node's type (if any) in the node itself.
+    
+    Marmoset can't test this, but we need to be able to do it for the sake of pointer arithmatic.
+    
+Pointer arithmetic
+    expr1 -> expr2 +/- term
+    The exact meaning of this depends on types.
+    expr1 -> expr2 + term
+        if expr2, term: int (as before)
+        if expr2: int*, term: int (means expr2 + 4*term)
+            code(expr1) = code(expr2)
+                          push($3)
+                          code(term)
+                          pop($5)
+                          mult $3, $4
+                          mflo $3
+                          add $3, $5, $3
+        if expr2: int, term: int* (means 4*expr3 + 4*term)
+            Similar to above.
+
+Subtraction
+    expr1 -> expr2 - term
+    if expr2, term: int (as before)
+    if expr2: int*, term: int (means expr2 - 4*term)
+        Similar in addition, but subtract instead of add.
+    if expr2, term: int* (pointer subtraction; (expr2 - term)/4)
+        code(expr1) = code(expr2)
+                      push($3)
+                      code(term)
+                      pop($5)
+                      sub $3, $5, $3
+                      div $3, $4
+                      mflo $3
+
+Assignment through pointer dereference
+    LHS - address of which to store value
+    RHS - the value
+    stmt -> ID = expr
+    stmt -> *factor = expr     // *x = y "store y at the location denoted by x"
+    Recall: LHS of assign statement is an lvalue
+        code(stmt) = code(factor)
+        push($3)
+        code(expr)
+        pop($5) ($5 <- factor)
+        sw $3, 0($5)
+        
+        "We don't do anything to the STAR"
+
+Address of (&lvalue)
+    code(&ID) = lis $3
+                .word ____   // look up ID in symbol table
+                add $3, $29, $3
+    
+    code(&*factor) = code(factor)
+
+New/delete
+    In the runtime environment! "You don't have to write them, I had to write them!"
+    alloc.merl "About 600 lines of MIPS"
+    Link to assembled MIPS.
+    Must be linked last! It needs to know where the end of the program is.

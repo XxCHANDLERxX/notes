@@ -1,0 +1,197 @@
+Note: Make it a top priority to finish A8. A9 and A10 rely on it.
+
+"We are done parsing now."
+
+Context-Sensitive Analysis (also called semantic analysis)
+
+    What properties of valid programs cannot be enforced by CFGs?
+
+        Checking if a variable has been declared more than once, or not declared
+        at once. Anything related to declaration-before-use.
+
+        Type correctness.
+
+        Scope.
+
+        Other language-specific gotchas, like C++ checking for cyclical
+        inheritance hierachies.
+
+Next language class: context-sensitive languages
+
+    Specified by a context-sensitive grammar.
+    Roughly speaking, on the LHS you can have more than one symbol. It provides
+    restrictions on how rules can be applied - a context on the LHS.
+
+    In theory, we could finish our compiler with context-sensitive languages,
+    but they are a pain to work with and not widely used at all.
+
+    A more ad-hoc approach is more useful here:
+
+        Traverse the parse tree.
+
+        "The remainder of our compiler will simply be a bunch of tree walks."
+
+    e.g. Parse tree class.
+
+        class Tree {
+            public:
+                string rule; // grammar rule, e.g. "factor ID", or "ID xyz"
+                vector<Tree*> children;
+        };
+
+        "This tree class should be sufficient for our compiler."
+
+    Tree traversal example: print the tree
+
+        void print(Tree &t) {
+            // print t.rule
+            for (vector<Tree *>::iterator i=t.children.begin();
+                 i != t.children.end(); ++i) {
+                print(**i);
+            }
+        }
+
+What analysis is needed for WLP4? What errors need to be caught?
+
+    Note: The context-sensitive analysis stage is our last opportunity to catch
+    errors. Past this point is just code generation, so we must catch all
+    remaining compile-time errors here.
+
+     - Variables/procedures used but not declared.
+     - Variables/procedures declared more than once.
+     - Type errors.
+
+    For now, assume wain is the only procedure (to eliminate the problem of
+    scope, for simplicity).
+
+Declaration errors - multiple/missing declarations.
+
+    How do we check this? We've actually done this before...
+
+    Construct a symbol table. "This is the third time we have used the phrase
+    'symbol table' in different contexts."
+
+        Traverse the parse tree to collect all declarations.
+        For each node corresponding to rule 'decl -> type ID', extract the name,
+        (e.g. x), and the type (int or int*) and add it to the symbol table.
+        If the name is already in the symbol table, it's an error.
+        Now we've checked for multiple declarations! Yay!
+
+        Traverse again, checking for rules 'factor -> ID' and 'lvalue -> ID'.
+        If the ID's name is not in the symbol table, that's an error.
+        Undeclared variables are now checked!
+
+        These two passes can be merged.
+        In WLP4, we know declarations come first. If we encounter a declaration
+        after use, that was a parser error!
+
+    Symbol table implementation:
+
+        The simplest thing to do is probably to declare a global variable.
+
+        e.g. map<string, string> symTbl; // name, type
+
+        "A bool for type (int or int*) is more efficent, but I'll use a string
+         here for readability."
+
+    BUT this doesn't take scopes into account, and doesn't check procedure
+    calls.
+
+    Consider the following issue:
+
+        int f() {
+            int x = 0;
+            return x;
+        }
+        int wain(int a, int b) {
+            int x = 0;
+            return x;
+        }
+
+        In our original, naive traversal algorithm, this would throw a duplicate
+        variable declaration error.
+
+        If we comment out x's second declaration, the algorithm will be happy,
+        but it shouldn't.
+
+    We must forbid duplicated declarations in the same procedure, but allow them
+    in different procedures.
+
+    Also, forbid duplicate procedure declarations.
+    Note: Procedures are all global (no nesting).
+    Note: No global variables in WLP4.
+    Recall: Every procedure in WLP4 returns an int.
+
+    Solution: Have a separate symbol table for each procedure, and a top-level
+    symbol table that collects all the procedure names.
+
+    e.g. map<string, map<string, string> > topSymTbl; // proc name, proc symTbl
+
+When traversing, if the node has the rule 'procedure -> ...' or 'main -> ...',
+that means we have a new procedure. Make sure its name isn't already in the
+symbol table. If it is, that's an error, else add it.
+
+Note: We may want another global variable, currentProcedure, which is the
+procedure we are currently in, and keep it up to date.
+
+For variables - store the declared type in the symbol table.
+Is there any type infor for procedures?
+
+    Yes - the signature.
+    Note: All procedures in WLP4 return int, so the signature is just the
+    sequence of parameter types. Store that in the topSymTbl.
+    Note: Overloaded signatures are not allowed in WLP4.
+
+So now the topSymTbl looks like this:
+
+    map<string, pair<vector<string>,map<string, string> > >
+        |                   |         |
+        procedure name      signature local symbol table
+
+    To complete the signature:
+        Nodes of the form 'paramlist -> dcl', 'paramlist -> dcl COMMA paramlist'
+        (if params is empty, then empty signature).
+    
+    Note: Don't make the parameter list backwards! Also make sure you handle
+    empty signatures! Marmoset tests this!
+
+    All of this we've talked about can be done in one pass.
+
+Types
+
+    Why do programming languages have types?
+
+    Recall from early in the term, "how do you tell what a byte of memory
+    represents?"
+    How do we remember what our intent was when we store some bits?
+    The type system!
+
+     - prevents errors
+     - assigns interpretations to RAM locations and remembers those
+       interpretations
+
+    e.g.
+
+        int *a = NULL;
+        a = 7; // ERROR! Attempt to store an int where a ptr is needed.
+
+    So:
+
+        - find a type for every var/expr
+        - ensure the rules are followed
+
+    Traverse the tree!
+
+        string TypeOf(Tree &t) {
+            for each c in t.children, find type of c
+            use types of children and t.rule to determine TypeOf(t)
+        }
+
+    e.g. CS245-style deduction rules!
+
+        ID - get its type from symTbl
+
+            <id.name, TAU> IN decls      // if id.name declared to have type TAU
+            -----------------------
+                    id : TAU
+

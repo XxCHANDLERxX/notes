@@ -1,0 +1,231 @@
+Theorem (Knuth, 1965):
+
+    The set
+
+        { wa | THERE EXISTS x. S' => wax }, where w is our stack and a is an
+        input character,
+
+    is a regular language.
+
+    So, it can be described by a DFA, and we can use the DFA to make
+    shift/reduce decisions.
+
+This is called LR parsing
+
+    - left-to-right scan
+    - rightmost derivations
+
+    Example:
+
+        S' -> |-E-|
+        E -> E + T
+        E -> T
+        T -> id
+
+        "This is a grammar that LL(1) choked on."
+
+    LR(0) machine - simplest
+
+    Definition: An item is a production with a dot (.) somewhere on the right
+    hand side (indicates partially completed rule).
+    "It separates the part of the rule that you have seen from the part that you
+     are still waiting for."
+    "It represents your eye, or your finger."
+
+    ->[S' ->. |-E-|] State 1
+           |                   "Label an arc with the symbol that follows the
+           |   |-               dot. Advance the dot in the next state."
+          \ /
+      [S' -> |-.E-|            "If the dot precedes a non-terminal A, add all
+       E -> .E + T              productions with A on the left hand side to
+       E -> .T] State 2         the state, with a dot at the leftmost position."
+
+           -- id --> [T -> id.] State 6
+           -- T --> [E -> T.] State 5
+           -- E --> [S' -> |-E.-|
+                     E -> E. + T] State 3
+                         -- -| --> [S' -> |-E-|.] State 4
+                         -- + --> [E -> E + .T
+                                   T -> .id] State 7
+                                       -- T --> [E -> E + T.] State 8
+                                       -- id --> State 6
+    Using the machine:
+
+        Start in the start state with an empty stack.
+        Shifting: Shift a character from the input to the stack.
+                  Follow the transition for that char to a new state - if none,
+                  error or reduce.
+        Reducing: "reduce states" have only one item, and the dot is rightmost.
+                  When the dot is rightmost, we have a "complete item".
+                  Reduce by the rule in the stack, pop the right hand side, and
+                  back up the number of symbols that are being popped, push left
+                  hand side, follow transition for left hand side.
+
+    Backtracking in the DFA implies that we must remember what state the DFA was
+    in before.
+
+        How? Push the DFA states on the stack as well.
+
+        ex. S' -> |-E-|
+            E -> E + T
+            E -> T
+            T -> id
+
+            w = |-id+id+id-|
+
+            "We will probably want to use two stacks when we code this, but in
+             class we will use only one stack since that is theoretically
+             important."
+
+        Stack        Read        Unread        Action
+        1            EPSILLON    |-id+id+id-|  S2 (Shift and go to 2)
+        1|-2         |-          id+id+id-|    S6
+        1|-2id6      |-id        +id+id-|      Reduce T -> id (pop sym & state)
+                                              "Back in state 2, push T, goto 5."
+        1|-2T5       |-id        +id+id-|      R E -> T (back in state 2,
+                                                         push E, goto 3)
+        1|-2E3       |-id        +id+id-|      S7
+        1|-2E3+7     |-id+       id+id-|       S6
+        1|-2E3+7id6  |-id+id     +id-|         Reduce T -> ID
+        1|-2E3+7T8   |-id+id     +id-|         Reduce E -> E + T
+                                               Pop 3 symbols and 3 states.
+                                               Pop 8T, 7+, 3E.
+                                               Push E, goto 3.
+        1|-2E3       |-id+id      +id-|         S7
+        1|-2E3+7     |-id+id+     id-|          S6
+        1|-2E3+7id6  |-id+id+id   -|            R T -> id goto 8
+        1|-2E3+7T8   |-id+id+id   -|            R E -> E + T goto 3
+        1|-2E3       |-id+id+id   -|            S4
+        1|-2E3-|4    |-id+id+id-| EPSILLON      ACCEPT
+    
+        "We can continue reducing, but since we have pushed EOF we can stop
+         here."
+
+    What can go wrong here?
+
+        What if a state looks like this:
+
+            A -> D.cB
+            B -> G.
+
+            Do we shift c or reduce by B -> G?
+            This is called a shift-reduce conflict.
+
+        What about a state that looks like this?
+
+            A -> D.
+            B -> B.
+
+            Do we reduce by A -> D or by B -> B?
+            This is a reduce-reduce conflict.
+
+        Can't we just look at the stack to decide?
+        No. If we have states like this, the stack must look like both of the
+        procedures.
+
+    If any complete item 'A -> D.' is not alone in a state, there will be a
+    conflict, and the grammar is not LR(0).
+
+    What about right-associative expressions?
+
+    e.g. S' -> |-E-|
+         E -> T + E
+         E -> T
+         T -> id
+
+         ->[ S' -> .|-E-|]                                                     1
+             -- |- -->[ S' -> -|.E-|                                           2
+                        E -> .T + E
+                        E -> .T
+                        E -> .id ]
+
+                          -- T -->[ E -> T. + E                                5
+                                    E -> T. ]
+                            -- + --> [ E -> T + .E                             7
+                                       E -> .T + E
+                                       E -> .T
+                                       T -> .id ]
+                                         -- id --> 6
+                                         -- T --> 5
+                                         -- E -->[ E -> T + E. ]               8
+                          -- id -->[ T -> id. ]                                6
+                          -- E -->[ S' -> |-E.-| ]                             3
+                          -- -| -->[ S' -> |-E-|. ]                            4
+
+        BUT state 5 is problematic - it has a shift-reduce conflict.
+
+        e.g. input starts with '|-id':
+
+            1 -- shift --> 1|-2 -- shift -> 1|-2id6 -- reduce T->id -> 1|-2T5
+
+            Should we reduce E -> T?
+            It depends on what comes after the dot.
+            
+                If the input is '|-id-|', then yes, you should reduce.
+                If the input is '|-id+...', then no, don't reduce.
+
+        To fix the conflict, add lookahead.
+
+            For each 'A -> D.', attach Follow(A).
+            Follow(E) = { -| }
+            Follow(T) = { +, -| }
+
+        Recall the conflicting state:
+
+            E -> T. + E
+            E -> T.
+
+        This becomes:
+
+            E -> T. + E
+            E -> T.
+                         -|
+        A reduce action, 'A -> D.    X' (where X = Follow(A) sticky note)
+        applies only if the next character is in X.
+
+        So 'E -> T. + E' applies when the next character is +, and
+           'E -> T.   -|' applies when the next char is '-|'.
+        Conflict resolved!
+
+    This algorithm is called an SLR(1) parser. We will be asked to code one on
+    our assignment. SLR(1) = Simple LR with 1-character lookahead. This resolves
+    many, but not all, conflicts.
+
+    "You don't need to come up with the machine ourselves, we just need to
+     implement the stack algorithm."
+
+    LR(1) is more sophisticated. Knuth invented it in the 1960s (when we had
+    room-sized computers), and it produces MANY states, so we used the simpler
+    approach.
+
+    Note: If we are asked to do an LR(1) parse, we can do SLR(1) - it's the same
+    machine.
+
+Building a Parse Tree
+
+    "Because these algorithms answer yes or no."
+
+    Top-down:
+
+        [-|S         S -> AyB
+        [-|ByA
+           \|/
+            S
+
+        "Keep S and attach it to its children."
+
+    Bottom-up:
+
+        [|-ab        A -> ab
+        [|-A
+           |\
+           ab
+
+        "Don't throw those children away, hang them off of the new node."
+
+    By the time you are done, you have a parse tree!
+    
+    Note: Shift steps stay the same.
+    Note: Output of A7 is a parse tree, in a specific file format, which is
+    roughly a pre-order traversal.
+
