@@ -3597,7 +3597,1391 @@ Automatically Computing the Predictor Table
         "Can we learn anything about B_k?"
         We could have A->Bc, where B can be any of B_i through B_k.
 
-CS 241 Tutorial 1 May 15 2015
+To summarize from last class:
+
+// initialize nullable array to all false (nothing is nullable until proven
+// otherwise).
+Nullable[A] <- false FOR ALL a
+repeat
+    for each rule B -> B_1, ..., B_k         
+        if k == 0 or Nullable[B_i] FOR ALL i
+            // if everything on the right is nullable, then the left hand side
+            // is nullable
+            Nullable[B] <- true
+until nothing changes
+
+First[A] <- {} FOR ALL A
+repeat
+    for each B -> B_1, ..., B_k
+        for i = 1 to k
+            // loop through all characters on right hand side
+            if B_i is a terminal a
+                // if the first character is a terminal, it definitely has to
+                // start with that character, so we are done
+                First[B] U= { a }; break
+            else
+                First[B] U= First[B_i]
+                if not Nullable[B_i]; break
+until nothing changes
+
+Follow[A] <- {} FOR ALL A != S'
+repeat
+    for each B -> B_1, ..., B_k
+        for i = 1 to k
+            if B_i IN N
+                Follow[B_i] U= First*(B_i+1, ..., B_k)
+                if all of B_i+1, ..., B_k nullable (including i=k)
+                    // if everything after bi is nullable, including if nothing
+                    // is after bi, then anything that can follow b can follow
+                    // bi
+                    Follow[B_i] U= Follow[B]
+until nothing changes
+
+Concrete example:
+
+1 S' -> |-S-|
+2 S -> bSd
+3 S -> pSq
+4 S -> C
+5 S -> lC
+6 C -> EPSILLON
+
+Nullable
+
+    iteration    0      1      2      3
+    S'           false  false  false  false
+    S            false  false  true   true
+    C            false  true   true   true
+
+    "Rules 1 to 3 are not nullable - their right hand sides have terminals."
+    "Rule 4 could possibly be nullable, but we don't know yet."
+    "Rule 6 tells us that C is nullable."
+    "0th iteration is all false because we start with everything false."
+    "Stop after iteration 3 because the table didn't change."
+
+First
+
+    iteration    0    1       2          3
+    S'           {}   {|-}    {|-}       {|-}
+    S            {}   {b, p}  {b, p, l}  {b, p, l}
+    C            {}   {l}     {l}        {l}
+
+    First Iteration:
+
+        "Rule 1 tells us that S' starts with |-."
+        "Rules 2 and 3 tell us that S can start with b or p."
+        "Rule 4 says S can start with anything C can start with. We don't know
+         what C starts with yet, though. So at this point in time (iteration 1),
+         rule 4 tells us nothing."
+        "Rule 5 tells us that C can start with l. I wish we knew that in the
+         last step!"
+        "Rule 6 tells us nothing."
+
+    Second Iteration:
+
+        "Rules 1, 2, and 3 don't tell us anything *new* about our first-sets."
+        "Rule 4 now tells us that S can start with l as well."
+
+    Third Iteration:
+
+        "We learn nothing new, so stop."
+
+Follow
+
+    iteration    0   1           2
+    S            {}  {-|, d, q}  {-|, d, q}
+    C            {}  {-|, d, q}  {-|, d, q}
+
+    First Iteration:
+
+        "Rule 1 tells us that EOF can come after S."
+        "Rule 2 tells us that d can come after S."
+        "Rule 3 tells us that q can come after S."
+        "Rule 4 tells us that anything that follows S can follow C. i.e. since
+         S can become C, then C can be followed by anything in S's follow-set.
+         Note that this rule triggers the last if-statement in the follow
+         algorithm. Also note that this outcome is easy to get backwards."
+        "Rule 5 triggers that last if-statement again, but ends up telling us
+         that anything that follows C can follow C, which tells us nothing new."
+
+    Second Iteration:
+
+        Do any of these rules teach us anything new? No. We are done.
+
+"Why are we doing all of this?"
+
+    This information lets us build the predictor table automatically.
+
+    Where Predict(A,a) = { A -> B | a IN First*(B) } U
+                         { A -> B | Nullable(B), a IN Follow(A) }
+
+    "Follow(A) is the follow set of A."
+
+    Predict    |-  -|  b  d  p  q  l
+    
+    S'         1
+    S              4   2  4  3  4  4
+    C              6      6     6  5
+
+
+    S':
+        "First row - look for rules with S' on the left. So we can only use rule
+         1 here. Now (as defined by the Predict function) we look at the first
+         of the right hand side of rule 1 - |-. So put 1 under |-. It's not
+         nullable, so we are done."
+
+    S:
+        "Rule 2: first of right hand side is b."
+        "Rule 3: first of right hand side is p."
+        "Rule 4: first of the right hand side is l."
+        
+        Is S nullable? Yes. It could disappear.
+        "So for each character in S's follow set, we can make S disappear by
+         applying rule 4. Fill in 4 under -|, d, and q."
+
+    C:
+        "We can apply rule 5 - first of the right hand side is l."
+        "We can make C disappear - as -|, d, or q."
+
+So now we have a clearer idea of what makes a grammar LL(1).
+
+    A grammar is LL(1) if:
+
+     - No two distinct productions (rules) with the same LHS can generate the
+       same first symbol. "If they have the same left hand side, the right hand
+       side had better start with different things."
+
+     - No nullable symbol A can have the same terminal symbol a in both its
+       first set and its follow set. "We won't know whether to match a or make a
+       disappear."
+
+     - There is only one way to send a nullable symbol to EPSILLON. "If a is
+       nullable, then we better have only one way to make it disappear.
+       Otherwise the grammar is ambiguous, which is definitely LL(1)."
+
+"Now we have spent a lecture and a half going over LL(1), and you might be
+ excited to move on. But wait! This might take the wind out of your sails."
+
+e.g. Not LL(1):
+
+    E -> E + T | T
+    T -> T * F | F
+    F -> id
+
+    "This is *obviously* not LL(1). Why?"
+
+    Imagine we had E on our stack and id on our input.
+    Which rule do we use? E -> E+t, or E -> T?
+    E => T => F => id
+    E => E + T => T + T => F + T => id + T
+    "Same first symbol id"
+    Oh no! Two ways to get to id! This is ambiguous!
+
+    This is a phenomenon known as left-recursion.
+    The recrusiveness of these rules is on the left side of the rule.
+    Replacing E with E+T will put E on the top of our stack again. We can use
+    the rule lots of times without getting anywhere.
+
+    Left recursion is always not LL(1).
+
+So, let's make the grammar right-recursive.
+
+    E -> T + E | T
+    T -> F * T | F
+    F -> id
+
+    "Flip the rules around. This generates the same strings, but jsut not the
+     same way."
+
+    Now, this is even more obviously not LL(1). We have two right hand sides
+    that start with the same thing (T or F).
+
+    How do we fix this? Factor the grammar.
+
+    E -> TE'
+    E' -> EPSILLON | +E
+    T -> FT'
+    T' -> EPSILLON | *T
+    F -> id
+
+    (Where E' is the rest of E)
+
+    This grammar is, in fact, LL(1)!
+    "But look at it. It's hideous! It's disgusting! Think of what a mess the
+     parse tree is going to be!"
+
+    The lesson here is that LL(1) doesn't play well with left-associativity.
+    "LL(1) conflicts with let-associativity."
+
+Bottom-up Parsing
+
+    "Didn't I tell you that once we got to the end of top-down parsing you would
+     forget about bottom-up?" :P
+
+    Go from w to S.
+    Stack stores partially-reduced input read so far.
+    "Start from w and work your way back."
+    w <= ALPHA_k <= ALPHA_k-1 <= ... <= ALPHA_1 <= S
+
+    Invariant: stack + unread input = ALPHA_i (or w or S)
+
+    e.g.
+
+        S' -> |-S-|
+        S -> AyB
+        A -> ab
+        A -> cd
+        B -> z
+        B -> wx
+
+        w = |-abywx-|
+
+        "This is what we will code for A7. We are asked to code a bottom up
+         parser, not all the confusing stuff above."
+
+        Stack    Read      Unread     Action
+        []       EPSILLON  |-abywx-|  Shift |- "take it off input, put in stack"
+        [|-]     |-        abywx-|    Shift a
+        [|-a]    |-a       bywx-|     Shift b
+        [|-ab]   |-ab      ywx-|      Reduce A -> ab "pop b,a, push A"
+        [|-A]    |-ab      ywx-|      Shift y
+        [|-Ay]   |-aby     wx-|       Shift w
+        [|-Ayw]  |-abyw    x-|        Shift x
+        [|-Aywx] |-abywx   -|         Reduce B -> wx "pop x,w, push B"
+        [|-AyB]  |-abywx   -|         Reduce S -> AyB "pop B,y,A, push S"
+        [|-S]    |-abywx   -|         Shift -|
+        [|-S-|]  |-abywx-| EPSILLON   Reduce S' -> |-S-|
+        [S']     |-abywx-| EPSILLON   Accept
+
+    Choice at each step:
+
+        1) Shift a character from the input to the stack.
+        2) Reduce - top of the stack is the right hand side of a grammar rule - 
+           replace with left hand side.
+
+    Accept if stack contains S' when input is EPSILLON (empty).
+    Ignoring the final formal step, we could equivalently accept |-S-| on empty
+    input.
+    We could also ignore the second-to-last step, and accept when we shift -|.
+
+    The hard part is deciding between the two options.
+
+    How do we know whether to shift or reduce?
+     - Use next input char to help decide.
+     - Problem is still hard.
+
+    Our first instinct is to say, "if the stack looks like the right hand side
+    of a grammar rule, reduce".
+    BUT if we add the grammar rule C->x, we can make a mistake.
+
+    Knowing what to do when is a HARD problem, but it is solved.
+
+    "Who has heard of Donald Knuth? It was his idea to analyze algorithms with
+     big-O notation, and decided to write a 7-volume book about CS (The Art of
+     Computer Programming). He also invented TeX."
+
+    Theorem (Donald Knuth, 1965):
+
+        The set { wa | THERE EXISTS x. S' =>* wax } is a regular language.
+        (Where w is a stack and a is the next input character.)
+        So DFAs will play a role in bottom-up parsing!
+
+Theorem (Knuth, 1965):
+
+    The set
+
+        { wa | THERE EXISTS x. S' => wax }, where w is our stack and a is an
+        input character,
+
+    is a regular language.
+
+    So, it can be described by a DFA, and we can use the DFA to make
+    shift/reduce decisions.
+
+This is called LR parsing
+
+    - left-to-right scan
+    - rightmost derivations
+
+    Example:
+
+        S' -> |-E-|
+        E -> E + T
+        E -> T
+        T -> id
+
+        "This is a grammar that LL(1) choked on."
+
+    LR(0) machine - simplest
+
+    Definition: An item is a production with a dot (.) somewhere on the right
+    hand side (indicates partially completed rule).
+    "It separates the part of the rule that you have seen from the part that you
+     are still waiting for."
+    "It represents your eye, or your finger."
+
+    ->[S' ->. |-E-|] State 1
+           |                   "Label an arc with the symbol that follows the
+           |   |-               dot. Advance the dot in the next state."
+          \ /
+      [S' -> |-.E-|            "If the dot precedes a non-terminal A, add all
+       E -> .E + T              productions with A on the left hand side to
+       E -> .T] State 2         the state, with a dot at the leftmost position."
+
+           -- id --> [T -> id.] State 6
+           -- T --> [E -> T.] State 5
+           -- E --> [S' -> |-E.-|
+                     E -> E. + T] State 3
+                         -- -| --> [S' -> |-E-|.] State 4
+                         -- + --> [E -> E + .T
+                                   T -> .id] State 7
+                                       -- T --> [E -> E + T.] State 8
+                                       -- id --> State 6
+    Using the machine:
+
+        Start in the start state with an empty stack.
+        Shifting: Shift a character from the input to the stack.
+                  Follow the transition for that char to a new state - if none,
+                  error or reduce.
+        Reducing: "reduce states" have only one item, and the dot is rightmost.
+                  When the dot is rightmost, we have a "complete item".
+                  Reduce by the rule in the stack, pop the right hand side, and
+                  back up the number of symbols that are being popped, push left
+                  hand side, follow transition for left hand side.
+
+    Backtracking in the DFA implies that we must remember what state the DFA was
+    in before.
+
+        How? Push the DFA states on the stack as well.
+
+        ex. S' -> |-E-|
+            E -> E + T
+            E -> T
+            T -> id
+
+            w = |-id+id+id-|
+
+            "We will probably want to use two stacks when we code this, but in
+             class we will use only one stack since that is theoretically
+             important."
+
+        Stack        Read        Unread        Action
+        1            EPSILLON    |-id+id+id-|  S2 (Shift and go to 2)
+        1|-2         |-          id+id+id-|    S6
+        1|-2id6      |-id        +id+id-|      Reduce T -> id (pop sym & state)
+                                              "Back in state 2, push T, goto 5."
+        1|-2T5       |-id        +id+id-|      R E -> T (back in state 2,
+                                                         push E, goto 3)
+        1|-2E3       |-id        +id+id-|      S7
+        1|-2E3+7     |-id+       id+id-|       S6
+        1|-2E3+7id6  |-id+id     +id-|         Reduce T -> ID
+        1|-2E3+7T8   |-id+id     +id-|         Reduce E -> E + T
+                                               Pop 3 symbols and 3 states.
+                                               Pop 8T, 7+, 3E.
+                                               Push E, goto 3.
+        1|-2E3       |-id+id      +id-|         S7
+        1|-2E3+7     |-id+id+     id-|          S6
+        1|-2E3+7id6  |-id+id+id   -|            R T -> id goto 8
+        1|-2E3+7T8   |-id+id+id   -|            R E -> E + T goto 3
+        1|-2E3       |-id+id+id   -|            S4
+        1|-2E3-|4    |-id+id+id-| EPSILLON      ACCEPT
+    
+        "We can continue reducing, but since we have pushed EOF we can stop
+         here."
+
+    What can go wrong here?
+
+        What if a state looks like this:
+
+            A -> D.cB
+            B -> G.
+
+            Do we shift c or reduce by B -> G?
+            This is called a shift-reduce conflict.
+
+        What about a state that looks like this?
+
+            A -> D.
+            B -> B.
+
+            Do we reduce by A -> D or by B -> B?
+            This is a reduce-reduce conflict.
+
+        Can't we just look at the stack to decide?
+        No. If we have states like this, the stack must look like both of the
+        procedures.
+
+    If any complete item 'A -> D.' is not alone in a state, there will be a
+    conflict, and the grammar is not LR(0).
+
+    What about right-associative expressions?
+
+    e.g. S' -> |-E-|
+         E -> T + E
+         E -> T
+         T -> id
+
+         ->[ S' -> .|-E-|]                                                     1
+             -- |- -->[ S' -> -|.E-|                                           2
+                        E -> .T + E
+                        E -> .T
+                        E -> .id ]
+
+                          -- T -->[ E -> T. + E                                5
+                                    E -> T. ]
+                            -- + --> [ E -> T + .E                             7
+                                       E -> .T + E
+                                       E -> .T
+                                       T -> .id ]
+                                         -- id --> 6
+                                         -- T --> 5
+                                         -- E -->[ E -> T + E. ]               8
+                          -- id -->[ T -> id. ]                                6
+                          -- E -->[ S' -> |-E.-| ]                             3
+                          -- -| -->[ S' -> |-E-|. ]                            4
+
+        BUT state 5 is problematic - it has a shift-reduce conflict.
+
+        e.g. input starts with '|-id':
+
+            1 -- shift --> 1|-2 -- shift -> 1|-2id6 -- reduce T->id -> 1|-2T5
+
+            Should we reduce E -> T?
+            It depends on what comes after the dot.
+            
+                If the input is '|-id-|', then yes, you should reduce.
+                If the input is '|-id+...', then no, don't reduce.
+
+        To fix the conflict, add lookahead.
+
+            For each 'A -> D.', attach Follow(A).
+            Follow(E) = { -| }
+            Follow(T) = { +, -| }
+
+        Recall the conflicting state:
+
+            E -> T. + E
+            E -> T.
+
+        This becomes:
+
+            E -> T. + E
+            E -> T.
+                         -|
+        A reduce action, 'A -> D.    X' (where X = Follow(A) sticky note)
+        applies only if the next character is in X.
+
+        So 'E -> T. + E' applies when the next character is +, and
+           'E -> T.   -|' applies when the next char is '-|'.
+        Conflict resolved!
+
+    This algorithm is called an SLR(1) parser. We will be asked to code one on
+    our assignment. SLR(1) = Simple LR with 1-character lookahead. This resolves
+    many, but not all, conflicts.
+
+    "You don't need to come up with the machine ourselves, we just need to
+     implement the stack algorithm."
+
+    LR(1) is more sophisticated. Knuth invented it in the 1960s (when we had
+    room-sized computers), and it produces MANY states, so we used the simpler
+    approach.
+
+    Note: If we are asked to do an LR(1) parse, we can do SLR(1) - it's the same
+    machine.
+
+Building a Parse Tree
+
+    "Because these algorithms answer yes or no."
+
+    Top-down:
+
+        [-|S         S -> AyB
+        [-|ByA
+           \|/
+            S
+
+        "Keep S and attach it to its children."
+
+    Bottom-up:
+
+        [|-ab        A -> ab
+        [|-A
+           |\
+           ab
+
+        "Don't throw those children away, hang them off of the new node."
+
+    By the time you are done, you have a parse tree!
+    
+    Note: Shift steps stay the same.
+    Note: Output of A7 is a parse tree, in a specific file format, which is
+    roughly a pre-order traversal.
+
+Note: Make it a top priority to finish A8. A9 and A10 rely on it.
+
+"We are done parsing now."
+
+Context-Sensitive Analysis (also called semantic analysis)
+
+    What properties of valid programs cannot be enforced by CFGs?
+
+        Checking if a variable has been declared more than once, or not declared
+        at once. Anything related to declaration-before-use.
+
+        Type correctness.
+
+        Scope.
+
+        Other language-specific gotchas, like C++ checking for cyclical
+        inheritance hierachies.
+
+Next language class: context-sensitive languages
+
+    Specified by a context-sensitive grammar.
+    Roughly speaking, on the LHS you can have more than one symbol. It provides
+    restrictions on how rules can be applied - a context on the LHS.
+
+    In theory, we could finish our compiler with context-sensitive languages,
+    but they are a pain to work with and not widely used at all.
+
+    A more ad-hoc approach is more useful here:
+
+        Traverse the parse tree.
+
+        "The remainder of our compiler will simply be a bunch of tree walks."
+
+    e.g. Parse tree class.
+
+        class Tree {
+            public:
+                string rule; // grammar rule, e.g. "factor ID", or "ID xyz"
+                vector<Tree*> children;
+        };
+
+        "This tree class should be sufficient for our compiler."
+
+    Tree traversal example: print the tree
+
+        void print(Tree &t) {
+            // print t.rule
+            for (vector<Tree *>::iterator i=t.children.begin();
+                 i != t.children.end(); ++i) {
+                print(**i);
+            }
+        }
+
+What analysis is needed for WLP4? What errors need to be caught?
+
+    Note: The context-sensitive analysis stage is our last opportunity to catch
+    errors. Past this point is just code generation, so we must catch all
+    remaining compile-time errors here.
+
+     - Variables/procedures used but not declared.
+     - Variables/procedures declared more than once.
+     - Type errors.
+
+    For now, assume wain is the only procedure (to eliminate the problem of
+    scope, for simplicity).
+
+Declaration errors - multiple/missing declarations.
+
+    How do we check this? We've actually done this before...
+
+    Construct a symbol table. "This is the third time we have used the phrase
+    'symbol table' in different contexts."
+
+        Traverse the parse tree to collect all declarations.
+        For each node corresponding to rule 'decl -> type ID', extract the name,
+        (e.g. x), and the type (int or int*) and add it to the symbol table.
+        If the name is already in the symbol table, it's an error.
+        Now we've checked for multiple declarations! Yay!
+
+        Traverse again, checking for rules 'factor -> ID' and 'lvalue -> ID'.
+        If the ID's name is not in the symbol table, that's an error.
+        Undeclared variables are now checked!
+
+        These two passes can be merged.
+        In WLP4, we know declarations come first. If we encounter a declaration
+        after use, that was a parser error!
+
+    Symbol table implementation:
+
+        The simplest thing to do is probably to declare a global variable.
+
+        e.g. map<string, string> symTbl; // name, type
+
+        "A bool for type (int or int*) is more efficent, but I'll use a string
+         here for readability."
+
+    BUT this doesn't take scopes into account, and doesn't check procedure
+    calls.
+
+    Consider the following issue:
+
+        int f() {
+            int x = 0;
+            return x;
+        }
+        int wain(int a, int b) {
+            int x = 0;
+            return x;
+        }
+
+        In our original, naive traversal algorithm, this would throw a duplicate
+        variable declaration error.
+
+        If we comment out x's second declaration, the algorithm will be happy,
+        but it shouldn't.
+
+    We must forbid duplicated declarations in the same procedure, but allow them
+    in different procedures.
+
+    Also, forbid duplicate procedure declarations.
+    Note: Procedures are all global (no nesting).
+    Note: No global variables in WLP4.
+    Recall: Every procedure in WLP4 returns an int.
+
+    Solution: Have a separate symbol table for each procedure, and a top-level
+    symbol table that collects all the procedure names.
+
+    e.g. map<string, map<string, string> > topSymTbl; // proc name, proc symTbl
+
+When traversing, if the node has the rule 'procedure -> ...' or 'main -> ...',
+that means we have a new procedure. Make sure its name isn't already in the
+symbol table. If it is, that's an error, else add it.
+
+Note: We may want another global variable, currentProcedure, which is the
+procedure we are currently in, and keep it up to date.
+
+For variables - store the declared type in the symbol table.
+Is there any type infor for procedures?
+
+    Yes - the signature.
+    Note: All procedures in WLP4 return int, so the signature is just the
+    sequence of parameter types. Store that in the topSymTbl.
+    Note: Overloaded signatures are not allowed in WLP4.
+
+So now the topSymTbl looks like this:
+
+    map<string, pair<vector<string>,map<string, string> > >
+        |                   |         |
+        procedure name      signature local symbol table
+
+    To complete the signature:
+        Nodes of the form 'paramlist -> dcl', 'paramlist -> dcl COMMA paramlist'
+        (if params is empty, then empty signature).
+    
+    Note: Don't make the parameter list backwards! Also make sure you handle
+    empty signatures! Marmoset tests this!
+
+    All of this we've talked about can be done in one pass.
+
+Types
+
+    Why do programming languages have types?
+
+    Recall from early in the term, "how do you tell what a byte of memory
+    represents?"
+    How do we remember what our intent was when we store some bits?
+    The type system!
+
+     - prevents errors
+     - assigns interpretations to RAM locations and remembers those
+       interpretations
+
+    e.g.
+
+        int *a = NULL;
+        a = 7; // ERROR! Attempt to store an int where a ptr is needed.
+
+    So:
+
+        - find a type for every var/expr
+        - ensure the rules are followed
+
+    Traverse the tree!
+
+        string TypeOf(Tree &t) {
+            for each c in t.children, find type of c
+            use types of children and t.rule to determine TypeOf(t)
+        }
+
+    e.g. CS245-style deduction rules!
+
+        ID - get its type from symTbl
+
+            <id.name, TAU> IN decls      // if id.name declared to have type TAU
+            -----------------------
+                    id : TAU
+
+Recall: Deduction rules for contextual analysis
+
+
+<id.name, TAU> IN dcls   -   if id.name declared to have type TAU
+----------------------
+       id: TAU           -   then id has type TAU
+
+
+string typeOf(Tree &t) {
+    if t.rule == "ID name"
+        return symtbl.lookup(name)
+        ...
+}
+
+Singleton Productions
+
+    expr->term     \
+    term->factor    |- Type of LHS = type of RHS 
+    factor->id     /
+
+    -----------    -------------
+      NUM:int        NULL: int*
+
+
+       E: TAU
+    -----------   "If E has type TAU, then (E) also has type TAU."
+      (E): TAU
+
+Address-of
+
+        E: int 
+    --------------
+       &E: int*
+
+Deref
+
+       E: int*
+    ------------
+       *E: int
+
+Alloc
+
+       E: int
+    -----------------
+    new int [E]: int*
+
+Multiplication
+
+    E1: int, E2: int
+    -----------------
+       E1*E2: int
+
+    (Same for division and modulo)
+
+Addition
+
+    int + int -> int (valid!)
+    int* + int -> int* (valid!) "pointer arithmetic"
+    int + int* -> int* (valid) "communitive - pointer arithmetic again"
+    int* + int* -> invalid! "But what if..?" "No. It's illegal!"
+
+    E1: int, E2: int
+    ----------------
+       E1+E2: int
+
+    E1: int*, E2: int
+    ----------------
+       E1+E2: int*
+
+    E1: int, E2: int*
+    -----------------
+       E1+E2: int*
+
+Subtraction
+
+    int - int -> int (valid!)
+    int* - int -> int* (valid!) "pointer arithmetic"
+    int - int* -> invalid!
+    int* - int* -> int (valid!) "The difference between two values is a
+                                 distance (array slots)!"
+                                "Subtracting two houses is the number of
+                                 houses apart they are."
+
+    E1: int, E2: int
+    ----------------
+       E1-E2: int
+
+    E1: int*, E2: int
+    ----------------
+       E1-E2: int*
+
+    E1: int*, E2: int*
+    -----------------
+       E1-E2: int
+
+Function call
+
+    "Argument types must match the signature."
+
+    <f,(TAU1, ..., TAUn)> IN procedures E1: TAU1, ..., En: TAUn
+    -----------------------------------------------------------
+                  f(E1, ..., En): int
+
+^The above rules solve A8P5
+Below solves A8P6
+
+"Things in the language that don't have types but impose restrictions."
+
+Loops, If statements
+
+    Test T should be boolean, not int or int*.
+    But wait - WLP4 doesn't have a boolean type!
+    "Just because the user can't be type bool, we can have type bool."
+    The grammar ensures that T is a comparison.
+    So we just need to check that the comparison is well-typed - i.e. it may not
+    have a type but it obeys the rules.
+
+Tests
+
+     E1: TAU, E2: TAU
+    ------------------   "If they have the same type, they can be compared."
+    well-typed(E1==E2)
+
+    (Same for !=)
+
+     E1: TAU, E2: TAU
+    ------------------
+    well-typed(E1<E2)
+
+    (Same for >, <=, >=)
+
+Assignment
+
+     E1: TAU, E2: TAU   "They still have to have the same type."
+    -----------------
+    well-typed(E1==E2)
+
+Print
+
+          E: int
+    -----------------
+    well-typed(E1==E2)
+
+Dealloc
+
+          E: int*
+    -----------------------
+    well-typed(delete [] E)
+
+If statement
+
+    well-typed(T) well-typed(S1) well-typed(S2) 
+    -------------------------------------------
+         well-typed(if(T) {S1} else {S2})
+
+Sequences of statements
+                                "Empty sequence is always well-typed."
+    --------------------        "Nothing there to cause an error!"
+    well-typed(EPSILLON)        "Empty sequence of statements."
+
+
+    well-typed(S1), well-typed(S2)
+    ------------------------------
+            well-typed(S1S2)
+
+Declarations (dcls)
+
+    
+    ------------------------
+    well-typed(INT ID = NUM)
+
+
+    --------------------------
+    well-typed(INT* ID = NULL)
+
+
+Procedures
+
+          well-typed(dcls) well-typed(stmnts) E:int
+    -----------------------------------------------------
+    well-typed(INT ID(params) {dcls statements return E;}
+
+Wain
+
+    "With mips.twoints we have wain(int,int), with mips.array we have
+     wain(int*, int). So dcl1 can be anything, but dcl2 has to be an int."
+
+    dcl2 = INT ID well-typed(dcls) well-typed(stmnts) E:int
+    -------------------------------------------------------
+    well-typed(INT WAIN(dcl1, dcl2) {dcls stmts return E;})
+
+"This is your assignment 8. We have now covered all possible compile errors."
+
+Now, we know everything we can about the code - all the loops, declarations,
+etc. Now it's time to generate MIPS code.
+
+Recall: Code generation steps
+
+    Source
+    Lexical Analysis (tokens!)
+    Parsing (parse tree!)
+    Semantic Analysis (parse tree and symbol table)
+    Code Generation (assembly)
+
+    By the time we have reached code generation, we know the program has no
+    compile-time errors.
+
+    Now, output equivalent MIPS assembly.
+
+    There are infinitely many equivalent MIPS programs. Which do we choose?
+
+    In order of importance, for this course:
+     - correct (essential!)
+     - easy (to write) "Debuggable, easy to communicate."
+     - shortest possible program?
+     - fastest possible program (to run)?
+     - fastest to compile?
+
+    For bonus marks on A10, we can optimize for short code (Marmoset assumes
+    short code = fast code).
+    If we have the shortest output, we get a prize!
+    "Just look at the output at the end, and you will have plenty of ideas for
+     optimization. I will discuss some optimization tricks after we are done
+     code generation."
+
+    e.g. "Shortest possibl WLP4 program."
+
+        int wain (int a, int b) {return a;}
+
+        Convention: The parameters of wain are in $1 and $2, and the output is
+        in $3.
+
+        Shortest MIPS solution:
+
+            add $3, $1, $0
+            jr $31
+
+    e.g. "Tied for shortest possible WLP4 program."
+
+        int wain (int a, int b) {return b;}
+
+        Shortest MIPS solution:
+
+            add $3, $2, $0
+            jr $31
+
+    Note: These two programs have the same parse trees.
+    How do you match the use of an ID with the proper dcl?
+    Symbol table! Add a field that indicates where each id is stored.
+
+    Name Type Location (extra field on top of A8)
+    a    int  $1
+    b    int  $2
+
+    When traversing for code generation, you look up the ID in the symbol table.
+
+    a -> $1
+    b -> $2
+
+    What about local declarations? What register can they go in?
+    What if we declare 50 local variables?
+     - They can't all be in registers (probably not enough)
+    For simplicity:
+     - Put all variables on the stack, including the parameters of wain.
+
+    int wain(int a, int b) {return a;}
+    => sw $1, -4($30)
+       sw $2, -8($30)
+       lis $4
+       .word 8
+       sub $30, $30, $4
+       lw $3, 4($30)
+       add $30, $30, $4
+       jr $31
+
+    Now, the symbol table has an offset from $30 instead of a location.
+
+    Name Type Offset from $30
+    a    int  4
+    b    int  0
+
+A9 and A10 will be published a bit early, and at the same time.
+
+﻿Recall:
+
+
+int wain(int a, int b) { return a; }
+
+
+sw $1, -4($30)
+sw $2, -8($30)
+lis $4
+.word 8
+sub $30, $30, $4
+lw $30, $30, $4
+lw $3, 4($30
+add $30, $30, $4
+fr $31
+
+
+Symbol table:
+Name Type Offset from $30
+a    int  4    8
+b    int  0    4
+c    int    -> 0
+
+
+Problem: Can't compute offsets until all decls have been seen, because $30 changes
+with each decls.
+
+
+int wain(int a, int b) { int c=0; return a; }
+...
+lw $3, 8($30)
+...
+
+
+Symbol table:
+Name Type Offset from $30
+a    int  8
+b    int  4
+c    int  0
+
+
+Convenient time to introduce to conventions:
+ - $4 contains 4
+ - $29 points to the bottom of the stack frame (won't move - the bottom is the bottom)
+ 
+  Note: Intel has bp/bbp "base pointer" or "frame pointer" pointing to the bottom of the stack frame for
+  a constant offset.
+  
+ Now the example becomes:
+ int waint(int a, int b) { return a; }
+ lis $4
+ .word 4
+ ; recall: $30 points just past the end of memory
+ ; what we call the "bottom" could be this initial $30 value, or one above
+ sub $29, $30, 4 ; set up frame pointer to point at bottom element of stack
+ sw $1, -4($30)
+ sw $2, -8($30)
+ se $0, -12($30)
+ lis $5
+ .word 12
+ sub $30, $30, 5
+ 
+
+
+       |
+ 29 -> |___
+ 30 -> 
+  
+ Becomes:
+  
+ 29 -> | c
+       | b
+       |_a_
+ 30 ->
+ 
+ 
+ And the symbol table is:
+ Name Type Offset from $29
+ a    int  0
+ b    int  -4
+ c    int  -8
+ 
+ "Because we are computing offsets from the end of the stack, you can compute offsets
+  reliably on-the-go."
+ 
+ More complicated programs...
+ 
+ int wain (int a, int b) { return a+b; }
+ 
+ In general: for each grammar rule A -> GAMMA,
+ build code(A) from code(GAMMA)
+ 
+ Extend previous convention:
+ Use $3 for "output" of all expressions.
+ 
+ a+b  $3 <- eval(a)
+      $3 <- eval(b)  // value of a is lost!
+      $3 <- $3 + $3
+      
+Need a place to store pending computation.
+Use a register:
+code(a) ($3 <- a)
+add $5, $3, $0 ($5 <- a)
+code(b) ($3 <- a + b)
+a + (b + c)
+    code(a) ($3 <- a)
+    add $5, $3, $0 ($5 <- a)
+    code(b) ($3 <- b)
+    add $6, $3, $0 ($6 <- b)
+    code(c) ($3 <- c)
+    add $3, $6, $3 ($3 <- b+c)
+    add $3, $5, $3 ($3 <- a + (b+c))
+   
+The above code uses two additional registers.
+Similarly, a + (b + (c + d)) would need 3 extra registers.
+Eventually, we run out of registers.
+More general solution: use a stack.
+code(a) ($3 <- a)
+push($3)
+code(b) ($3 <- b)
+push($3)
+code(c) ($3 <- c)
+push($3)
+code(d) ($3 <- d)   // one extra register!
+pop($5) ($5 <- c)
+add $3, $5, $3 ($3 <- c + d)
+pop($5) ($5 <- a)
+add $3, $5, $3 ($3 <- a + (b + (c + d)))
+
+
+In general: expr1 -> expr2 + term
+code(expr1) = code(expr2)
+            + push($3)
+            + code(term)
+            + pop($5)
+            + add $3, $5, $3
+
+
+Singleton rules: easy!
+    "just copy it over"
+    expr -> term
+    code(expr) = code(term)
+
+
+PrintLn(expr)
+    Prints expr followed by newline.
+    This is A2P6!
+    
+    Brief introduction of a runtime environment:
+
+
+       A set of procedures supplied by the compiler (or the OS)
+       to assist programs in their execution.
+       
+       e.g. msvcrt.dll "microsoft visual c runtime"
+       
+    Put procedure print in the runtime environment.
+    We provide print.merl!
+    
+    ./wlp4gen < prog.wlp4i > prog.asm
+    java cs241.linkasm < prog.asm > prog.merl
+    linker prog.merl print.merl > exec.mips
+    java mips.(twoints or array) exec.mips
+    
+    So, assume "print" is available - it takes input in $1.
+    
+    code(println(expr)) = code(expr) ($3 <- expr)
+                        + add $1, $3, $0
+                        + call print
+                        
+Assigment:
+    stmt -> lvalue = expr
+    For now, assume lvalue = ID (no pointers)
+    
+    stmt -> lvalue = expr
+    code(stmt) = code(expr)
+               + sw $3, _($29)  // _ = lookup ID in symbol table
+
+
+What's left? If and while.
+ - need boolean testing
+ - suggestion: store 1 in $11, and store print in $10
+ 
+Boilerplate code so far:
+    ; prologue
+    .import print
+    lis $4
+    lis $10
+    .word print
+    lis $11
+    .word 1
+    sub $29, $30, $4
+    
+    (put vars on stack)
+    (your code)
+    
+    ; epilogue
+    add $30, $29, $4
+    jalr $31
+
+
+Boolean tests:
+
+
+    test -> expr1 < expr2
+    code(test) = code(expr1) ($3 <- expr1)
+               add $6, $3, $0 ; code generation for exprs only
+               code(expr2) ($3 <- expr2)
+               slt $3, $6, $3 ($3 <- expr1 < expr2)
+    
+    test -> expr1 > expr2
+        (treat this as expr2 < expr1)
+    
+    "using register 5 would be dangerous, so use register 6"CS 241 lec July 15 2015
+
+test -> expr1 < expr2
+    code(test) = code(expr1) ($3 <- expr1)
+               add $6, $3, $0 ($6 <- expr2)
+               code(expr2) ($3 <- expr2)
+               slt $3, $6, $3
+    
+test -> expr1 > expr2 - treat as expr2 < expr1
+
+    Does it make a difference swapping expr1 and expr2 above vs
+    swapping $3 and $6 above?
+
+    Issue: side effects.
+
+    expr1 and expr2 could contain functions that print things.
+    In C and C++, the programmer shouldn't rely on whether expr1 or expr2
+    to expect one behaviour or another.
+    It can make an observable difference,but we can't expect that to matter.
+        
+
+test -> expr1 != expr2
+    code(test) = code(expr1) ($3 <- expr1)
+    add $6, $3, $0 ($6 <- expr1)
+    code(expr2) ($3 <- expr2)
+    slt $5, $3, $6 ($5 = $3 < $6) \
+    slt $6, $6, $3 ($6 = $6 < $3) / at most one of these will be 1
+    add $3, $5, $6 ($3 = $5 OR $6)
+    
+test -> expr1 == expr2
+    Treat as !(expr1 != expr2) as before, and then:
+    sub $3, $11, $3 ($3 <- 1-3
+    
+    >=, <= - exercise
+    
+If stmt -> if(test) {stmts1} else {stmts2}
+    code(stmt) =
+        code(test) ($3 <- test)
+        beq $3, $11, true
+        code(stmts2)
+        beq $0, $0, endif
+        true:
+            code(stmts1)
+        endif:
+        
+    BUT if there are multiple if statements, we need unique label names.
+        The easiest way to do that is to keep some kind of a counter running, and
+        append the count to each new label.
+        
+        e.g. counter x
+        => elsex, endifx, truex, for labels, and x++ for each new stmt
+        
+        Watch out for nested if statements, though!
+            Generate your labels before you recurse.
+
+While stmmt -> while(test){stmts}
+    Use a counter Y for while labels (if we so choose).
+    code(stmt) =
+        loopY:
+        code(test) ($3 <- test)
+        beq $3, $0, doneY
+        code(stmts)
+        beq $0, $0, loopY
+        doneY:
+
+Up until this point, this solves assignment 9.
+Advice: If at first you don't succeed, you must debug your compiler,
+and look at your generated MIPS assembly. To help yourself out, generate
+comments!
+
+"We move on now to the beginnings of assignment 10."
+"Now we need to support procedures and pointers."
+
+7 things needed to support pointers:
+- NULL
+- dereferencing
+- addressOf
+- pointer comparison
+- pointer arithmatic
+- allocation/deallocation
+- assignment through pointers
+
+NULL
+    Can use 0 (in C and C++, it is mapped to NULL)
+    BUT that doesn't mean the compiled code must use a bunch of zeroes to represent it.
+    Note: 0 is a valid memory address!
+    
+    e.g.
+        int *p = (int*)(x - x) is not necessarily zero, but undefined
+    
+    Idea: use 1 to represent NULL so that dereferencing it will crash.
+    
+    factor -> NULL:
+        codE(factor) = add $3, $11, $0
+
+Dereference
+    factor1 -> *factor2
+        code(factor1) = code(factor2) ($3 <- factor2)
+                        lw $3, 0($3)
+
+Comparison - same as int comparison
+    Except that there are no negative pointers.
+    So pointer comparison should be unsigned.
+    Use sltu instead of slt.
+    
+    So, for generating code for, e.g.,
+        test -> expr1 < expr2
+    use slt if expr1, expr2: int
+    and use sltu if expr1, expr2: int*
+    
+    Re-run your typeOf function on expr 1 or expr2 to recompute the types!
+    Or, add a type field to each tree node.
+    Your typeOf procedure records each node's type (if any) in the node itself.
+    
+    Marmoset can't test this, but we need to be able to do it for the sake of pointer arithmatic.
+    
+Pointer arithmetic
+    expr1 -> expr2 +/- term
+    The exact meaning of this depends on types.
+    expr1 -> expr2 + term
+        if expr2, term: int (as before)
+        if expr2: int*, term: int (means expr2 + 4*term)
+            code(expr1) = code(expr2)
+                          push($3)
+                          code(term)
+                          pop($5)
+                          mult $3, $4
+                          mflo $3
+                          add $3, $5, $3
+        if expr2: int, term: int* (means 4*expr3 + 4*term)
+            Similar to above.
+
+Subtraction
+    expr1 -> expr2 - term
+    if expr2, term: int (as before)
+    if expr2: int*, term: int (means expr2 - 4*term)
+        Similar in addition, but subtract instead of add.
+    if expr2, term: int* (pointer subtraction; (expr2 - term)/4)
+        code(expr1) = code(expr2)
+                      push($3)
+                      code(term)
+                      pop($5)
+                      sub $3, $5, $3
+                      div $3, $4
+                      mflo $3
+
+Assignment through pointer dereference
+    LHS - address of which to store value
+    RHS - the value
+    stmt -> ID = expr
+    stmt -> *factor = expr     // *x = y "store y at the location denoted by x"
+    Recall: LHS of assign statement is an lvalue
+        code(stmt) = code(factor)
+        push($3)
+        code(expr)
+        pop($5) ($5 <- factor)
+        sw $3, 0($5)
+        
+        "We don't do anything to the STAR"
+
+Address of (&lvalue)
+    code(&ID) = lis $3
+                .word ____   // look up ID in symbol table
+                add $3, $29, $3
+    
+    code(&*factor) = code(factor)
+
+New/delete
+    In the runtime environment! "You don't have to write them, I had to write them!"
+    alloc.merl "About 600 lines of MIPS"
+    Link to assembled MIPS.
+    Must be linked last! It needs to know where the end of the program is.CS 241 Tutorial 1 May 15 2015
 
 Recall the definition of a fibonacci number:
     Fn = Fn-1 + Fn-2
@@ -4097,3 +5481,240 @@ Context-Free Grammars (CFGs)
         else if (rule == "S -> (S)") return 1 + eval(S);
         else if (rule == "S -> SS) return max(eval(S1), eval(S2));
 
+CS 241 Tutorial 7
+
+Topics: Top-down parsing
+
+Definitions:
+
+LL(1): "The kind of top down parsing that we are talking about in this course."
+    - Left-to-right scan of input
+    - Left-to-right canonical derivation
+    - 1 symbol of lookahead
+
+    Top-down parser: begins at start symbol and finds a derivation for the input
+    string.
+
+    An LL(1) grammar is a grammar that can be parsed by an LL(1) parser.
+
+Predict function:
+
+    A grammar is LL(1) only when the output of the Predict function is of size
+    at most 1.
+
+    Predict(A,a) = { A -> GAMMA | a IN First(GAMMA) OR
+                                  (GAMMA =>* EPSILLON AND a IN Follow(A)}
+    "GAMMA is the right hand side of the rule."
+
+    First(GAMMA) = { b | GAMMA =>* bB for some B }
+    "Possible first terminal symbols that can be eventually derived from GAMMA."
+
+
+Ex. Grammar:
+
+    1) S' |-S-|
+    2) S -> aXYb
+    3) S -> XY
+    4) X -> pX
+    5) X -> EPSILLON
+    6) Y -> q
+    7) Y -> EPSILLON
+
+
+    Step 1: Create predict table
+
+    First(|-S-|) = {|-}
+    First(aXYb) {a}
+    First(XY) = {P,q}
+    First(pX) = {p}
+    First(EPSILLON) = {}
+    First(q) = {q}
+
+    Follow(S') = {} "Nothing can come after the entire string"
+    Follow(S) {-|} "Only rule 1 has S on the right hand side."
+    Follow(X) = {b, -|, q} "Y can become q or EPSILLON"
+    Follow(Y) = {b, -|} "EOF because it can come after S (on left hand side)
+
+    Three things to look for when creating the follow sets:
+    
+        non-terminal followed by something - add First(something)
+    
+        terminal at the end of the rule -> add parent's follow set
+    
+        followed by something that can be empty -> add that something's follow
+        set
+
+    Constructing predict table:
+
+        Rule 1 has |- in first list - put a 1 at (S', |-)
+        2 in (S,a)
+        3 in (S,p) and (S,q)
+        4 in (X,q)
+        6 in (Y,q)
+        "that handles all of our first sets"
+
+        5 in X,P X,q X,-|
+        7 in Y,b Y,=|
+        "that's our follow set part"
+
+        So our grammar is LL(1) because Predict only put at most one rule in
+        each cell.
+
+Parsing example:
+
+    Action     |  Consumed Input  |  Stack  |  Remaining input
+    ----------------------------------------------------------
+    Initialize    EPSILLON           S'        |-appqb-|
+
+    "Our symbol on the stack is S' and our upcoming input is |-, so our predict
+     table tells us to apply rule 1."
+
+    expand 1      EPSILLON           |-S-|     |-appqb-|
+
+    "First symbol on the stack and first on remaining input are the same, so we
+     match it."
+
+    match |-      |-                 S-|       appqb-|
+    expand 2      |-                 aXYb-|    appqb-|
+    match a       |-a                XYb-|     PPqb-|
+    expand 4      |-a                pXYb-|    PPqb-|
+    match p       |-ap               XYb-|     Pqb-|
+    expand 4      |-ap               pXYb-|    Pqb-|
+    match p       |-app              XYb-|     qb-|
+    expand 5      |-app              Yb-|      qb-|
+    ...
+    "We are done when we see EOF"
+
+    Now how do we recover the derivation?
+
+        Read off the rules applied.
+        In this case: 1, 2, 4, 4, 5, ...
+        S' => |-S-| => |-aXYb-| ...
+
+        This is a left-most derivation (this property is a byproduct of the
+        algorithm).
+
+        We can also build a parse tree by applying each rule in the list to the
+        leftmost non-terminal leaf, starting with S'.
+
+        S'
+        |\\
+        |-S-|
+        //|\
+        aXYb
+        /| ...
+        PX
+        /|
+        PX
+         |
+         EPSILLON
+
+    If we change rule 2 to "S -> Sab", is our grammar still LL(1)?
+
+        No.
+
+        Recompute the predict table, see if there are no two entries in the same
+        cell.
+        In order to prove that it is LL(1) you have to compute the whole table.
+
+        First(Sab) = {p,q,a}
+        Follow(S) = {a,-|}
+        In table: 2 and 3 in (S,a)
+        So parsing |-ab-| is difficult, since the parser only sees 'a' and
+        doesn't know how many 'ab's to create before continuing.
+
+        Notice that here we also have left-recursion.
+
+            S is on our stack, and S is the first on the right hand side of the
+            rule (we can expand forever to infinitely many S's without reading
+            any new input).
+CS 241 Tutorial 10
+
+Topics:
+    Code generation
+    Expressions
+    Switch statement
+    Test code
+
+Code gen tips and conventions
+    - store all results in $3
+    - store intermediate results on the stack
+    - write implementation-level helper functions (e.g. push.pop)
+    - store 4 in $4, 1 in $11
+    - output comments with assembly code
+
+Expressions
+    code(factor -> ++lvalue) =
+        // an lvalue is something you can assign to, so code(lvalue) should return an address
+        code(lvalue); // assume this returns an address into $3 to the var
+        add $5, $3, $0
+        lw $3, 0($3)
+        add $3, $3, $11
+        sw $3, 0($5)
+    
+    code(factor -> lvalue++) =
+        code(lvalue);
+        add $5, $3, $0
+        lw $3, 0($5)
+        add $6, $3, $11
+        sw $6, 0($5)
+
+Switch statements
+    switch(expr) {
+        case (expr) {
+            statements
+        }
+        case (expr) {
+            statements
+        }
+        ...
+        default {
+            statements
+        }
+    }
+
+    code(statement -> switch(expr) {cases default}) =
+        code(expr)
+        // add $6, $3, $0 - don't! Could be overwritten by nested switch statement!
+        cases.label = endSwitchX;
+        code(cases)
+        code(default)
+        endSwitchX:
+    
+    
+    code(cases -> cases2 case) =
+        cases2.label = cases.label;
+        case.label = cases.label;
+        code(cases)
+        code(case)
+    
+    code(cases -> EPSILLON) =
+    
+    code(default -> default {statements}) =
+        pop($5) // get rid of comparison value off the stack
+        code(statements)
+
+    code(case -> case(expr) {statements} =
+        code(expr) // $3 <- eval(expr)
+        pop($5) // get value to compare
+        bne $5, $3, endCaseY
+        code(statements)
+        beq $0, $0, case.label
+        endCaseY:
+            push $5
+            
+    "This was essentially a big if-statement."
+    e.g. if(expr1 == expr2) {
+            statements1
+         } else {
+            if (expr1 == expr3) {
+                statements2
+            } ...
+    
+    "Except we would only want to evaluate expr1 once, to avoid any extra side effects."
+    "A general C switch looks different."
+    
+    switch (expr1) {
+        case NUM: statements1
+        case NUM: statements2; break
+        default: statementN
