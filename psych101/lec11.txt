@@ -1,0 +1,307 @@
+11a Social Psychology II: The Perceiver Shapes Reality and the Interaction of
+    the Person and the Situation
+    
+    Three basic units:
+     - the power of the situation
+     - the power of the person "the perceiver shapes reality"
+        - fundamental attribution error "why someone did something"
+        - stereotyping "a distortion of reality"
+        - self-fulfilling prophecies "believing it makes it true"
+     - the interaction of the person and the situation
+        - the two factor theory of emotion
+        - cognitive dissonance theory
+        - prof's research: stereotype threat
+
+11b Fundamental Attribution Error
+    
+The Origin of Fundamental Attribution Error
+ - study from a group of psychologists, in particular Fritz Heider
+ - brought a Gestalt tradition
+    - the whole isn't the sum of its parts, etc.
+ - the whole not equal to the sum of its parts is most relavent to understanding
+   other people
+ - person perception is a natural extension from the perception of objects
+
+When you perceive somebody, how do you decide what type of person they are?
+ - Heider focused on the idea that seeing a behaviour invokes the question,
+   "why did they do it?"
+ - dispositional attribution - attributing behaviour to the person
+    - "I punched him because I'm a mean person."
+ - situational attribution - behaviour influenced by the situation
+    - "I punched him because he dissed my mother."
+ - what is the reason for the person's behaviour?
+
+What do people do when they see someone engage in a behaviour?
+
+Jones and Harris Study (1967)
+ - subjects read pro or anti-Castro essays (after Cuban missile crisis)
+ - the situation was that either the individual chose to write the essay or
+   they were given no choice
+    - does the produced essay reflect their real attitudes?
+       - according to attribution theory, "I don't know".
+ - being forced to write a pro-Castro essay didn't make people more pro-Castro
+ - people would assume that they wrote it because that's the type of person
+   they are, despite being forced to write that essay
+    - this is the fundamental attribution error
+
+The Ross, Amabile, and Steimetz Game Show Study (1977)
+ - one person was the "host", the other is the contestant
+    - "people assume Alex Trebek is smart"
+ - questioner got to pick 10 things that they thought they knew and somebody
+   else would be unlikely to know (in the public domain)
+ - there were also observers watching the "game show"
+ - since the "host" was chosen by chance, the two people should be similar
+ - contestants even believe that the host is smart
+
+"The behaviour engulfs the field"
+ - behaviour (figure) stands out; the situation is ground
+ - the focus on the person attributes the behaviour to them
+ - culture plays a big role; a lot stronger in western cultures
+    - emphasis on independance and autonomy; people make their own choices
+    - eastern cultures emphasize harmonious relations and responibilities
+       - easterners more sensitive to the situation
+
+11b2 Stereotyping
+ - based on a certain characterization of what members of a specific group
+   are like
+ - some stereotypes are acceptable (e.g. lawyers)
+ - other stereotypes are less acceptable (e.g. ethnicity)
+ - lead to an expectation of what we think people are going to be like,
+   and we tend to read that into their behaviour
+ - particular content will be read into their behaviour
+
+Study by Darley and Gross (1983)
+ - people come in and act as a teacher
+ - watch 9 year old Hannah take a standardized test
+ - Hannah's performance is baffling - mixed bag of hard and easy
+   questions correct
+ - asked to determine how smart Hannah is
+ - stereotype set up - Hannah picked up in front of a huge mansion vs.
+   a trailer park
+ - half of the subjects judged how smart she was before watching her 
+   performance, after just watching the video
+ - expectations were much higher for "rich" Hannah, especially after seeing
+   her confusing test performance
+
+The automatic activation of stereotypes affects evaluation - Devine (1989)
+ - people sometimes rely on and use stereotypes without even being conscious
+   that they are
+ - Devine wanted to see if activating a stereotype about people of colour,
+   without knowing it, could affect the evaluation of a person whose race is
+   unknown
+ - submiminally primed with stereotype-related words flashing on the screen
+ - asked to read a story about Donald, a jerk
+ - asked, "how aggressive is Donald?"
+ - when primed with African American stereotype, people saw Donald as more
+   agressive, despite their level of prejudice
+ - presumably it would also affect evaluation of meeting a person of colour
+   in real life
+
+UWaterloo study by Sinclair and Kunda (1999)
+ - subjects gave an oral presentation where they pitch themselves to a job
+   position
+ - the person evaluates the manager who is either black or white, with 
+   positive or negative feedback
+ - people dislike the manager more after negative feedback if they are black
+ - "we use the stereotype to reach our desired conclusions"
+
+11b3 Self-Fulfilling Prophecies
+ - the prophecy fulfills itself
+ - the prophecy, the beliefs, creates its own reality and makes it happen
+ - e.g. thinking the stock market will crash leads to people withdrawing
+   their money, crashing the stock market
+
+The Pygmalion Effect in the Classrom - Rosenthal and Jacobson (1968)
+ - the belief that someone can become good and successful will become
+   good and successful
+ - five children picked at random from a number of elementary classes
+ - teachers told that they are late bloomers, soon-to-be geniuses
+ - these children ended up doing better
+ - the expectation of the teacher of them to become smarter actually makes
+   them smarter
+ - how does this happen?
+
+Self-Fulfilling Prophecies in Dating - Snyder, Tanke and Bersheid (1977)
+ - men and women asked to meet a stranger over the phone
+ - had fake portfolios of what the other person was like
+ - the men were given all the same information, the only difference was in
+   the manipulated photograph of the woman that they believed they were
+   speaking to
+ - videotaped each talker separately; asked people how they behaved
+ - men were a lot nicer to the women they thought were attractive
+ - what is assumed is that attractive women are more desirable, friendlier,
+   and nicer
+ - the "what's beautiful is good" stereotype
+ - would that stereotype create its own reality?
+ - women's responses were the start of the self-fulfilling prophecy
+ - women seen as unattractive responded less kindly
+
+Model for Creating a Self-Fulfilling Prophecy
+
+    1. Perceiver's expectations
+    2. Perceiver's behaviour toward the target
+    3. Target's behaviour toward the perceiver
+
+11c1 The Two-Factor Theory of Emotion
+
+Early Models of Emotion
+
+    William James
+     - believed that emotions are experienced because we act a certain way
+     - e.g. running from a bear makes you scared
+     - reaction is first physiological
+    
+    Cannon and Baird argued the opposite
+     - first understand it, then that leads to the emotional reaction
+    
+    Two Factor Theory
+     - parts of both of these arguments
+     - physiological arousal AND cognitive interpretation of the physiological
+       arousal
+     - the two factors are the physiological arousal, and the cognitive 
+       arousal
+     - theory argues that emotions stem from physiological arousal
+        - e.g. sweating, heart pumping, etc.
+     - cognitive label supplied to arousal to determine emotion
+       - sweating => scared OR excited?
+     
+Anger and Your Mother Study - Schacter and Singer (1962)
+ - wanted to see how psychological arousal together with a label, could
+   go together to create the emotional reaction of anger
+ - told subjects they were studying vision
+ - shots given; told they will be aroused or not aroused
+ - 1/3 were given a placebo
+ - asked to complete a questionaire with another person
+ - confederate gets angry
+ - how many men has your mother had sex with other than your father?
+    - 4-6, 6-10, 20 or more
+ - questions also asks the subjects to rate their feelings
+ - people with physiological arousal but no explanation
+    - they used the explanation from the situation
+    - these people had heightened anger
+ 
+The Attraction and the Bridge - Dutton and Aron (1974)
+ - high, rickety bridge (arousing)
+ - attractive and unattractive woman meets a guy on the high bridge or
+   a low bridge
+ - asked to complete a questionaire
+ - physiological arousal - misinterpreted as being caused by attraction
+   for the woman? (given her number)
+ - independant variable - do they call her?
+ - physiological arousal + high bridge = love! (label)
+ - low bridge, no physiological arousal = not as attracted
+ - way more guys called her after meeting on the high bridge (50%) vs
+   the low bridge
+
+11c2 Cognitive Dissonance Theory
+ - between 1962 and 1967, it dominated social psychology by far (90% of 
+   studies!)
+ - theory developed by Leon Festinger (mot famous of Lewin's students)
+ - Festinger wanted to understand what happens when we have thoughts that
+   don't go together
+ - thought much of our psychology is making sense of these conflicting
+   thoughts
+ - argued that we get uncomfortable/anxious when thoughts don't fit
+   together, which motivates us to make the easiest change to erase the
+   conflict
+
+Participant Observation Study - Festinger and Schacter
+ - found out about a cult
+ - they predicted that the world was going to end
+ - sold their houses when told that only the followers will be saved
+ - Festinger predicted what would happened to this cult
+ - what happens to these people when the world doesn't end?
+    - conflicting cognitions
+    - rationalized that their cult had saved the world rather than being
+      misguided
+
+How much money would it take to get you to lie? - Festinger and
+Carlsmith (1959)
+ - had subjects asked them to turn pegs on a board for half an hour
+ - experimenter explains that they want you to tell the next participant
+   that it was a fun experiment
+ - offered $1 or $20 to agree to do this
+ - control => not fun
+    - no dissonance
+ - $20 => still not very far
+    - money explains discrepancy "I did it for the money"
+ - $1 => very fun
+    - conflicting thoughts => you decide that it WAS fun
+
+Model of Cognitive Dissonance
+ - enjoyable
+    - no external reward
+       - self-perception: "I do this because I like it"
+          - intrinsic motivation
+    - external reward
+       - self-perception: "I do this because I'm paid to"
+          - extrinsic motivation
+ 
+ The fact that you lied cannot be changed, or at least not without
+ changing how you feel about the task.
+
+The Role of Arousal in Cognitive Dissonance - Zanna and Cooper (1974)
+ - cognitive dissonance interpretation is unique because conflicting
+   thoughts cause arousal, anxious, nervous, and upset
+ - uses two factor theory to connect arousal to Cognitive Dissonance
+ - most students don't like tuition increases
+ - had subjects compose an essay which was supposedly submitted to the
+   Board of Governors as an argument for the tuition increase
+ - in other condition, an illusion was created that people had a choice
+   about doing it - high choice condition
+    - board member pleads to class that they desperately need support for a
+      tuition increase, but told they are free to choose
+ - applied another level to the study so that they had high and low choice,
+   but also took a pill
+ - pill was said to cause arousal or calming
+    - arousal from dissonance could be blamed as the pill
+    - "placebo; made of jello"
+    - high dissonance from calming pill - changed their attitude a lot
+
+11c3 University of Waterloo Research Focus - Stereotype Threat
+ - prof's research!
+ - stereotype existing undermines that group's performance
+ - even if they don't believe the stereotype, they worry about portraying or
+   confirming the stereotype
+
+Intellectual Test Performance and Group Differences - A Bit of History
+ - group differences on intellectual test performance has been a contentious
+   issue
+ - some of the early intelligence tests justified certain groups of society
+   being above others - Eugenics Movement
+ - has effected immigration policies in Canada and U.S.
+ - group differences may actually be about the stereotypes than they are about
+   actual differences in ability or potential
+
+Demonstrating the Effect of Stereotype Threat on Intellectual Test Performance -
+Spencer, Steele and Quinn (1999)
+ - looked at stereotype threat and women's performance on Math tests
+ - some told there are no gender differences on this test, so gender is now
+   irrelavent
+ - some told there are gender differences, but not about the direction of the
+   bias; it is assumed that men do better
+ - When told about gender differences, men scored a bit higher than usual (26%),
+   and women scored significantly lower (7%).
+ - When told there are no gender differences, men and women scored about the
+   same (19% vs 17%). 
+ - There is a substantial detriment being caused by the concern about gender
+   differences and having to worry about confirming the stereotype.
+ - When told a test is under construction and non-diagnostic of their ability,
+   minorities score much better.
+ - In post-communist Poland, women were encouraged to do Math and were impacted
+   less by the stereotype threat.
+
+The Impact of Stereotypic Commercials on Women's Math Performance - Davies,
+Spencer, Quinn and Gerhardstein (2001)
+ - watching stereotypic commercials don't affect men's performance, but
+   negatively affect women's performances
+
+The Impact of Stereotypic Commercials on Women's Career Aspirations - Davies,
+Spencer, Quinn and Gerhardstein (2001)
+ - had subjects watch stereotypic commercials and rate desire to enroll in
+   different majors, and different careers, before and after watching
+ - dip in quantitative careers after watching stereotypic commercials for
+   women, and rise in verbal careers
+ - no affect on men
+ - neutral commercials have no affect
+

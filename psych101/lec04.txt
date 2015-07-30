@@ -1,0 +1,240 @@
+4 Developmental Psychology
+
+4a What is Behaviourism
+
+    Classical conditioning
+
+        Pavlov and his dogs
+
+    Operant conditioning
+
+        Skinner and his pigeons
+
+    "Then came the fall of the house of cards - new theories found flaws in
+     traditional conditioning. This is when developmental psychology began."
+
+    Language Acquisition
+
+        How is it that we learn to speak?
+
+    Observational Learning
+
+        "We learn by watching somebody else do something, AKA modelling."
+
+4b Classical Conditioning
+
+    Pavlov wanted to study spit. Why is it there?
+
+        Had test tubes hooked up to the saliva glands of dogs to collect the
+        spit.
+
+        He noticed that after a few days, just walking up to the dogs to give
+        them food would cause them to salivate.
+
+        He then wondered why they were salivating before food was there.
+
+        Unconditional stimulus (UCS) produces an unconditional response (UCR),
+        i.e. food in mouth elicits salivation
+
+        Conditioned stimulus (e.g. metronome) and eventually the neutral
+        stimulus alone produces a conditioned response (CR), thus becoming a
+        conditioned stimulus (CS).
+
+        Pavlov did this with many different neutral stimuli: lights, bells, etc.
+
+    What is learning and unlearning?
+
+        In classical conditioning, learning is associating conditioned stimulus
+        or neutral stimulus with an unconditioned stimulus to the point where
+        the conditioned stimulus produces the unconditioned response.
+
+        Pavlov didn't understand the implications of this and didn't realize how
+        these results could be generalized/
+
+    John Watson was one of the early American behaviourists.
+
+        Didn't study thoughts, but rather what is observable.
+
+        Used Pavlov's ideas on teaching/learning.
+
+        Wagered that he could take twenty children and raise them to be
+        anything. i.e. teaching someone to be afraid of soft and fuzzy.
+
+        You could teach someone something that makes no sense, and they can,
+        for example, learn to be afraid of something irrational.
+
+    This is called the process of generalization
+
+        Occurs when conditioned stimulus is changed a bit but the
+        conditioned response still happens.
+
+        Screaming and crying is the conditioned response - something that can be
+        observed - rather than fear, an unobservable emotion.
+
+    Opposite of generalization is discrimination
+
+        Happens when conditioned stimulus is changes and the conditioned
+        response doesn't happen.
+
+        The concept of "unlearning".
+
+        e.g. Little Albert being afraid of of rats but not bunnies because he
+        can differentiate between the two.
+
+        Can be taught by presenting the unconditioned stimulus only with the rat
+        and never with the bunny.
+
+    Extinction
+
+        Happens when conditioned stimulus (unconditioned response) no longer
+        produces the response.
+
+        "When it no longer happens."
+
+        Theoretically happens if unconditioned stimuli is no longer paired with
+        the conditioned stimuli.
+
+    Problems with classical conditioning
+
+        The only behaviour being influenced is something that they would
+        normally do.
+
+        You can't get the organism to do new, unnatural behaviours (e.g. long
+        division). We can't associate a behaviour or stimuli when teaching long
+        division.
+
+4c Operant Conditioning
+
+    Allows behaviours that wouldn't naturally occur to happen.
+
+    Skinner proposed that any behaviour engaged by anyone has been learnt
+    through operant conditioning.
+
+    How does this happen? How do we get behaviour that doesn't occur as an
+    unconditional response (UCR)?
+
+    Skinner proposed that rewarded behaviour occurs more often in the future,
+    and behaviour that is not rewarded will occur less often.
+
+    Skinner says almost all behaviour follows this.
+
+    Note: Has nothing to do with punishment, only with rewards (or lack therof).
+
+    By rewarding pigeons with food for doing behaviours which he wanted them to
+    do, he could teach them to do miraculous things (e.g. playing Betoven on a
+    tiny piano). Pigeons don't do this naturally.
+
+    Learning is, therefore, about taking on new behaviours.
+
+    Different types of reinforcement:
+
+        Positive reinforcer - getting good things
+
+            e.g. The pigeon getting food
+
+        Negative reinforcer - removing bad things (still good)
+
+            e.g. Taking Aspirin to get rid of a headache
+
+        Note: negative reinforcers aren't punishments.
+
+        Skinner said punishment isn't a way to teach - it doesn't show you what
+        to do. Something bad happening doesn't teach you what to do.
+
+            Punishment leads to inaction rather than action.
+
+        Primary reinforcers - pleasant in their own right, like candy
+
+        Conditioned (secondary) reinforcers - pleasant through association
+
+            e.g. Associating money (secondary) buys pleasant (primary) things.
+
+            Conditioned stimuli (money) gets associated with unconditioned
+            stimuli (what the money buys). Notice how we snuck classical
+            conditioning in to help explain operant conditioning.
+
+    Both argue that thoughts are "epiphenomenon" - things that don't matter and
+    have no influence. All you need to do is study what can be observed, and
+    anything can be explained without looking at thought. This was where operant
+    conditioning fell short, however.
+
+4d Language Acquisition
+
+    Was language learned via behaviourism?
+
+        Skinner argued that language was learnt through enforcement.
+
+        e.g. Children receive reinforcement (like affection) from their parents
+        when they first began to speak words instead of babbling.
+
+    Chomsky said that language learning was innate - an inborn ability to learn
+    language.
+
+    There is a critical period early on in which everyone learns language.
+
+    Chomsky was not a psychologist, but a linguist.
+
+    Aurgued Skinner was naive - language couldn't simply be taught by way of
+    reinforcement.
+
+    "You can teach your pigeon to play the piano, Skinner, but can you teach it
+     to talk?"
+
+    Bottom line: behaviourism is clearly wrong - children learn language very
+    quickly. Babies can hear all the different ranges of sound that people make.
+
+    After about a year, children's brains become used to the language thay they
+    hear and can no longer hear certain sounds.
+
+        e.g. Foereign language speakers have a hard time differentiating between
+        certain non-native syllables.
+
+    Children can learn thousands of words per day and pick up a foreign language
+    without much effort. "Old dogs have a harder time learning new languages
+    than the young pups."
+
+    This all suggests that there is a built-in ability to learn language rather
+    than learning everything by reinforcement.
+
+4e Observational Learning
+
+    "The final nail in the coffin of behaviourism."
+
+    Bandura - Bobo doll study - trained as a behaviourist but criticized it,
+    saying that you can learn by watching others.
+
+    This means that thoughts intervene with one's actions.
+
+    Bobo Doll Study
+
+        In one condition - adults beat up the bobo doll, kick the bobo doll,
+        etc. What would the children play with? Will they beat up the bobo doll?
+
+        Those who didn't witness the beatings hit the bobo doll an average of
+        two times. Those who did hit it sixty-two times.
+
+        These kids learned how to be violent!
+
+        Bandura argued that children learned to be violent by watching violent
+        television.
+
+        This also demonstrated that thoughts matter in learning.
+
+4f The Big Picture: Fundamental Issues Being Addressed
+
+    Nature vs Nurture
+
+    Behaviourists focused most on nurture - Watson raising twenty children into
+    anything, Skinner believing he could create a utopian society through
+    behaviourist principles.
+
+    Now with langauge acquisition and the inborn ability to learn language, we
+    have more of a focus on nature.
+
+    Important question: Could behaviourism explain what was really important? Is
+    it applicable to everyday life? Behaviourism tripped up here by not
+    explaining observational learning.
+    
+    Although no longer an over-arching theory, behaviourism can still be used to
+    control some behaviours (e.g. in therapy).
+

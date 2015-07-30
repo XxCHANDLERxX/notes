@@ -1,0 +1,266 @@
+6a Cognitive Psychology I - Memory: The Big Picture
+
+    Memory as information processing
+
+        Stages and events of memory
+
+    Effortful memory
+
+        When we are trying to learn and remember
+
+    Memory without awareness (and without effort)
+
+        When we remember things we do not realize we remember
+
+    The fragility of memory
+
+        Our memories are often a distorted view of reality
+        Memory isn't a "steel trap" where events are captured and remain
+        perfectly, e.g. when you get in a fight with someone and you both recall
+        events differently.
+
+6b Stages of Memory
+
+    External events -> sensory input -> sensory memory -> attention to important
+    or novel information (encoding) -> short-term memory -> encoding -> 
+    long-term memory
+
+    Short-term memory: Activated memory that holds a few items briefly
+
+    Long-term memory: The relatively permanent and limitless storehouse in
+    memory
+
+    Process of encoding, storage, and retrieval
+
+    We can have problems when we don't remember things
+
+    The information may not have been encoded properly
+
+    We could have trouble remembering information if it got lost in storage
+
+    Can have trouble retrieving the information
+
+6c1 How much do we retain?
+
+    How long do you retain things in short-term memory?
+
+        Remember three letters (f, t, z) and count backwards from 100.
+        Before 20 seconds is up, they have totally lost it.
+
+        Short term memory is limited in length as well as capacity. The basic
+        rule is that our short-term memory can hold 7 +/- 2 things.
+
+        This rule was discovered by Bell labs - this is why we have 7-digit
+        phone numbers!
+
+    How long do you retain things in short-term memory?
+
+        Ebbinghaus' Forgetting Curve - memorize syllables, then given a recall
+        test. Curve starts around 60% and drops off after day 1, levels off
+        around 20%. Note that this is recall, not recognition - recognition is
+        similar, but around 30% higher.
+
+    We can relearn information relatively quickly - Ebbinghaus' Retention Curve
+
+    Number of repititions of a list on day 1 decreases amount of time to relearn
+    the material on day 2 - information is being retained somewhere for later
+    use.
+
+6c2 Cues that Influence Memory
+
+    Ebbinghaus' ideas can be dramatically influenced by cues
+
+    There are all kinds of different cues
+
+    Semantic cues are helpful for memory
+
+    We were given a semantic a semantic hint for one picture - a study used the
+    same pictures with two cues: a midget playing a trombone in a telephone
+    booth vs. an early bird who caught a very strong worm.
+
+    Semantic cues for helping memory
+
+        Semantic (type of ...)
+        Acoustic (rhymes with ...)
+        Visual (written in capitals)
+
+    Cues related to the self-concept are even better
+
+        Best cues for memory are those that can be processed by and relevant to
+        the individual
+
+        Understanding how it matters to you lets you remember it easier
+
+        Self-reference effect; self-centred memory.
+
+    Context effects
+
+        Other cues from the environment/situation that you are in
+
+        We're better at remembering things if we are in the same state we were
+        in when the information was learnt
+
+        Alcohol and memory studies showed this - getting drun while studying?
+        Better write the exam drunk! :P
+
+        Mood - We tend to remember happy things more easily when we are happy,
+        and sad things when we are sad - those with depression tend to remember
+        only the sad things that they have dealt with.
+
+        Thus scuba divers study - memory exercises between land and water showed
+        a very strong context effect if you learn and recall in the same
+        environment.
+
+6c3 Interference in Memory
+
+    As we learn more, the new stuff we learn interferes with old stuff we
+    learned, and vice-versa.
+
+        e.g. Experienced prof used to remember students' names easily, but after
+             learning so many names he has trouble learning new names.
+
+    Learning a new language can facilitate or interfere.
+
+    Proactive interference - French, learned beforehand, interferes proactively
+    while learning another language like Spanish - the French word might be
+    recalled instead of the Spanish one.
+
+    Retroactive interference - Learning Spanish can make it harder to remember
+    your previously-learnt French words.
+
+6c4 Strategies to Improve Memory
+
+    Mnemonics - sayings/patterns developed to remember things
+
+        Only assists you with learning lists, but not understanding the content.
+
+        e.g. OCEAN scale - openness, concientiousness, extroversion,
+             agreeability, neuroticism
+
+        Just knowing lists isn't that useful, though.
+
+    Chunking
+
+        Group items together into different groups
+
+        Particularly helpful for short-term memory so that you can remember more
+        information.
+
+    That's it for effortful memory
+
+        We know memory isn't as good as we would like, is sensitive to cues, can
+        be confused by interfering memories, and can be improved with various
+        strategies.
+
+6d Memory Without Awareness
+
+    We can be influenced by many subtle things
+
+    Ocean, moon, barn, house, canoe, sand, salt...
+
+    Write down favourite band, coffee, and a laundry detergent.
+
+        Most people now write down Tide after being primed with the ocean words.
+
+    Study of amnesiacs - somebody who has amnesia.
+
+    Different kinds of amnesia
+
+        Bad head injury can wipe out recent memories
+
+        Epileptic seizures can lose a period of memory
+
+        Amnesiacs have suffered brain damage such that short-term memories never
+        make it into long-term memory.
+
+        Dan Schachter - story of the golfer
+
+            Avid golfer can't remember anything - says he can't play golf.
+            Goes to play golf and has a perfect swing, uses the lingo, etc. but
+            in his mind he felt that it was his first time playing golf.
+
+    Procedural memory
+
+        Able to do something even without being aware of it - without
+        consciously knowing what they are able to do.
+
+        Despite having no knowledge, people can learn various tasks.
+
+        McMaster University - famous names study
+
+            Week 1 - subjects given list of names to learn
+            Week 2 - pick out from the list of names all of the famous people
+            Result: People picked out the names from the list from week 1 as
+                    famous people.
+
+        People can learn things without being aware of what they have learned.
+
+        Another test:
+
+            Week 1 - Given subjects a long list of words
+            Week 2 - Given a word stem, asked to complete it
+            Result: They spell out words from the list
+
+        Favourite example - prof always puts his manual transmission into first
+        gear at every stop and couldn't recall where/how/why he learned how to
+        do that.
+
+6e The Fragility of Memory
+
+    1970s studies revealed just how fragile our memories can be.
+
+    Memory Construction - The Construction of Automobile Destruction (Elizabeth
+    Loftus).
+
+        How fast were they going when they bumped into each other? 30kph
+        How fast were they going when they smashed into each other? 45kph
+        Was there any broken glass? 20% of "smashed" said yes; 2% of "bumped"
+        said no.
+
+    Trials - eye witnesses are supposed to know what really happened - but that
+    supposition is incredibly naive.
+
+    We tend to remember what we want to remember.
+
+        UWaterloo - Study Skills course study - 8 weeks at UW
+
+            People remember how much their studying was improved, but really
+            just exaggerate how bad they were before they started.
+
+    We paint ourselves in a positive light in our memory.
+
+    Do we forget what we want to forget? That's not so easy. The more we try to
+    suppress thoughts, the more ofen they come back.
+
+        Post-traumatic stress disorder
+
+    We can construct memories very well, but blocking them is hard.
+
+    Recovered memories:
+
+        Psychodynamic orientation - repressed memories from traumatic events in
+        childhood.
+
+        Others believe childhood memories from are just constructions.
+
+        When people recover memories, it can be from hypnosis, guided imagery,
+        etc. But are these false memories? Can we ever recover untainted
+        memories?
+
+    Cautions
+
+        Research has shown that some memories children have could be
+        constructions, but it's easier to show certain things are false than
+        when things are true - e.g. memories of abuse shouldn't be disgarded.
+
+        Younger children, people under hypnosis or guided memory, on certain
+        drugs like sodium pentathol, tend to be less accurate.
+
+        Memories people have always had some recollection of tend to be more
+        accurate.
+
+        It's more important to do more investigations than to rely solely on
+        testimony.
+
+        We can't discern what's a true memory and what's a false memory.
+

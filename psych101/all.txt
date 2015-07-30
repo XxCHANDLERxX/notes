@@ -1377,3 +1377,2122 @@ Lecture 02: Behavioural Neuroscience I
             Grains of sand rolls around on hairs in the vestibular
 
 
+4 Developmental Psychology
+
+4a What is Behaviourism
+
+    Classical conditioning
+
+        Pavlov and his dogs
+
+    Operant conditioning
+
+        Skinner and his pigeons
+
+    "Then came the fall of the house of cards - new theories found flaws in
+     traditional conditioning. This is when developmental psychology began."
+
+    Language Acquisition
+
+        How is it that we learn to speak?
+
+    Observational Learning
+
+        "We learn by watching somebody else do something, AKA modelling."
+
+4b Classical Conditioning
+
+    Pavlov wanted to study spit. Why is it there?
+
+        Had test tubes hooked up to the saliva glands of dogs to collect the
+        spit.
+
+        He noticed that after a few days, just walking up to the dogs to give
+        them food would cause them to salivate.
+
+        He then wondered why they were salivating before food was there.
+
+        Unconditional stimulus (UCS) produces an unconditional response (UCR),
+        i.e. food in mouth elicits salivation
+
+        Conditioned stimulus (e.g. metronome) and eventually the neutral
+        stimulus alone produces a conditioned response (CR), thus becoming a
+        conditioned stimulus (CS).
+
+        Pavlov did this with many different neutral stimuli: lights, bells, etc.
+
+    What is learning and unlearning?
+
+        In classical conditioning, learning is associating conditioned stimulus
+        or neutral stimulus with an unconditioned stimulus to the point where
+        the conditioned stimulus produces the unconditioned response.
+
+        Pavlov didn't understand the implications of this and didn't realize how
+        these results could be generalized/
+
+    John Watson was one of the early American behaviourists.
+
+        Didn't study thoughts, but rather what is observable.
+
+        Used Pavlov's ideas on teaching/learning.
+
+        Wagered that he could take twenty children and raise them to be
+        anything. i.e. teaching someone to be afraid of soft and fuzzy.
+
+        You could teach someone something that makes no sense, and they can,
+        for example, learn to be afraid of something irrational.
+
+    This is called the process of generalization
+
+        Occurs when conditioned stimulus is changed a bit but the
+        conditioned response still happens.
+
+        Screaming and crying is the conditioned response - something that can be
+        observed - rather than fear, an unobservable emotion.
+
+    Opposite of generalization is discrimination
+
+        Happens when conditioned stimulus is changes and the conditioned
+        response doesn't happen.
+
+        The concept of "unlearning".
+
+        e.g. Little Albert being afraid of of rats but not bunnies because he
+        can differentiate between the two.
+
+        Can be taught by presenting the unconditioned stimulus only with the rat
+        and never with the bunny.
+
+    Extinction
+
+        Happens when conditioned stimulus (unconditioned response) no longer
+        produces the response.
+
+        "When it no longer happens."
+
+        Theoretically happens if unconditioned stimuli is no longer paired with
+        the conditioned stimuli.
+
+    Problems with classical conditioning
+
+        The only behaviour being influenced is something that they would
+        normally do.
+
+        You can't get the organism to do new, unnatural behaviours (e.g. long
+        division). We can't associate a behaviour or stimuli when teaching long
+        division.
+
+4c Operant Conditioning
+
+    Allows behaviours that wouldn't naturally occur to happen.
+
+    Skinner proposed that any behaviour engaged by anyone has been learnt
+    through operant conditioning.
+
+    How does this happen? How do we get behaviour that doesn't occur as an
+    unconditional response (UCR)?
+
+    Skinner proposed that rewarded behaviour occurs more often in the future,
+    and behaviour that is not rewarded will occur less often.
+
+    Skinner says almost all behaviour follows this.
+
+    Note: Has nothing to do with punishment, only with rewards (or lack therof).
+
+    By rewarding pigeons with food for doing behaviours which he wanted them to
+    do, he could teach them to do miraculous things (e.g. playing Betoven on a
+    tiny piano). Pigeons don't do this naturally.
+
+    Learning is, therefore, about taking on new behaviours.
+
+    Different types of reinforcement:
+
+        Positive reinforcer - getting good things
+
+            e.g. The pigeon getting food
+
+        Negative reinforcer - removing bad things (still good)
+
+            e.g. Taking Aspirin to get rid of a headache
+
+        Note: negative reinforcers aren't punishments.
+
+        Skinner said punishment isn't a way to teach - it doesn't show you what
+        to do. Something bad happening doesn't teach you what to do.
+
+            Punishment leads to inaction rather than action.
+
+        Primary reinforcers - pleasant in their own right, like candy
+
+        Conditioned (secondary) reinforcers - pleasant through association
+
+            e.g. Associating money (secondary) buys pleasant (primary) things.
+
+            Conditioned stimuli (money) gets associated with unconditioned
+            stimuli (what the money buys). Notice how we snuck classical
+            conditioning in to help explain operant conditioning.
+
+    Both argue that thoughts are "epiphenomenon" - things that don't matter and
+    have no influence. All you need to do is study what can be observed, and
+    anything can be explained without looking at thought. This was where operant
+    conditioning fell short, however.
+
+4d Language Acquisition
+
+    Was language learned via behaviourism?
+
+        Skinner argued that language was learnt through enforcement.
+
+        e.g. Children receive reinforcement (like affection) from their parents
+        when they first began to speak words instead of babbling.
+
+    Chomsky said that language learning was innate - an inborn ability to learn
+    language.
+
+    There is a critical period early on in which everyone learns language.
+
+    Chomsky was not a psychologist, but a linguist.
+
+    Aurgued Skinner was naive - language couldn't simply be taught by way of
+    reinforcement.
+
+    "You can teach your pigeon to play the piano, Skinner, but can you teach it
+     to talk?"
+
+    Bottom line: behaviourism is clearly wrong - children learn language very
+    quickly. Babies can hear all the different ranges of sound that people make.
+
+    After about a year, children's brains become used to the language thay they
+    hear and can no longer hear certain sounds.
+
+        e.g. Foereign language speakers have a hard time differentiating between
+        certain non-native syllables.
+
+    Children can learn thousands of words per day and pick up a foreign language
+    without much effort. "Old dogs have a harder time learning new languages
+    than the young pups."
+
+    This all suggests that there is a built-in ability to learn language rather
+    than learning everything by reinforcement.
+
+4e Observational Learning
+
+    "The final nail in the coffin of behaviourism."
+
+    Bandura - Bobo doll study - trained as a behaviourist but criticized it,
+    saying that you can learn by watching others.
+
+    This means that thoughts intervene with one's actions.
+
+    Bobo Doll Study
+
+        In one condition - adults beat up the bobo doll, kick the bobo doll,
+        etc. What would the children play with? Will they beat up the bobo doll?
+
+        Those who didn't witness the beatings hit the bobo doll an average of
+        two times. Those who did hit it sixty-two times.
+
+        These kids learned how to be violent!
+
+        Bandura argued that children learned to be violent by watching violent
+        television.
+
+        This also demonstrated that thoughts matter in learning.
+
+4f The Big Picture: Fundamental Issues Being Addressed
+
+    Nature vs Nurture
+
+    Behaviourists focused most on nurture - Watson raising twenty children into
+    anything, Skinner believing he could create a utopian society through
+    behaviourist principles.
+
+    Now with langauge acquisition and the inborn ability to learn language, we
+    have more of a focus on nature.
+
+    Important question: Could behaviourism explain what was really important? Is
+    it applicable to everyday life? Behaviourism tripped up here by not
+    explaining observational learning.
+    
+    Although no longer an over-arching theory, behaviourism can still be used to
+    control some behaviours (e.g. in therapy).
+
+5a Developmental Psychology II: The Big Picture
+
+    Physical development
+
+        We'll focus on big changes early and late
+    
+    Cognitive development
+
+        Piaget's Theory
+        Recent evidence extending and qualifying this theory
+
+    Social development
+
+        Attachment Theory - starting in childhood
+        Erikson's Theory - whole lifespan
+        Gender Development
+
+5b Phsyical Development
+
+    Physical Development in Infancy
+
+        Many milestones, but huge variability among the first two years.
+
+        Movement - rolling over to walking up steps.
+
+            Sudden infant death syndrome can be prevented from rolling over and
+            getting their face stuck.
+
+        Standing alone and walking are, on average, separated by a month :3
+
+    Physical Development in Old Age
+
+        Declines in the senses - sharp decline from ages 70 to 90.
+
+        Fatal car accidents most common before 25 and after 55, esp. after 70.
+
+5c1 An Introduction to Piaget's Theory
+
+    Early psychologist active from early 1900s to 1950s.
+
+    Developed his theory by playing with children rather than doing experiments.
+
+    Based on what they did, he would design theories about how they develop.
+
+    Proposed (controversially) that there were stages of development, with
+    dramatic shifts rather than continuous development.
+
+    Schema - a way to think about the world.
+
+        Piaget argued each stage had a different way of thinking about the
+        world.
+
+            e.g. A classroom - we're supposed to take notes, listen, etc.
+
+    Within each schema, we have:
+
+        Assimilation - adding information to your schema.
+
+            e.g. Had to assimilate note-taking tools, lecturer's style, and
+            class format (but we still think of it as a classroom.
+
+        Accomodation - changing your schema based on new information.
+
+            e.g. A play in class instead of a lecture - we would have to
+            develop a new schema to accomodate for lighting, performance,
+            acting, watching, etc.
+
+5c2 Piaget's Stages of Development
+
+    Birth to 2 years
+
+        Sensorimotor - experiencing world through actions (not much thought).
+
+        Object permanence - developed around 8 months. Before then, a dropped
+        rattle would disappear.
+        
+        Stranger anxiety - fear of people the child doesn't know very well.
+        The child learns the permanency of their mother and dislikes their
+        absence.
+
+    2 to 6 years
+
+        Preoperational - representing things with words and images, but not
+        logical.
+
+            e.g. Taller glass looks like it has more water.
+            e.g. Checkers spaced farther apart (even though a 5 year old can
+                 count them).
+
+        Pretend play
+
+        Egocentrism - can't see someone else's perspective.
+
+            e.g. Kids describing what they see while hiding their head instead
+            of what the other person will see.
+
+        Language development
+
+    7 to 11 years
+
+        Concrete operational - thinking logically about concrete events,
+        grasping analogies, arithmetic.
+
+        According to Piaget, they must need these objects in front of them
+        though.
+
+    12 through adulthood
+
+        Formal operational - abstract reasoning (seems to have the least
+        evidence).
+
+        Mature moral reasoning
+
+5c3 Extensions and Qualifications of Piaget's Theory
+
+    Does object permanence really emerge around 8 months?
+
+        No, it's much earlier, in a more general and gradual way.
+
+    Focus on UWaterloo research - Infant Cognition (Dr. Andrea Aguiar).
+
+        Research assistant, now a professor.
+
+        90% of babies showed a response.
+
+        At 2.5 months - simple rule: if something is behind something you won't
+        see it, even if it doesn't cross a gap in the object.
+
+        At 2.5 to 3 months, a doll moving from one side of the object to the
+        other surprises the child if it doesn't show in the gap, but don't pay
+        attention to height.
+
+        From 3 to 3.5 months, objects appearing unexpectedly from behind shorter
+        obstacles will surprise the child.
+
+    Egocentrism and the Theory of Mind
+
+        The notion that you can understand what someone else is thinking.
+
+        Recall: Piaget said egocentrism lasted until around age 7.
+
+        Theory of mind parallels to object permanence - gradual with age, with
+        different aspects to full understanding.
+
+        e.g. Sally puts a ball in a red cupboard, but Anne moves it to the blue
+        cupboard. Kids predict Sally will open the blue cupboard, based on their
+        own perspective. Rather than 7, kids can solve this puzzle around ages
+        4-5.
+
+    Development is more continuous and earlier than Piaget proposed.
+
+        Dr. Aguiar's research showed how bits and pieces are picked up over time
+        rather than with dramatic shifts.
+
+5d Social Development
+5d1 Attachment Theory
+
+    Harlow's monkey studies
+
+        Baby monkeys raised with wire monkey with food, but they prefer soft
+        terry-cloth mother without food.
+
+        Harlow believed that affection and touch is very important.
+
+    Theory behind attachment theory
+
+        Inborn need to bond with our caregiver
+
+        This relationship will be the basis for all other relationships that
+        individual will have.
+
+    The strange situation - Mary Ainsworth
+
+        Mothers come into the experiment with 13-16 month old, leave child in a
+        toy room. How do the children respond to the mother leaving?
+
+        How did the child respond to the mother coming back?
+
+        Secure attachment pattern - child is somewhat upset to see the mother
+        leave, but very happy when the mother returns.
+
+        Anxious attachment pattern - child would be very upset when mother
+        leaves, but very happy and clingy when they return.
+
+        Avoidance attachment pattern - child is either upset or not when the
+        child leaves, but wants nothing to do with her when she comes back.
+
+        These patterns can be divided into secure and insecure attachment.
+
+            Secure - misses the mother, seeks reunion, but is able to deal with
+            time on their own.
+
+            Insecure - either doesn't miss theor mother or isn't able to deal
+            with being on their own.
+
+        This can predict the number of friends children will make when going to
+        school - securely attached infants between 1 and 1.5 are better at
+        making friends and have a sense of social competence.
+
+        There is also evidence that people that have secure relationships are
+        also the ones who develop good adult relationships.
+
+        This would suggest that trust can be taught through a stable, loving
+        relationship with the primary caregiver.
+
+5d2 Erikson's Theory
+
+    Theory goes from infancy to old age.
+
+    Ideas have Freudian roots to them; Erikson was actually Freud's cheufer.
+
+    Believed that there were certain challenges that needed to be dealt with at
+    certain points in one's life. Accomplishing those challenges is the primary
+    social issue during each stage of life.
+
+    Infancy (<1) - basic issue is trust vs. mistrust.
+
+    Toddlerhood (1-2) - basic issue is autonomy vs. shame and doubt "I can do it
+    myself".
+
+    Preschooler (3-5) - Initiative vs. guilt
+
+    Elementary school (6-puberty) - Competence vs. inferiority "doing things
+    well"
+
+    Adolescence (teen-early 20s) - Identity vs. role confusion
+
+    Young adulthood - Intimacy vs. isolation
+
+    Middle adulthood - Generativity vs. stagnation "mid-life crisis", "feeling
+    like you've contributed to the world", "re-emergence of intimacy and
+    identity issues"
+
+    Late adulthood - Integrity vs. despair "I've lived a good life"
+
+    Criticisms:
+    
+        Culture bound (very western). Intimacy and identity in the early
+        1900s have been pushed much later. Autonomy is a very western idea.
+
+        Theory doesn't explain who will have trouble or not.
+
+        Why would Bill Clinton have a mid-life crisis?
+
+        Premature babies - sense of bonding in an incubator is encouraged;
+        holding and cuddling with babies, even in the respirator, gives a
+        better chance.
+
+        Theory is more of a framework that a serious model; order may not be
+        entirely right; some things might be missing.
+
+5c3 Gender Development
+
+    A common observation: children's behaviour, particularly play, is gender
+    stereotyped.
+
+    Why does this behaviour come out?
+
+        Is it how parents treat them? Erikson's attachment theory says parents
+        shape their children.
+
+        A number of studies showed that parents don't have that much influence
+        over children, especially in gener stereotyped behaviour.
+
+        No relationship between the way in which parents treat their children,
+        what values the parents have, and how children turn out.
+
+        Gender stereotypes are kinda like learning an accent.
+
+        We pick it up from the society at large.
+
+    Social Learning Theory
+        
+        The bobo doll version of gender development
+
+        Watch others to see what gets rewarded and what gets punished
+
+        By the way girls and boys are punished/rewareded, children can
+        develope gender type behaviour.
+
+    Gender Schema Theory
+
+        Argues that gender is learned from your culture, which gives you a
+        gender schema; a gender lens.
+
+        Gender-organized thinking, gender-typed behaviour.
+
+        This model explains why boys and girls tend to have same-sex friends.
+
+    Social learning theory and gender schema theory probably both occure and
+    work together to produce gender behaviour.
+6a Cognitive Psychology I - Memory: The Big Picture
+
+    Memory as information processing
+
+        Stages and events of memory
+
+    Effortful memory
+
+        When we are trying to learn and remember
+
+    Memory without awareness (and without effort)
+
+        When we remember things we do not realize we remember
+
+    The fragility of memory
+
+        Our memories are often a distorted view of reality
+        Memory isn't a "steel trap" where events are captured and remain
+        perfectly, e.g. when you get in a fight with someone and you both recall
+        events differently.
+
+6b Stages of Memory
+
+    External events -> sensory input -> sensory memory -> attention to important
+    or novel information (encoding) -> short-term memory -> encoding -> 
+    long-term memory
+
+    Short-term memory: Activated memory that holds a few items briefly
+
+    Long-term memory: The relatively permanent and limitless storehouse in
+    memory
+
+    Process of encoding, storage, and retrieval
+
+    We can have problems when we don't remember things
+
+    The information may not have been encoded properly
+
+    We could have trouble remembering information if it got lost in storage
+
+    Can have trouble retrieving the information
+
+6c1 How much do we retain?
+
+    How long do you retain things in short-term memory?
+
+        Remember three letters (f, t, z) and count backwards from 100.
+        Before 20 seconds is up, they have totally lost it.
+
+        Short term memory is limited in length as well as capacity. The basic
+        rule is that our short-term memory can hold 7 +/- 2 things.
+
+        This rule was discovered by Bell labs - this is why we have 7-digit
+        phone numbers!
+
+    How long do you retain things in short-term memory?
+
+        Ebbinghaus' Forgetting Curve - memorize syllables, then given a recall
+        test. Curve starts around 60% and drops off after day 1, levels off
+        around 20%. Note that this is recall, not recognition - recognition is
+        similar, but around 30% higher.
+
+    We can relearn information relatively quickly - Ebbinghaus' Retention Curve
+
+    Number of repititions of a list on day 1 decreases amount of time to relearn
+    the material on day 2 - information is being retained somewhere for later
+    use.
+
+6c2 Cues that Influence Memory
+
+    Ebbinghaus' ideas can be dramatically influenced by cues
+
+    There are all kinds of different cues
+
+    Semantic cues are helpful for memory
+
+    We were given a semantic a semantic hint for one picture - a study used the
+    same pictures with two cues: a midget playing a trombone in a telephone
+    booth vs. an early bird who caught a very strong worm.
+
+    Semantic cues for helping memory
+
+        Semantic (type of ...)
+        Acoustic (rhymes with ...)
+        Visual (written in capitals)
+
+    Cues related to the self-concept are even better
+
+        Best cues for memory are those that can be processed by and relevant to
+        the individual
+
+        Understanding how it matters to you lets you remember it easier
+
+        Self-reference effect; self-centred memory.
+
+    Context effects
+
+        Other cues from the environment/situation that you are in
+
+        We're better at remembering things if we are in the same state we were
+        in when the information was learnt
+
+        Alcohol and memory studies showed this - getting drun while studying?
+        Better write the exam drunk! :P
+
+        Mood - We tend to remember happy things more easily when we are happy,
+        and sad things when we are sad - those with depression tend to remember
+        only the sad things that they have dealt with.
+
+        Thus scuba divers study - memory exercises between land and water showed
+        a very strong context effect if you learn and recall in the same
+        environment.
+
+6c3 Interference in Memory
+
+    As we learn more, the new stuff we learn interferes with old stuff we
+    learned, and vice-versa.
+
+        e.g. Experienced prof used to remember students' names easily, but after
+             learning so many names he has trouble learning new names.
+
+    Learning a new language can facilitate or interfere.
+
+    Proactive interference - French, learned beforehand, interferes proactively
+    while learning another language like Spanish - the French word might be
+    recalled instead of the Spanish one.
+
+    Retroactive interference - Learning Spanish can make it harder to remember
+    your previously-learnt French words.
+
+6c4 Strategies to Improve Memory
+
+    Mnemonics - sayings/patterns developed to remember things
+
+        Only assists you with learning lists, but not understanding the content.
+
+        e.g. OCEAN scale - openness, concientiousness, extroversion,
+             agreeability, neuroticism
+
+        Just knowing lists isn't that useful, though.
+
+    Chunking
+
+        Group items together into different groups
+
+        Particularly helpful for short-term memory so that you can remember more
+        information.
+
+    That's it for effortful memory
+
+        We know memory isn't as good as we would like, is sensitive to cues, can
+        be confused by interfering memories, and can be improved with various
+        strategies.
+
+6d Memory Without Awareness
+
+    We can be influenced by many subtle things
+
+    Ocean, moon, barn, house, canoe, sand, salt...
+
+    Write down favourite band, coffee, and a laundry detergent.
+
+        Most people now write down Tide after being primed with the ocean words.
+
+    Study of amnesiacs - somebody who has amnesia.
+
+    Different kinds of amnesia
+
+        Bad head injury can wipe out recent memories
+
+        Epileptic seizures can lose a period of memory
+
+        Amnesiacs have suffered brain damage such that short-term memories never
+        make it into long-term memory.
+
+        Dan Schachter - story of the golfer
+
+            Avid golfer can't remember anything - says he can't play golf.
+            Goes to play golf and has a perfect swing, uses the lingo, etc. but
+            in his mind he felt that it was his first time playing golf.
+
+    Procedural memory
+
+        Able to do something even without being aware of it - without
+        consciously knowing what they are able to do.
+
+        Despite having no knowledge, people can learn various tasks.
+
+        McMaster University - famous names study
+
+            Week 1 - subjects given list of names to learn
+            Week 2 - pick out from the list of names all of the famous people
+            Result: People picked out the names from the list from week 1 as
+                    famous people.
+
+        People can learn things without being aware of what they have learned.
+
+        Another test:
+
+            Week 1 - Given subjects a long list of words
+            Week 2 - Given a word stem, asked to complete it
+            Result: They spell out words from the list
+
+        Favourite example - prof always puts his manual transmission into first
+        gear at every stop and couldn't recall where/how/why he learned how to
+        do that.
+
+6e The Fragility of Memory
+
+    1970s studies revealed just how fragile our memories can be.
+
+    Memory Construction - The Construction of Automobile Destruction (Elizabeth
+    Loftus).
+
+        How fast were they going when they bumped into each other? 30kph
+        How fast were they going when they smashed into each other? 45kph
+        Was there any broken glass? 20% of "smashed" said yes; 2% of "bumped"
+        said no.
+
+    Trials - eye witnesses are supposed to know what really happened - but that
+    supposition is incredibly naive.
+
+    We tend to remember what we want to remember.
+
+        UWaterloo - Study Skills course study - 8 weeks at UW
+
+            People remember how much their studying was improved, but really
+            just exaggerate how bad they were before they started.
+
+    We paint ourselves in a positive light in our memory.
+
+    Do we forget what we want to forget? That's not so easy. The more we try to
+    suppress thoughts, the more ofen they come back.
+
+        Post-traumatic stress disorder
+
+    We can construct memories very well, but blocking them is hard.
+
+    Recovered memories:
+
+        Psychodynamic orientation - repressed memories from traumatic events in
+        childhood.
+
+        Others believe childhood memories from are just constructions.
+
+        When people recover memories, it can be from hypnosis, guided imagery,
+        etc. But are these false memories? Can we ever recover untainted
+        memories?
+
+    Cautions
+
+        Research has shown that some memories children have could be
+        constructions, but it's easier to show certain things are false than
+        when things are true - e.g. memories of abuse shouldn't be disgarded.
+
+        Younger children, people under hypnosis or guided memory, on certain
+        drugs like sodium pentathol, tend to be less accurate.
+
+        Memories people have always had some recollection of tend to be more
+        accurate.
+
+        It's more important to do more investigations than to rely solely on
+        testimony.
+
+        We can't discern what's a true memory and what's a false memory.
+
+7a Cognitive Psychology II: Perception, Preconceptions and Judgement
+
+Perception - the whole is not equal to the sum of its parts
+ - Figure and ground in perception
+ - Gestalt principles/view of perception
+
+Our knowledge and preconceptions shape our perceptions
+ - Illusions
+ - Perceptual set - situation where expectation of seeing something influence
+   what we actually percieve
+
+Judgement under uncertainty
+ - Heuristics in judgement
+ - Artificial intelligence
+
+7b Perception
+
+Gestalt Psychologists
+
+    The whole is not equal to the sum of its parts
+
+        Our thoughts and perceptions shape what we perceive
+
+        We don't perceive reality, but rather our perceptions are our take on
+        reality - even though the reality may be out there in the abstract
+
+        We don't se what's exactly out there, our perceptions are shaped by
+        our thoughts
+
+        We see through a lens of our thoughts/perceptions
+
+    e.g. Picture of black dots suggests a dalmation
+        "You apply meaning to this smattering of dots."
+    e.g. Doghouse illusion with big gaps
+        "You see a whole dog house - even though it's an impossible object."
+
+    => We perceive things that aren't really there
+
+    Finger and ground in perception
+
+        e.g. Young lady vs old lady painting depending on what you focus on
+
+        Figure stands out, ground is hidden behind and not being percieved at
+        the moment that you are looking at it
+
+        e.g. Vase with two faces
+
+        Tho whole can't be equal to the sum of its parts because you can't get
+        two answers from the same part
+
+    Gestalt grouping principles
+
+        e.g. 3 pairs of vertical lines - often called 3 groups due to proximity,
+        rather than two groups of three lines, etc.
+
+        e.g. 3 columns - of 3 triangles, circles, and triangles, as opposed to
+        rows - grouping principle
+
+        e.g. Continuity principle - squiggle with a line through it vs group
+        of semicircles
+
+        e.g. Connectedness - 3 dumbells instead of 6 circles and 3 lines
+
+        e.g. The principle of closure - 3 sliced partial circles that suggests
+        a triangle in the middle - our mind wants to connect the lines
+
+        e.g. Gestalt principles of good form - we tend to see things as a whole,
+        as a gestalt, as a good form, even when it's not there - cube appearing
+        from amongst circles with lines overlayed (Necker's cube)
+
+7c Our Knowledge and Preconceptions Shape Our Perceptions
+
+    Gestalt psychologist's contribution to cognitive psychology
+
+     - showed that thoughts and preconceptions (our beliefs) influence what we
+       see
+
+    Muller-Lyer Illusion
+        A  B  C
+        <-->--<
+
+        AB appears shorter than BC
+
+        Western society sees a lot of corners; certain angles imply that a
+        corner is pointing away from us => BC is farther away, so it must be
+        longer - probably a result from spending lots of times in buildings
+
+    Ponzo Illusion
+
+        Two parallele lines - one on the bottom looks smaller because of our
+        view of perspective on the image underneath
+
+        Also - Shepard illusion - monster chasing another down a hallway towards
+        the camera
+
+    The Ames Room
+
+        Room angled, with a slanted floor (shrinking the ceiling) gives the
+        impression of a giant and a small person - even though they are the same
+        size
+
+    When we think about things, that influences our perceptions of the world
+    around us - "top-down processing" shows that our preconceptions/beliefs
+    influence our view
+
+    Perceptual set - three drawings of a lady's face - first one or last one
+    alone look like a saxaphone player, but seen with the middle one they look
+    like faces
+
+7d1 Schemas and Heuristics
+
+    Thoughts (in particular, judgements) are influenced by the way we think
+    about the world
+
+    Schemas - ways in which we think about the world, and how we come to
+    understand it - summary of what we think the world is like
+
+    Heuristics - simple ways to think about things - shortcut strategies used
+    for decision making
+
+    Why do we need schemas?
+
+        Too much information - must decide what we pay attention to - must
+        summarize to process/memorize, or communicate to others
+
+        Allow us to go beyond the information given
+
+            e.g. paragraph of "gibberish"
+                 LAUNDRY! -> paragraph makes sense now
+
+    Like illusions, heuristics tell us how to process information
+
+        Representativeness heuristic
+
+            e.g. Question - "Linda is a bank teller" or "Linda is a bank teller
+            and active in the feminist movement" - people are drawn to say the
+            latter because she sounds like a feminist, so they pick the
+            representative answer
+
+            e.g. More words in English with K as the first letter of as third
+            letter? - the latter, surprisingly - because it's hard to think
+            about them
+
+            e.g. If you go to the middle east, should you be concerned about
+            terrorist attacks or traffic accidents? - the latter
+
+7d2 UW Research: Priming and Time Judgements (Dr. Jennifer Stolz)
+
+    By priming a concept, judgements about timing can be affected.
+
+    Half of participants - each trial begins with short prime, like "bacon" on a
+    screen.
+
+    Other participants get no prime.
+
+    Two different words appear on the screen at almost the same time (~20-100ms)
+    with one related to the prime (e.g. eggs).
+
+    Subject is asked which word appeared first.
+
+    Not primed -> equally likely to pick either word
+    Primed -> more likely to think eggs appeared first
+
+    Because the concept was primed in your head, it appears to be presented more
+    quickly than it actually was
+
+7d3 Artificial Intelligence - Do people think like computers?
+
+    Computers and the development of computers had a big impact on cognitive
+    psychology
+
+        Information processing - new model "the computer metaphor" to reason
+        about how people thought of things.
+
+    AI was an area of psychology that grew in the 1970s and 80s
+
+    Do people think like computers?
+
+        Early on, computers were a metaphor for how people thought
+
+        When cognitive psychology became popular, we started trying to get
+        computers to think like people
+
+         - It could give insight into how people think about things
+
+    Recall how we talked about "encoding", "storage", and "retrieval"?
+
+    Useful to model theoretical thought processes on a computer
+
+    Big lesson - thought is complex and people don't think about things
+    consistently - computers and people don't think in the same way - it would
+    be very difficult to get a computer to use the same sorts of heuristics that
+    we do
+
+8a Clinical Psychology I: Psychology Disorders
+
+    Five different classes of disorders
+
+        Anxiety Disorders (Phobias)
+
+        Mood Disorders (Depression, Bipolar Disorder)
+
+        Psychotic Disorders (Schizophrenia)
+
+        Dissociative Disorders (Multiple Personality Disorder/Dissociative
+        Identity)
+
+        Personality Disorders
+
+        Book - DSM-IV categorizes disorders - first axis is the first four
+        things, personality disorders are a separate, second axis
+
+8b Anxiety Disorders
+
+    Phobias
+
+        Irrational fear of something you really don't have to be afraid of
+
+        Fairly common condition
+
+        Story about prof's son - scared of dogs, even small terrier, for some
+        reason
+
+        Very treatable
+
+        Graph of phobias and scary things - 40% Very afraid of snakes, etc. vs
+        "bothered slightly" vs "not at all afraid of it"
+
+        People's phobias are logical - snakes can be poisonous, claustrophobia
+        can suggest death from suffocation
+
+        People aren't scared of driving cars, for some reason.
+
+    Generalized Anxiety Disorder - Panic Disorder
+
+        Overwhelming sense of anxiety
+
+        Not localized as being caused by a particular thing
+
+        Can become quite debilitating
+
+        Associated with panic attacks (with panic disorders)
+
+            e.g. Agorophobia - fear of open placesm being outside
+
+             - Some cases where people stayed inside for 20 years
+
+    Obsessive Compulsive Disorder
+
+        Can vary from mildy to extremely obsessive and debilitating
+
+        16 year old boy worried about germs everywhere
+
+        Washed his hands about 2000 times a day
+
+        Would spend all of his time washing his hands but neglecting the rest
+        of his body, pooping his pants, etc.
+
+        Repetitive thoughts - boy thinking that he is being poisoned
+
+        Repetitive behaviours - checking things over and over again - a few
+        times isn't debilitating, but a few hundred times can be
+
+        Obsessions (repetitive thoughts):
+            
+            dirt/germs/toxins: 40% (among children/adolescents with OCD)
+            something terrible happening: 24%
+            Symmetry, order, exactness: 17%
+
+        Compulsions (repetitive behaviours):
+        
+            excessive handwashing, bathing, grooming: 85%
+            repeating rituals (in/out of door, chair): 51%
+            checking doors, locks, appliances, brakes, homework: 46% 
+
+    Lots of ways to treat anxiety disorders
+
+        Psychanalytic perspective - therapy
+
+            Solves some deep lying problem which is causing the disorder
+
+            Freud's Little Hans case study
+
+                Developed his ideas about Oedipus complex
+
+                Little Hans was very afraid of horses
+
+                Freud only talked to Hans' parents
+
+                Debilitating phobia back then - horses everywhere
+
+                Freud believed that Little Hans had anxiety arising from Oedipus
+                complex transferred onto horses; terrified that the father might
+                castrate him; horses have large penises and wear blinders, like
+                his father's glasses
+        
+        Learning perspective
+
+            Thinks people gain phobias like Little Albert - being afraid of
+            small, furry animals
+
+            Anxiety gained by associating stimuli with something aversive
+
+            Can generalize from one thing to another
+
+            Treatment via unconditioning, e.g. virtual reality training
+
+            OCD - dealt with by rewarding people for not doing their compulsions
+
+        Social cognitive perspective
+
+            Observational learning
+
+            Developed certain phobias by watching others and observing what they
+            are afraid of
+
+                e.g. Prof is slightly uncomfortable with dogs -> his son is
+                afraid of them
+
+            Use models who are doing non-fearful  behaviour to help overcome the
+            fear
+
+        Biological perspective
+
+            OCD can be treated by drugs in some cases
+
+            Phobias fall into natural categories over hsitory - inborn
+            biological fears
+            
+8b) Mood Disorders
+
+    In particular, depression.
+
+    Major Affective Disorder
+
+        AKA unipolar depression
+        Profoundly depressed and lasting over six months
+        Can interfere dramatically with your life
+        Fairly common, and pretty treatable
+
+        Other symptoms:
+            - poor appetite
+            - insomnia
+            - feeling worthless
+            - loss of interest in others
+            - sleeping 14-15 hours a day (or insomnia)
+            - weight gain due to lack of activity
+            - persistant
+            - clear thoughts of suicide "almost all people who commit suicide
+              have depression"
+
+    Bipolar Depression
+
+        Seen as a more extreme version of unipolar depression.
+        Used to be called manic depression.
+        Extreme highs and lows
+        Low side is major affective disorder or unipolar depression
+        High side is euphoric, grandiose, feeling unstoppable
+
+        e.g. Patiient's baseball story
+
+            "I was quite good, semi pro, eventually made the major leagues,
+             won three games as a pitcher. Also I was the top ace in the U.S.
+             military and got to meet the president. Then I decided to run for
+             president, and I became the president. Then, I decided to become
+             god! I still am god!"
+
+        Negative side of euphoria - easily agitated, can be violent, reckless,
+        risk-taking, wasting money
+
+        A number of famous people who have been manic depressive - Winston
+        Churchill, poets.
+
+        Pressured speech - words being pushed out before they are even fully
+        formed. Usually someone in this state is bouncing off the walls with
+        energy and not sleeping.
+
+        Rate of mood change:
+         - Rapid cycling (hours/days)
+         - Months, or even years
+         - Seems to vary within people
+
+        Women suffer from depression more than men (10% of 18-24 year olds vs
+        5% for men).
+        Men are more likely to kill themselves than women, though.
+
+    Explanation of Mood Disorders
+
+        Psychoanalytic perspective
+         - depression is anger turned inward
+         - part of the therapy is to express your anger at the appropriate
+           target
+
+        Biological perspective
+         - strong genetic influences - both unipolar and bipolar disorders run
+           in the same family
+         - certain neruotransmitters there seems to be a depletion in depressed
+           individuals - in particular, noradrenalin and seratonin
+         - drugs that elevate the levels of noradrenalin and seratonin are
+           effective anti-depressants
+         - do the highs and lows of bipolar balance out eventually?
+            - probably not
+            - may be due to poor regulation of neurotransmitters in the synapse
+            - neruotransmitter levels may sometimes be too high, and sometimes
+              too low
+
+        Social cognitive perspective
+         - treatments combine drugs with social cognitive approach are most
+           affective
+         - attributions for failure as internal, stable, or global
+            - internal: it's my fault
+            - stable: it's always going to be this way
+            - global: it will affect my whole life
+         - vicious cycle of negative thoughts/moods
+         - therapy can break this vicious cycle
+
+8d Psychotic Disorders - Schizophrenia
+
+    Thinking is scattered; people don't make any sense.
+
+    Disorganized thinking
+    Delusions - beliefs that are provably false but they still believe it
+    Often delusions of persecution, e.g. "the CIA is spying on me"
+    Disturbed perceptions
+     - auditory hallucinations (hearing voices/sounds that aren't there)
+     - inappropriate emotions and actions
+        - catatonia - can be posturing
+        - emotions not matching the situation
+     - social withdrawl
+        - don't like spending time with people or having anything to do with
+          others
+     - flat affect
+        - no emotion/responsiveness
+        - monotone voice
+
+    Types of Schizophrenia:
+     - Paranoid (preoccupied with delusions/hallucinations)
+     - Disorganized (speech, behaviour, or emotions)
+     - Catatonic (immobility, negativism, parrotlike repeating of others)
+     - Undifferentiated (catch-all; many and varied symptoms)
+     - Residual (withdrawl, after hallucinations/delusions disappeared)
+
+    Two types of symptoms that stand out:
+     - positive symptoms (delusions, hallucinations)
+     - negative emotions (social withdrawl, inappropriate emotions, and flatness
+       or affect)
+
+    Explanations of Schizophrenia
+
+        Psychoanalytic perspective
+         - focus on unconscious
+         - Freud believed unconscious was irrational
+         - he thought that schizophrenia was the overflowing of the irrational
+           unconscious
+
+        Biological perspective
+         - genetic influences
+         - brain neurotransmitters (dopamaine)
+         - one schizophrenic twin means the other has a 50% chance of having it
+
+        Social cognitive perspective
+         - Stress Diathesis Model
+         - suggest schizophrenia is a combination of two things
+         - genetic predisposition is combined with stress experienced
+
+8e Dissociative Disorders - Multiple Personalies
+
+    Note: very different from schizophrenia.
+    Consciousness can be divided, can lose sense of who they are
+    Fugue State
+     - a person disappears and becomes someone totally different
+       "woke up and started a new life"
+     - skeptics say that individuals may just be purposefully leaving their life
+       behind
+     - never the same person at the same time
+
+    Dissociative Identity Disorders
+     - one body can be different identities, often in threes
+     - Three Faces of Eve - Eve White, Eve Black, and Jane
+       "Went through fifteen sets of three personalities."
+     - is this real?
+        - some say this is a real, serious problem
+           - there are distinct patterns of brain activities
+           - seen as a way to cope with anxiety
+           - may be a result of abuse or trauma as a child
+             "being different people in order to cope"
+        - some say it isn't real
+           - social phenomena created by hypnosis in therapy
+           - between 1930-1960 there were two cases per decade
+           - in the 1980s there were 20000 cases
+
+8f Personality Disorders
+
+    Traditionally seen as a very different type of disorder; classified
+    differently by psychiatrists (medical doctors).
+    Difficulty getting along wiht other people.
+    Ranges dramatically.
+    Most prominant/important: Antisocial Personality Disorder
+        - Almost as if they have no conscience
+        - Can commit brutal acts
+        - Can be very charming or charismatic
+        - Many famous mass murderers have antisocial personality disorders
+        - Not upset/aroused by acts that hurt other people, etc.
+        - Coherent thinking; seem normal
+
+    Histrionic
+     - 95% diagnosed are women
+    Narcissistic
+     - 80% diagnosed are male
+    Borderline personality
+     - mostly women
+
+    All three above:
+     - impulsive
+     - dramatic
+     - dramatic style of relating to others
+     - can't get along with other people
+     - tend to be strongly disliked
+
+    Avoidant Personality Disorders
+     - high anxiety and social withdrawl
+     - nowadays would be said to have social phobia
+
+    Schizoid Personality Disorder
+     - mild form of schizophrenia
+     - eccentric behaviour
+     - classified by social withdrawl, magical thoughts
+
+    Classifications of Personality Disorders
+     - Antisocial: destructive people, no conscience
+     - Histrionic, Narcissistic, and Borderline: terrible ways of interacting
+       with others
+     - Avoidant and Schizoid: weak forms of other disorders
+
+Clinical Psychology II: Therapies - The Big Picture
+
+    Some disorders are easier dealt with than others
+    
+    Anxiety disorders
+     - often cognitive behaviour therapies and phobias
+     - almost 50% (85% of new) therapists are CBT
+
+    Mood disorders
+     - major depressive disorder; medication and therapy
+
+    Schizophrenia
+     - medication therapy
+
+    Evaluating therapies
+     - is therapy effective?
+     - if so, why?
+
+9b Anxiety Disorders
+
+    Phobias
+     - extremely high success rate in therapy
+     - usually treated with cognitive therapy
+        - e.g. Calmly looking at a picture of a spider from a distance, work up
+          to a toy spider. eventually a live spider. Systemmatic desensitization
+          that slowly exposes you to the phobia.
+        - cognitive => thoughts trying to be controlled (peaceful, calming
+          thoughts)
+        - behavioural => a behaviour being done
+
+    Cognitive Behavioural Therapy
+
+        Getting people to engage in behaviours that will help them out while
+        using their thoughts to encourage and develop those behaviours
+
+    More serious anxiety disorders
+     - Agorophobia, social phobia, obsessive compulsive disorder
+     - Usually treated with a combination of drug therapy and cognitive therapy
+
+9c Mood Disorders
+
+    Usually treated with both CBT and medication
+
+    Cognitive therapy for depressions
+     - recall that people tend to make a catastrophe of all events in their
+       lives
+     - so we focus on the negative thoughts that depressed people have
+       "it doesn't have to ruin your life"
+       "when your kids get in trouble, it isn't your fault"
+
+    Depression scores
+     - cognitive training patients are much less depressed (3 months?)
+     - people who are waiting got marginally less depressed
+     - (each without drugs)
+     - 15-20% of people seeking therapy are experiencing major depression
+        - don't respond to drugs or therapy
+        - often become suicidal
+        - can turn to Electro-Convulsive Therapy (ECT) "shock therapy"
+           - in 40s and 50s this was used as a punishment
+           - anesthesia is used, and electric current is applied to only
+             one half of the brain
+           - still very controversial/debated; we don't understand how it works
+           - number of shocks varies per person
+
+    30-40% with depression will get better without any treatment in 6-9 months.
+
+    Bipolar Disorder
+
+        Primarily treated with medication (Lithium)
+
+    Schizophrenia
+
+        Primarily treated with medication
+
+        Doing therapy with someone who isn't making sense is too hard
+
+    Group therapy is often included with Bipolar/Schizophrenia
+
+        Allows you to deal with the stigma of having a mental illness
+
+        The stigma can control poeples' expectations
+
+        Can even affect how poeple are treated/viewed within mental hospitals
+
+    On Being Sane in Insane Places - Study by Rosenhan
+
+        Participant observation study
+
+        Had a group of graduate students go to a mental institution claiming
+        that they were hearing voices
+
+        Of 15 graduate students, 14 were admitted and 11 were diagnosed as
+        schizophrenic
+
+        It took the mental health professionals weeks to figure out that these
+        individuals were not suffering from schizophrenia - 9 of 15 had to tell
+        them the truth first
+
+        Writing notes observing the hospital were interpreted as paranoid
+        behaviour
+
+        This shows hwo strong the expectations of being crazy can colour other
+        peoples' views
+
+        Also shows that best intentions can lead to difficulties
+
+        Therapies and treatments may not always be of benefit to the individual,
+        and that there is room for improvement
+
+9e Evaluating Psychotherapies
+
+    Memory and hypnosis - suggested that hypnosis could create false memories,
+    bad things that didn't really happen
+
+    Therapies must be evaluated to ensure that they will help
+
+    Do psychotherapies really help people?
+
+9e1 What does it mean for therapy to be effective?
+
+    Does the person get better? How do you decide?
+    Should the patient decide if the therapy is effective or not?
+    When people want to get better they will say they are better even if they
+    aren't
+
+    e.g. UW's flawed study skills workshop
+
+    What about the word of the therapist's word?
+     - motivated to see improvements
+     - motivated by career reputation
+
+    Have a pre-test and a post-test; measure at the beginning and at the end.
+     - Not so easily accomplished
+     - Spontaneous remission: some people get better without assistance
+     - most people will coem in for therapy when they are at their worst
+
+    Regression to the mean
+     - statistical problems
+     - any score is partly based on chance, and partly based on real measurement
+       of what you are trying to measure
+     - high depression scores reported initially due to distress
+     - scores trend downwards even if there is no change in depression
+
+    What does this mean? How do we fix it?
+     - common to provide a standard, proven treatment and also try a new
+       treatment thought to be more effective
+     - often a setup the patient is concerned about
+     - that behaviour is a progress indicator
+
+9e2 Focus on UW Research on Therapy Effectiveness
+
+    Research by Johnathan Oakman on Social Phobias
+     - social phobics are afraid of interactions with other people
+     - all clients recieved medication therapy
+     - three conditions
+        - control: guided self help; 16 weekly therapist meetings
+        - standard CBT: done in group
+        - CBT with technology; use of videotaping of interactions and role play
+          "I must've looked so nervous... oh wait, I looked normal!"
+
+     - at the beginning and at the end they introduced a new social interaction
+     - the result showed all three conditions work to the same degree
+     - mean time of social phobics here was 18 years
+
+     What does this mean?
+      - you need to make the case that therapy is effective, and show that it is
+        cost effective
+
+9e3 Is Psychotherapy Effective?
+
+    Across the spectrum, the answer would be yes, but not by a huge amount.
+    [Two bell-shaped curves of outcomes; therapy bell translated right quite a
+     bit]
+
+    80% of untreated people have poorer outcomes than the average treated person
+
+    Are some therapies better than others?
+     - studies show that one deos not seem better than the other
+     - a couple studies show that certain therapies are better for certain
+       disorders (like systemmatic desensitization for phobias)
+     - experience and education seem to have little affect on ability of a
+       therapist
+
+    What makes therapy effective?
+     - seemingly just the personal interaction with somebody else; a personal
+       relationship
+     - gives people a sense of optimism and hope
+
+10a Social Psychology I: The Power of the Situation
+
+Kurt Lewin and his two classic statements
+ - behaviour is a function of the person and the situation
+ - there is nothing wuite so practical as a good theory
+
+Conformity and Obedience (in Nazi Germany)
+
+Bystander Intervention (Why do people not do anything when someone needs help?)
+ - often the opposite reasons of what you would expect
+
+10b Kurt Lewin and His Two Classic Statements
+
+Kurt Lewin
+ - the father of the field of social psychology
+ - most people in the field can trace their training back to him
+ - very eclectic psychologist
+ 
+ 1. Behaviour is a function of the person and the situation.
+  - the power of the situation must be examined alongside behaviour
+  - that statement has been fundamental in the understanding of social
+    psychology
+  - most people think that they are not controlled by the situation
+  - social psychologists believe that most people can be treated the same and
+    are affected in the same way by the situation
+
+  2. There is nothing quite so practical as a good theory
+   - approach of social psychology is that you need to have a good theory about
+     what is going on to understand and do something about a problematic
+     situation
+   - concerned with real issues that have a powerful affect on people
+
+10c Conformity and Obedience
+
+The Sherif Norm Formation Study
+ - wanted to understand how people came to have a certain set of beliefs and
+   why these are shared throughout society
+ - Sherif thought of these beliefs as norms
+ - took advantage of a perceptual illusion called the Autokinetic Effect
+    - pinpoint of light fixed on a dark room wall looks like it is moving,
+      since the movement of our eyes is hard to sense, it looks like it's
+      moving
+    - asked people how much the light moved
+    - people's estimates become consistant over time
+    - people with estimates placed in the same room tend to equalize their
+      estimates
+    - groups of people ended up giving a census estimate
+    - a confederate was thrown into the group to give a really small number
+      or a really big number, swaying the consensus
+
+The Solomon Asch Conformity Study
+ - was a Jewish contemporary of Lewin who also fled Nazi Germany
+ - thought that he would find more conformity in Germany than in the US
+ - would people say that long was short if pressured by conformity?
+    - everyone looked at three lines and picked the standard line on their own
+    - but when 7 people before you say 'line 3' (the shorter line), people
+      changed their answers
+    - 70% of people in the study gave the wrong answer at least once
+    - so, almost everyone went with the group, despite unambiguous stimuli
+
+The Stanley Milgrim Obedience Study
+ - felt that Asch's study did not explain the horrendous acts of Nazi Germany
+ - tested whether people would obey authority
+ - will people commit acts of cruelty just because they are told to?
+    - subjects are told that electric shocks will help people learn
+    - teacher instructs student to shock a confederate who gets small shocks
+      and acts nervous; acts in pain
+    - most subjects went to 300 volts (confederate goes silent)
+    - 63% of subjects keep going to 450 volts
+ - conclusion: we are a lot more susceptible to social pressure and obeying
+   authority figures than would be recognized
+ - psychiatrists estimated less then one tenth of one percent would have done
+   it
+ - women and men both come out to 63%
+ - Situation is very powerful. Why?
+    - person feels trapped; they agreed to do this
+    - only do 15 volt steps each time
+    - experimenter doesn't make it easy for the subject to stop
+ - very controversial study; led to ethics review boards
+ - only one of 40 regretted being in this experiment
+
+10d Bystander Intervention
+
+Kitty Genovese (1968)
+ - viciously attacked outside her apartment building
+ - 23 people were woken up and heard her scream, each one heard her,
+   but police weren't called until after the crime was done
+ - common sense notion was that new yorkers just didn't care
+
+Latane and Darley
+ - wanted a theory to understand this
+ - most people believe safety in numbers
+ - Latane and Darley believe that the more people that are around,
+   the less likely they are to help
+ 
+ Smoke filled room study
+  - 55% report smoke in their room when alone
+  - 12% report the smoke when in a group of three
+ 
+ The Seizure Study
+  - set up so that no one else is there to respond
+  - man fakes a seizure
+  - likelihood of someone helping is a direct, negative relation
+    of how many other people are available to help
+  - "breaking down on a lonely road is better than a busy one"
+ 
+ Model of Helping
+  - learning this phenomenon makes it less likely to happen
+  - to help, someone must:
+     - notice the incident
+     - interpret the incident as an emergency "everyone tries to be cool"
+     - assume responsibility "it's my job to help" "diffusion of 
+       responsibility"
+  - once someone attempts to help, there is a conformity effect
+    - one person seeing the incident as an emergency cues others to come
+      and help11a Social Psychology II: The Perceiver Shapes Reality and the Interaction of
+    the Person and the Situation
+    
+    Three basic units:
+     - the power of the situation
+     - the power of the person "the perceiver shapes reality"
+        - fundamental attribution error "why someone did something"
+        - stereotyping "a distortion of reality"
+        - self-fulfilling prophecies "believing it makes it true"
+     - the interaction of the person and the situation
+        - the two factor theory of emotion
+        - cognitive dissonance theory
+        - prof's research: stereotype threat
+
+11b Fundamental Attribution Error
+    
+The Origin of Fundamental Attribution Error
+ - study from a group of psychologists, in particular Fritz Heider
+ - brought a Gestalt tradition
+    - the whole isn't the sum of its parts, etc.
+ - the whole not equal to the sum of its parts is most relavent to understanding
+   other people
+ - person perception is a natural extension from the perception of objects
+
+When you perceive somebody, how do you decide what type of person they are?
+ - Heider focused on the idea that seeing a behaviour invokes the question,
+   "why did they do it?"
+ - dispositional attribution - attributing behaviour to the person
+    - "I punched him because I'm a mean person."
+ - situational attribution - behaviour influenced by the situation
+    - "I punched him because he dissed my mother."
+ - what is the reason for the person's behaviour?
+
+What do people do when they see someone engage in a behaviour?
+
+Jones and Harris Study (1967)
+ - subjects read pro or anti-Castro essays (after Cuban missile crisis)
+ - the situation was that either the individual chose to write the essay or
+   they were given no choice
+    - does the produced essay reflect their real attitudes?
+       - according to attribution theory, "I don't know".
+ - being forced to write a pro-Castro essay didn't make people more pro-Castro
+ - people would assume that they wrote it because that's the type of person
+   they are, despite being forced to write that essay
+    - this is the fundamental attribution error
+
+The Ross, Amabile, and Steimetz Game Show Study (1977)
+ - one person was the "host", the other is the contestant
+    - "people assume Alex Trebek is smart"
+ - questioner got to pick 10 things that they thought they knew and somebody
+   else would be unlikely to know (in the public domain)
+ - there were also observers watching the "game show"
+ - since the "host" was chosen by chance, the two people should be similar
+ - contestants even believe that the host is smart
+
+"The behaviour engulfs the field"
+ - behaviour (figure) stands out; the situation is ground
+ - the focus on the person attributes the behaviour to them
+ - culture plays a big role; a lot stronger in western cultures
+    - emphasis on independance and autonomy; people make their own choices
+    - eastern cultures emphasize harmonious relations and responibilities
+       - easterners more sensitive to the situation
+
+11b2 Stereotyping
+ - based on a certain characterization of what members of a specific group
+   are like
+ - some stereotypes are acceptable (e.g. lawyers)
+ - other stereotypes are less acceptable (e.g. ethnicity)
+ - lead to an expectation of what we think people are going to be like,
+   and we tend to read that into their behaviour
+ - particular content will be read into their behaviour
+
+Study by Darley and Gross (1983)
+ - people come in and act as a teacher
+ - watch 9 year old Hannah take a standardized test
+ - Hannah's performance is baffling - mixed bag of hard and easy
+   questions correct
+ - asked to determine how smart Hannah is
+ - stereotype set up - Hannah picked up in front of a huge mansion vs.
+   a trailer park
+ - half of the subjects judged how smart she was before watching her 
+   performance, after just watching the video
+ - expectations were much higher for "rich" Hannah, especially after seeing
+   her confusing test performance
+
+The automatic activation of stereotypes affects evaluation - Devine (1989)
+ - people sometimes rely on and use stereotypes without even being conscious
+   that they are
+ - Devine wanted to see if activating a stereotype about people of colour,
+   without knowing it, could affect the evaluation of a person whose race is
+   unknown
+ - submiminally primed with stereotype-related words flashing on the screen
+ - asked to read a story about Donald, a jerk
+ - asked, "how aggressive is Donald?"
+ - when primed with African American stereotype, people saw Donald as more
+   agressive, despite their level of prejudice
+ - presumably it would also affect evaluation of meeting a person of colour
+   in real life
+
+UWaterloo study by Sinclair and Kunda (1999)
+ - subjects gave an oral presentation where they pitch themselves to a job
+   position
+ - the person evaluates the manager who is either black or white, with 
+   positive or negative feedback
+ - people dislike the manager more after negative feedback if they are black
+ - "we use the stereotype to reach our desired conclusions"
+
+11b3 Self-Fulfilling Prophecies
+ - the prophecy fulfills itself
+ - the prophecy, the beliefs, creates its own reality and makes it happen
+ - e.g. thinking the stock market will crash leads to people withdrawing
+   their money, crashing the stock market
+
+The Pygmalion Effect in the Classrom - Rosenthal and Jacobson (1968)
+ - the belief that someone can become good and successful will become
+   good and successful
+ - five children picked at random from a number of elementary classes
+ - teachers told that they are late bloomers, soon-to-be geniuses
+ - these children ended up doing better
+ - the expectation of the teacher of them to become smarter actually makes
+   them smarter
+ - how does this happen?
+
+Self-Fulfilling Prophecies in Dating - Snyder, Tanke and Bersheid (1977)
+ - men and women asked to meet a stranger over the phone
+ - had fake portfolios of what the other person was like
+ - the men were given all the same information, the only difference was in
+   the manipulated photograph of the woman that they believed they were
+   speaking to
+ - videotaped each talker separately; asked people how they behaved
+ - men were a lot nicer to the women they thought were attractive
+ - what is assumed is that attractive women are more desirable, friendlier,
+   and nicer
+ - the "what's beautiful is good" stereotype
+ - would that stereotype create its own reality?
+ - women's responses were the start of the self-fulfilling prophecy
+ - women seen as unattractive responded less kindly
+
+Model for Creating a Self-Fulfilling Prophecy
+
+    1. Perceiver's expectations
+    2. Perceiver's behaviour toward the target
+    3. Target's behaviour toward the perceiver
+
+11c1 The Two-Factor Theory of Emotion
+
+Early Models of Emotion
+
+    William James
+     - believed that emotions are experienced because we act a certain way
+     - e.g. running from a bear makes you scared
+     - reaction is first physiological
+    
+    Cannon and Baird argued the opposite
+     - first understand it, then that leads to the emotional reaction
+    
+    Two Factor Theory
+     - parts of both of these arguments
+     - physiological arousal AND cognitive interpretation of the physiological
+       arousal
+     - the two factors are the physiological arousal, and the cognitive 
+       arousal
+     - theory argues that emotions stem from physiological arousal
+        - e.g. sweating, heart pumping, etc.
+     - cognitive label supplied to arousal to determine emotion
+       - sweating => scared OR excited?
+     
+Anger and Your Mother Study - Schacter and Singer (1962)
+ - wanted to see how psychological arousal together with a label, could
+   go together to create the emotional reaction of anger
+ - told subjects they were studying vision
+ - shots given; told they will be aroused or not aroused
+ - 1/3 were given a placebo
+ - asked to complete a questionaire with another person
+ - confederate gets angry
+ - how many men has your mother had sex with other than your father?
+    - 4-6, 6-10, 20 or more
+ - questions also asks the subjects to rate their feelings
+ - people with physiological arousal but no explanation
+    - they used the explanation from the situation
+    - these people had heightened anger
+ 
+The Attraction and the Bridge - Dutton and Aron (1974)
+ - high, rickety bridge (arousing)
+ - attractive and unattractive woman meets a guy on the high bridge or
+   a low bridge
+ - asked to complete a questionaire
+ - physiological arousal - misinterpreted as being caused by attraction
+   for the woman? (given her number)
+ - independant variable - do they call her?
+ - physiological arousal + high bridge = love! (label)
+ - low bridge, no physiological arousal = not as attracted
+ - way more guys called her after meeting on the high bridge (50%) vs
+   the low bridge
+
+11c2 Cognitive Dissonance Theory
+ - between 1962 and 1967, it dominated social psychology by far (90% of 
+   studies!)
+ - theory developed by Leon Festinger (mot famous of Lewin's students)
+ - Festinger wanted to understand what happens when we have thoughts that
+   don't go together
+ - thought much of our psychology is making sense of these conflicting
+   thoughts
+ - argued that we get uncomfortable/anxious when thoughts don't fit
+   together, which motivates us to make the easiest change to erase the
+   conflict
+
+Participant Observation Study - Festinger and Schacter
+ - found out about a cult
+ - they predicted that the world was going to end
+ - sold their houses when told that only the followers will be saved
+ - Festinger predicted what would happened to this cult
+ - what happens to these people when the world doesn't end?
+    - conflicting cognitions
+    - rationalized that their cult had saved the world rather than being
+      misguided
+
+How much money would it take to get you to lie? - Festinger and
+Carlsmith (1959)
+ - had subjects asked them to turn pegs on a board for half an hour
+ - experimenter explains that they want you to tell the next participant
+   that it was a fun experiment
+ - offered $1 or $20 to agree to do this
+ - control => not fun
+    - no dissonance
+ - $20 => still not very far
+    - money explains discrepancy "I did it for the money"
+ - $1 => very fun
+    - conflicting thoughts => you decide that it WAS fun
+
+Model of Cognitive Dissonance
+ - enjoyable
+    - no external reward
+       - self-perception: "I do this because I like it"
+          - intrinsic motivation
+    - external reward
+       - self-perception: "I do this because I'm paid to"
+          - extrinsic motivation
+ 
+ The fact that you lied cannot be changed, or at least not without
+ changing how you feel about the task.
+
+The Role of Arousal in Cognitive Dissonance - Zanna and Cooper (1974)
+ - cognitive dissonance interpretation is unique because conflicting
+   thoughts cause arousal, anxious, nervous, and upset
+ - uses two factor theory to connect arousal to Cognitive Dissonance
+ - most students don't like tuition increases
+ - had subjects compose an essay which was supposedly submitted to the
+   Board of Governors as an argument for the tuition increase
+ - in other condition, an illusion was created that people had a choice
+   about doing it - high choice condition
+    - board member pleads to class that they desperately need support for a
+      tuition increase, but told they are free to choose
+ - applied another level to the study so that they had high and low choice,
+   but also took a pill
+ - pill was said to cause arousal or calming
+    - arousal from dissonance could be blamed as the pill
+    - "placebo; made of jello"
+    - high dissonance from calming pill - changed their attitude a lot
+
+11c3 University of Waterloo Research Focus - Stereotype Threat
+ - prof's research!
+ - stereotype existing undermines that group's performance
+ - even if they don't believe the stereotype, they worry about portraying or
+   confirming the stereotype
+
+Intellectual Test Performance and Group Differences - A Bit of History
+ - group differences on intellectual test performance has been a contentious
+   issue
+ - some of the early intelligence tests justified certain groups of society
+   being above others - Eugenics Movement
+ - has effected immigration policies in Canada and U.S.
+ - group differences may actually be about the stereotypes than they are about
+   actual differences in ability or potential
+
+Demonstrating the Effect of Stereotype Threat on Intellectual Test Performance -
+Spencer, Steele and Quinn (1999)
+ - looked at stereotype threat and women's performance on Math tests
+ - some told there are no gender differences on this test, so gender is now
+   irrelavent
+ - some told there are gender differences, but not about the direction of the
+   bias; it is assumed that men do better
+ - When told about gender differences, men scored a bit higher than usual (26%),
+   and women scored significantly lower (7%).
+ - When told there are no gender differences, men and women scored about the
+   same (19% vs 17%). 
+ - There is a substantial detriment being caused by the concern about gender
+   differences and having to worry about confirming the stereotype.
+ - When told a test is under construction and non-diagnostic of their ability,
+   minorities score much better.
+ - In post-communist Poland, women were encouraged to do Math and were impacted
+   less by the stereotype threat.
+
+The Impact of Stereotypic Commercials on Women's Math Performance - Davies,
+Spencer, Quinn and Gerhardstein (2001)
+ - watching stereotypic commercials don't affect men's performance, but
+   negatively affect women's performances
+
+The Impact of Stereotypic Commercials on Women's Career Aspirations - Davies,
+Spencer, Quinn and Gerhardstein (2001)
+ - had subjects watch stereotypic commercials and rate desire to enroll in
+   different majors, and different careers, before and after watching
+ - dip in quantitative careers after watching stereotypic commercials for
+   women, and rise in verbal careers
+ - no affect on men
+ - neutral commercials have no affect
+
+12a Applications of Psychology: Sex, Success, and Health
+ - the psychology of sex
+ - achievement motivation
+ - the psychology of health
+
+The Psychology of Sex
+ - not studied much until about 60 years ago
+ - Kinsey (biological approach)
+ - Masters and Johnson (studied people having sex)
+ - culture and sex
+
+Achievement Motivation
+ - what drives people to get ahead in life
+ - intrinsic motivation (doing something because you want to, not to please or
+   to make money)
+ - leadership styles
+
+The Psychology of Health
+ - stress and disease
+ - maintaining good health
+
+12b The Psychology of Sex
+
+The Kinsey Report
+ - Kinsey was a biologist at the University of Indiana
+ - wanted to understand more about sex, and what people thought about it
+ - interviewed 18000 people about sexual practices
+    - only people who were willing to talk about it
+ - in the 40s and 50s, this may be a reflection of those who were a little more
+   free with their sexual attitudes
+ - Kinsey had a unique way of asking questions, assuming people had done things
+   to force a yes
+ - "people were pretty kinky"
+
+Research from last 10 years reflects a better estimation of sexual behaviour
+ - random sample of population (e.g. census)
+ - make sure that it's completely anonymous
+ - more representative surveys suggest people are more boring than Kinsey
+   suggested
+    - over 75% surveyed have never had an affair while married
+    - Kinsey had reported that about 80% of men and 50% of women had
+      extramarital affairs
+ - people still do a number of different sexual activites, but not as common as
+   Kinsey had suggested
+
+Masters and Johnson's Study of the Sexual Response Cycle (50s)
+ - wanted to know what happened to people when they were having sex
+ - what physiological responses people experience, and how do they describe that
+   experience
+ - had subjects have sex in the lab while hooked up to wires for 
+   physiological readings
+ - findings are now common knowledge
+
+    Sexual Response Cycle
+     - excitement phase
+        - bodies change, blood pressure rises, changes in the sexual organs
+     - plateau phase
+        - building up the excitement; blood pressure continues to rise
+     - orgasm
+        - something that people did not talk about; debates about womens'
+          orgasms
+     - resolution phase
+        - coming down, relaxing, body returns to normal states
+
+ - findings have been helpful for people with people who have sexual problems
+ - problems can be divided into different phases, and corrective excercises can
+   be created
+
+Culture and Sex
+
+    Media images and satisfaction of partners
+     - how does a man feel about his partner when he looks at pictures of a
+       beautiful woman?
+        - true for both genders: seeing beautiful images of someone else makes
+          you less satisfied with your partner
+     - one of the big changes in society is the availability of these images
+
+    Changes in sexual practices across cultures and times
+     - percentage of children born to unwed mothers
+        - western world: rising! (5% in 60s to 30-40% in 2000)
+           - girls enter puberty ~2 years than they used to (average age is 12)
+           - average age of marriage has gone up dramatically
+           - in 2001 the average age of marriage was 30.5 for women and 32 for
+             men, including second marriages
+           - for first marriages, it's 28 for women and 30.5 for men
+           - provides more opportunity for premarital children
+           - married women are giving birth to much fewer children
+           - attitudes have changed significantly from the 60s to the 2000s
+        - Japan: flat, near zero!
+
+12c Achievement Motivation
+
+Two types of achievement motivation:
+ - extrinsically driven by the rewards one will receive
+    - reading 1000 pages and get pizza, kids!
+ - intrinsically driven because one really wants to do it
+
+Daycare Magic Markers Study - Lepper, Greene, and Nisbett (1973)
+ - brought kids magic markers
+    - control condition: "colour with these markers if you want to"
+    - second condition: "if you draw a nice picture, you will get a reward"
+    - third condition: a surprise reward after drawing a picture
+
+ - a week later, magic markers were put out
+    - finding: rewards wreck intrinsic motivation
+       - least playtime with expected reward group
+       - surprised award group had little impact
+
+    Basic principle - when people know that they are going to be rewarded for
+    something ahead pf time, they don't know if they are doing it because they
+    reward it.
+
+    Promised rewards undermine people's intrinsic motivation.
+
+Building Intrinsic Motivation
+ - Mom: "I'll give you $5 for every A."
+    - Child: "As long as she pays, I'll study." (extrinsic motivation)
+ - Mom: "Your grades were great! Let's celebrate by going out to dinner!"
+    - Child: "I love doing well!" (intrinsic motivation)
+
+Leadership Style
+
+Fiedler's research on task and social leadership
+ - wanted to see which leaders were good leaders
+    - e.g. Bobby Knight - a tyrant, tolerates no shenanigans
+    - e.g. more social leaders - involved, interested, makes people happy
+ - which type of leader gets the most out of their players?
+    - social leader is usually better overall, but
+    - if the team is terrible, the task-oriented leader does the best, or
+      if the team is really good (pushes them the extra mile)
+
+12d The Psychology of Health
+
+Placebo Effect
+ - works for high blood pressure, heart attacks, angina
+ - Journal of the American Medical Association (Fall 2001)
+    - argues that the placebo effect is overblown
+    - studies forgot to take into accoun the regression to the mean
+    - when regression to the mean is taken into account, placebo effect is often
+      smaller
+ - known to be useful in helping people deal with pain
+ - when people think they are getting pain medication they seem to do better
+
+Stress
+ - understanding of stress and how problematic it can be for our physical health
+   has driven health psychology
+    - e.g. prof stressed out about taking care of kids and cooking thanksgiving
+      dinner; wife stressed out much differently about her mom's potential death
+ - general adaption syndrome "very biological reaction"
+    - phase 1: alarm reaction (mobilize resources)
+    - phase 2: resistance (cope with stressor)
+    - phase 3: exhaustion (reserves depleted)
+ - control is important
+    - if there is a feeling of control, the situation is much less stressful
+       - e.g. executive rat that can spin a wheel to avoid getting shocked
+         doesn't get sick and die
+    - the appraisal of the situation is crucial in determining the level of
+      stress
+       - stressful event
+          - appraisal: Threat "Yikes, this is beyond me!"
+             - response: panic, freeze up
+          - appraisal: Challenge "I've got to apply all I know."
+             - response: aroused, focused
+ - feeling of panicked stress negatively impacts the immune system
+    - Lymphocytes don't work as well
+    - increased cholesterol
+    - more prone to cancer and heart disease
+
+Promoting Health - Do's and Dont's
+ Do's:
+ - getting lots of exercise
+ - relaxation
+ - best reducer of stress and the best predictor of health is having lots of
+   social support
+
+ Don'ts:
+ - don't smoke or overeat
+

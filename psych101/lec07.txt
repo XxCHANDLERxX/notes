@@ -1,0 +1,194 @@
+7a Cognitive Psychology II: Perception, Preconceptions and Judgement
+
+Perception - the whole is not equal to the sum of its parts
+ - Figure and ground in perception
+ - Gestalt principles/view of perception
+
+Our knowledge and preconceptions shape our perceptions
+ - Illusions
+ - Perceptual set - situation where expectation of seeing something influence
+   what we actually percieve
+
+Judgement under uncertainty
+ - Heuristics in judgement
+ - Artificial intelligence
+
+7b Perception
+
+Gestalt Psychologists
+
+    The whole is not equal to the sum of its parts
+
+        Our thoughts and perceptions shape what we perceive
+
+        We don't perceive reality, but rather our perceptions are our take on
+        reality - even though the reality may be out there in the abstract
+
+        We don't se what's exactly out there, our perceptions are shaped by
+        our thoughts
+
+        We see through a lens of our thoughts/perceptions
+
+    e.g. Picture of black dots suggests a dalmation
+        "You apply meaning to this smattering of dots."
+    e.g. Doghouse illusion with big gaps
+        "You see a whole dog house - even though it's an impossible object."
+
+    => We perceive things that aren't really there
+
+    Finger and ground in perception
+
+        e.g. Young lady vs old lady painting depending on what you focus on
+
+        Figure stands out, ground is hidden behind and not being percieved at
+        the moment that you are looking at it
+
+        e.g. Vase with two faces
+
+        Tho whole can't be equal to the sum of its parts because you can't get
+        two answers from the same part
+
+    Gestalt grouping principles
+
+        e.g. 3 pairs of vertical lines - often called 3 groups due to proximity,
+        rather than two groups of three lines, etc.
+
+        e.g. 3 columns - of 3 triangles, circles, and triangles, as opposed to
+        rows - grouping principle
+
+        e.g. Continuity principle - squiggle with a line through it vs group
+        of semicircles
+
+        e.g. Connectedness - 3 dumbells instead of 6 circles and 3 lines
+
+        e.g. The principle of closure - 3 sliced partial circles that suggests
+        a triangle in the middle - our mind wants to connect the lines
+
+        e.g. Gestalt principles of good form - we tend to see things as a whole,
+        as a gestalt, as a good form, even when it's not there - cube appearing
+        from amongst circles with lines overlayed (Necker's cube)
+
+7c Our Knowledge and Preconceptions Shape Our Perceptions
+
+    Gestalt psychologist's contribution to cognitive psychology
+
+     - showed that thoughts and preconceptions (our beliefs) influence what we
+       see
+
+    Muller-Lyer Illusion
+        A  B  C
+        <-->--<
+
+        AB appears shorter than BC
+
+        Western society sees a lot of corners; certain angles imply that a
+        corner is pointing away from us => BC is farther away, so it must be
+        longer - probably a result from spending lots of times in buildings
+
+    Ponzo Illusion
+
+        Two parallele lines - one on the bottom looks smaller because of our
+        view of perspective on the image underneath
+
+        Also - Shepard illusion - monster chasing another down a hallway towards
+        the camera
+
+    The Ames Room
+
+        Room angled, with a slanted floor (shrinking the ceiling) gives the
+        impression of a giant and a small person - even though they are the same
+        size
+
+    When we think about things, that influences our perceptions of the world
+    around us - "top-down processing" shows that our preconceptions/beliefs
+    influence our view
+
+    Perceptual set - three drawings of a lady's face - first one or last one
+    alone look like a saxaphone player, but seen with the middle one they look
+    like faces
+
+7d1 Schemas and Heuristics
+
+    Thoughts (in particular, judgements) are influenced by the way we think
+    about the world
+
+    Schemas - ways in which we think about the world, and how we come to
+    understand it - summary of what we think the world is like
+
+    Heuristics - simple ways to think about things - shortcut strategies used
+    for decision making
+
+    Why do we need schemas?
+
+        Too much information - must decide what we pay attention to - must
+        summarize to process/memorize, or communicate to others
+
+        Allow us to go beyond the information given
+
+            e.g. paragraph of "gibberish"
+                 LAUNDRY! -> paragraph makes sense now
+
+    Like illusions, heuristics tell us how to process information
+
+        Representativeness heuristic
+
+            e.g. Question - "Linda is a bank teller" or "Linda is a bank teller
+            and active in the feminist movement" - people are drawn to say the
+            latter because she sounds like a feminist, so they pick the
+            representative answer
+
+            e.g. More words in English with K as the first letter of as third
+            letter? - the latter, surprisingly - because it's hard to think
+            about them
+
+            e.g. If you go to the middle east, should you be concerned about
+            terrorist attacks or traffic accidents? - the latter
+
+7d2 UW Research: Priming and Time Judgements (Dr. Jennifer Stolz)
+
+    By priming a concept, judgements about timing can be affected.
+
+    Half of participants - each trial begins with short prime, like "bacon" on a
+    screen.
+
+    Other participants get no prime.
+
+    Two different words appear on the screen at almost the same time (~20-100ms)
+    with one related to the prime (e.g. eggs).
+
+    Subject is asked which word appeared first.
+
+    Not primed -> equally likely to pick either word
+    Primed -> more likely to think eggs appeared first
+
+    Because the concept was primed in your head, it appears to be presented more
+    quickly than it actually was
+
+7d3 Artificial Intelligence - Do people think like computers?
+
+    Computers and the development of computers had a big impact on cognitive
+    psychology
+
+        Information processing - new model "the computer metaphor" to reason
+        about how people thought of things.
+
+    AI was an area of psychology that grew in the 1970s and 80s
+
+    Do people think like computers?
+
+        Early on, computers were a metaphor for how people thought
+
+        When cognitive psychology became popular, we started trying to get
+        computers to think like people
+
+         - It could give insight into how people think about things
+
+    Recall how we talked about "encoding", "storage", and "retrieval"?
+
+    Useful to model theoretical thought processes on a computer
+
+    Big lesson - thought is complex and people don't think about things
+    consistently - computers and people don't think in the same way - it would
+    be very difficult to get a computer to use the same sorts of heuristics that
+    we do
+

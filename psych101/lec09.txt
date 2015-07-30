@@ -1,0 +1,188 @@
+Clinical Psychology II: Therapies - The Big Picture
+
+    Some disorders are easier dealt with than others
+    
+    Anxiety disorders
+     - often cognitive behaviour therapies and phobias
+     - almost 50% (85% of new) therapists are CBT
+
+    Mood disorders
+     - major depressive disorder; medication and therapy
+
+    Schizophrenia
+     - medication therapy
+
+    Evaluating therapies
+     - is therapy effective?
+     - if so, why?
+
+9b Anxiety Disorders
+
+    Phobias
+     - extremely high success rate in therapy
+     - usually treated with cognitive therapy
+        - e.g. Calmly looking at a picture of a spider from a distance, work up
+          to a toy spider. eventually a live spider. Systemmatic desensitization
+          that slowly exposes you to the phobia.
+        - cognitive => thoughts trying to be controlled (peaceful, calming
+          thoughts)
+        - behavioural => a behaviour being done
+
+    Cognitive Behavioural Therapy
+
+        Getting people to engage in behaviours that will help them out while
+        using their thoughts to encourage and develop those behaviours
+
+    More serious anxiety disorders
+     - Agorophobia, social phobia, obsessive compulsive disorder
+     - Usually treated with a combination of drug therapy and cognitive therapy
+
+9c Mood Disorders
+
+    Usually treated with both CBT and medication
+
+    Cognitive therapy for depressions
+     - recall that people tend to make a catastrophe of all events in their
+       lives
+     - so we focus on the negative thoughts that depressed people have
+       "it doesn't have to ruin your life"
+       "when your kids get in trouble, it isn't your fault"
+
+    Depression scores
+     - cognitive training patients are much less depressed (3 months?)
+     - people who are waiting got marginally less depressed
+     - (each without drugs)
+     - 15-20% of people seeking therapy are experiencing major depression
+        - don't respond to drugs or therapy
+        - often become suicidal
+        - can turn to Electro-Convulsive Therapy (ECT) "shock therapy"
+           - in 40s and 50s this was used as a punishment
+           - anesthesia is used, and electric current is applied to only
+             one half of the brain
+           - still very controversial/debated; we don't understand how it works
+           - number of shocks varies per person
+
+    30-40% with depression will get better without any treatment in 6-9 months.
+
+    Bipolar Disorder
+
+        Primarily treated with medication (Lithium)
+
+    Schizophrenia
+
+        Primarily treated with medication
+
+        Doing therapy with someone who isn't making sense is too hard
+
+    Group therapy is often included with Bipolar/Schizophrenia
+
+        Allows you to deal with the stigma of having a mental illness
+
+        The stigma can control poeples' expectations
+
+        Can even affect how poeple are treated/viewed within mental hospitals
+
+    On Being Sane in Insane Places - Study by Rosenhan
+
+        Participant observation study
+
+        Had a group of graduate students go to a mental institution claiming
+        that they were hearing voices
+
+        Of 15 graduate students, 14 were admitted and 11 were diagnosed as
+        schizophrenic
+
+        It took the mental health professionals weeks to figure out that these
+        individuals were not suffering from schizophrenia - 9 of 15 had to tell
+        them the truth first
+
+        Writing notes observing the hospital were interpreted as paranoid
+        behaviour
+
+        This shows hwo strong the expectations of being crazy can colour other
+        peoples' views
+
+        Also shows that best intentions can lead to difficulties
+
+        Therapies and treatments may not always be of benefit to the individual,
+        and that there is room for improvement
+
+9e Evaluating Psychotherapies
+
+    Memory and hypnosis - suggested that hypnosis could create false memories,
+    bad things that didn't really happen
+
+    Therapies must be evaluated to ensure that they will help
+
+    Do psychotherapies really help people?
+
+9e1 What does it mean for therapy to be effective?
+
+    Does the person get better? How do you decide?
+    Should the patient decide if the therapy is effective or not?
+    When people want to get better they will say they are better even if they
+    aren't
+
+    e.g. UW's flawed study skills workshop
+
+    What about the word of the therapist's word?
+     - motivated to see improvements
+     - motivated by career reputation
+
+    Have a pre-test and a post-test; measure at the beginning and at the end.
+     - Not so easily accomplished
+     - Spontaneous remission: some people get better without assistance
+     - most people will coem in for therapy when they are at their worst
+
+    Regression to the mean
+     - statistical problems
+     - any score is partly based on chance, and partly based on real measurement
+       of what you are trying to measure
+     - high depression scores reported initially due to distress
+     - scores trend downwards even if there is no change in depression
+
+    What does this mean? How do we fix it?
+     - common to provide a standard, proven treatment and also try a new
+       treatment thought to be more effective
+     - often a setup the patient is concerned about
+     - that behaviour is a progress indicator
+
+9e2 Focus on UW Research on Therapy Effectiveness
+
+    Research by Johnathan Oakman on Social Phobias
+     - social phobics are afraid of interactions with other people
+     - all clients recieved medication therapy
+     - three conditions
+        - control: guided self help; 16 weekly therapist meetings
+        - standard CBT: done in group
+        - CBT with technology; use of videotaping of interactions and role play
+          "I must've looked so nervous... oh wait, I looked normal!"
+
+     - at the beginning and at the end they introduced a new social interaction
+     - the result showed all three conditions work to the same degree
+     - mean time of social phobics here was 18 years
+
+     What does this mean?
+      - you need to make the case that therapy is effective, and show that it is
+        cost effective
+
+9e3 Is Psychotherapy Effective?
+
+    Across the spectrum, the answer would be yes, but not by a huge amount.
+    [Two bell-shaped curves of outcomes; therapy bell translated right quite a
+     bit]
+
+    80% of untreated people have poorer outcomes than the average treated person
+
+    Are some therapies better than others?
+     - studies show that one deos not seem better than the other
+     - a couple studies show that certain therapies are better for certain
+       disorders (like systemmatic desensitization for phobias)
+     - experience and education seem to have little affect on ability of a
+       therapist
+
+    What makes therapy effective?
+     - seemingly just the personal interaction with somebody else; a personal
+       relationship
+     - gives people a sense of optimism and hope
+

@@ -1,0 +1,291 @@
+5a Developmental Psychology II: The Big Picture
+
+    Physical development
+
+        We'll focus on big changes early and late
+    
+    Cognitive development
+
+        Piaget's Theory
+        Recent evidence extending and qualifying this theory
+
+    Social development
+
+        Attachment Theory - starting in childhood
+        Erikson's Theory - whole lifespan
+        Gender Development
+
+5b Phsyical Development
+
+    Physical Development in Infancy
+
+        Many milestones, but huge variability among the first two years.
+
+        Movement - rolling over to walking up steps.
+
+            Sudden infant death syndrome can be prevented from rolling over and
+            getting their face stuck.
+
+        Standing alone and walking are, on average, separated by a month :3
+
+    Physical Development in Old Age
+
+        Declines in the senses - sharp decline from ages 70 to 90.
+
+        Fatal car accidents most common before 25 and after 55, esp. after 70.
+
+5c1 An Introduction to Piaget's Theory
+
+    Early psychologist active from early 1900s to 1950s.
+
+    Developed his theory by playing with children rather than doing experiments.
+
+    Based on what they did, he would design theories about how they develop.
+
+    Proposed (controversially) that there were stages of development, with
+    dramatic shifts rather than continuous development.
+
+    Schema - a way to think about the world.
+
+        Piaget argued each stage had a different way of thinking about the
+        world.
+
+            e.g. A classroom - we're supposed to take notes, listen, etc.
+
+    Within each schema, we have:
+
+        Assimilation - adding information to your schema.
+
+            e.g. Had to assimilate note-taking tools, lecturer's style, and
+            class format (but we still think of it as a classroom.
+
+        Accomodation - changing your schema based on new information.
+
+            e.g. A play in class instead of a lecture - we would have to
+            develop a new schema to accomodate for lighting, performance,
+            acting, watching, etc.
+
+5c2 Piaget's Stages of Development
+
+    Birth to 2 years
+
+        Sensorimotor - experiencing world through actions (not much thought).
+
+        Object permanence - developed around 8 months. Before then, a dropped
+        rattle would disappear.
+        
+        Stranger anxiety - fear of people the child doesn't know very well.
+        The child learns the permanency of their mother and dislikes their
+        absence.
+
+    2 to 6 years
+
+        Preoperational - representing things with words and images, but not
+        logical.
+
+            e.g. Taller glass looks like it has more water.
+            e.g. Checkers spaced farther apart (even though a 5 year old can
+                 count them).
+
+        Pretend play
+
+        Egocentrism - can't see someone else's perspective.
+
+            e.g. Kids describing what they see while hiding their head instead
+            of what the other person will see.
+
+        Language development
+
+    7 to 11 years
+
+        Concrete operational - thinking logically about concrete events,
+        grasping analogies, arithmetic.
+
+        According to Piaget, they must need these objects in front of them
+        though.
+
+    12 through adulthood
+
+        Formal operational - abstract reasoning (seems to have the least
+        evidence).
+
+        Mature moral reasoning
+
+5c3 Extensions and Qualifications of Piaget's Theory
+
+    Does object permanence really emerge around 8 months?
+
+        No, it's much earlier, in a more general and gradual way.
+
+    Focus on UWaterloo research - Infant Cognition (Dr. Andrea Aguiar).
+
+        Research assistant, now a professor.
+
+        90% of babies showed a response.
+
+        At 2.5 months - simple rule: if something is behind something you won't
+        see it, even if it doesn't cross a gap in the object.
+
+        At 2.5 to 3 months, a doll moving from one side of the object to the
+        other surprises the child if it doesn't show in the gap, but don't pay
+        attention to height.
+
+        From 3 to 3.5 months, objects appearing unexpectedly from behind shorter
+        obstacles will surprise the child.
+
+    Egocentrism and the Theory of Mind
+
+        The notion that you can understand what someone else is thinking.
+
+        Recall: Piaget said egocentrism lasted until around age 7.
+
+        Theory of mind parallels to object permanence - gradual with age, with
+        different aspects to full understanding.
+
+        e.g. Sally puts a ball in a red cupboard, but Anne moves it to the blue
+        cupboard. Kids predict Sally will open the blue cupboard, based on their
+        own perspective. Rather than 7, kids can solve this puzzle around ages
+        4-5.
+
+    Development is more continuous and earlier than Piaget proposed.
+
+        Dr. Aguiar's research showed how bits and pieces are picked up over time
+        rather than with dramatic shifts.
+
+5d Social Development
+5d1 Attachment Theory
+
+    Harlow's monkey studies
+
+        Baby monkeys raised with wire monkey with food, but they prefer soft
+        terry-cloth mother without food.
+
+        Harlow believed that affection and touch is very important.
+
+    Theory behind attachment theory
+
+        Inborn need to bond with our caregiver
+
+        This relationship will be the basis for all other relationships that
+        individual will have.
+
+    The strange situation - Mary Ainsworth
+
+        Mothers come into the experiment with 13-16 month old, leave child in a
+        toy room. How do the children respond to the mother leaving?
+
+        How did the child respond to the mother coming back?
+
+        Secure attachment pattern - child is somewhat upset to see the mother
+        leave, but very happy when the mother returns.
+
+        Anxious attachment pattern - child would be very upset when mother
+        leaves, but very happy and clingy when they return.
+
+        Avoidance attachment pattern - child is either upset or not when the
+        child leaves, but wants nothing to do with her when she comes back.
+
+        These patterns can be divided into secure and insecure attachment.
+
+            Secure - misses the mother, seeks reunion, but is able to deal with
+            time on their own.
+
+            Insecure - either doesn't miss theor mother or isn't able to deal
+            with being on their own.
+
+        This can predict the number of friends children will make when going to
+        school - securely attached infants between 1 and 1.5 are better at
+        making friends and have a sense of social competence.
+
+        There is also evidence that people that have secure relationships are
+        also the ones who develop good adult relationships.
+
+        This would suggest that trust can be taught through a stable, loving
+        relationship with the primary caregiver.
+
+5d2 Erikson's Theory
+
+    Theory goes from infancy to old age.
+
+    Ideas have Freudian roots to them; Erikson was actually Freud's cheufer.
+
+    Believed that there were certain challenges that needed to be dealt with at
+    certain points in one's life. Accomplishing those challenges is the primary
+    social issue during each stage of life.
+
+    Infancy (<1) - basic issue is trust vs. mistrust.
+
+    Toddlerhood (1-2) - basic issue is autonomy vs. shame and doubt "I can do it
+    myself".
+
+    Preschooler (3-5) - Initiative vs. guilt
+
+    Elementary school (6-puberty) - Competence vs. inferiority "doing things
+    well"
+
+    Adolescence (teen-early 20s) - Identity vs. role confusion
+
+    Young adulthood - Intimacy vs. isolation
+
+    Middle adulthood - Generativity vs. stagnation "mid-life crisis", "feeling
+    like you've contributed to the world", "re-emergence of intimacy and
+    identity issues"
+
+    Late adulthood - Integrity vs. despair "I've lived a good life"
+
+    Criticisms:
+    
+        Culture bound (very western). Intimacy and identity in the early
+        1900s have been pushed much later. Autonomy is a very western idea.
+
+        Theory doesn't explain who will have trouble or not.
+
+        Why would Bill Clinton have a mid-life crisis?
+
+        Premature babies - sense of bonding in an incubator is encouraged;
+        holding and cuddling with babies, even in the respirator, gives a
+        better chance.
+
+        Theory is more of a framework that a serious model; order may not be
+        entirely right; some things might be missing.
+
+5c3 Gender Development
+
+    A common observation: children's behaviour, particularly play, is gender
+    stereotyped.
+
+    Why does this behaviour come out?
+
+        Is it how parents treat them? Erikson's attachment theory says parents
+        shape their children.
+
+        A number of studies showed that parents don't have that much influence
+        over children, especially in gener stereotyped behaviour.
+
+        No relationship between the way in which parents treat their children,
+        what values the parents have, and how children turn out.
+
+        Gender stereotypes are kinda like learning an accent.
+
+        We pick it up from the society at large.
+
+    Social Learning Theory
+        
+        The bobo doll version of gender development
+
+        Watch others to see what gets rewarded and what gets punished
+
+        By the way girls and boys are punished/rewareded, children can
+        develope gender type behaviour.
+
+    Gender Schema Theory
+
+        Argues that gender is learned from your culture, which gives you a
+        gender schema; a gender lens.
+
+        Gender-organized thinking, gender-typed behaviour.
+
+        This model explains why boys and girls tend to have same-sex friends.
+
+    Social learning theory and gender schema theory probably both occure and
+    work together to produce gender behaviour.

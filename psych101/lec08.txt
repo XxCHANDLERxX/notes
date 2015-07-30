@@ -1,0 +1,340 @@
+8a Clinical Psychology I: Psychology Disorders
+
+    Five different classes of disorders
+
+        Anxiety Disorders (Phobias)
+
+        Mood Disorders (Depression, Bipolar Disorder)
+
+        Psychotic Disorders (Schizophrenia)
+
+        Dissociative Disorders (Multiple Personality Disorder/Dissociative
+        Identity)
+
+        Personality Disorders
+
+        Book - DSM-IV categorizes disorders - first axis is the first four
+        things, personality disorders are a separate, second axis
+
+8b Anxiety Disorders
+
+    Phobias
+
+        Irrational fear of something you really don't have to be afraid of
+
+        Fairly common condition
+
+        Story about prof's son - scared of dogs, even small terrier, for some
+        reason
+
+        Very treatable
+
+        Graph of phobias and scary things - 40% Very afraid of snakes, etc. vs
+        "bothered slightly" vs "not at all afraid of it"
+
+        People's phobias are logical - snakes can be poisonous, claustrophobia
+        can suggest death from suffocation
+
+        People aren't scared of driving cars, for some reason.
+
+    Generalized Anxiety Disorder - Panic Disorder
+
+        Overwhelming sense of anxiety
+
+        Not localized as being caused by a particular thing
+
+        Can become quite debilitating
+
+        Associated with panic attacks (with panic disorders)
+
+            e.g. Agorophobia - fear of open placesm being outside
+
+             - Some cases where people stayed inside for 20 years
+
+    Obsessive Compulsive Disorder
+
+        Can vary from mildy to extremely obsessive and debilitating
+
+        16 year old boy worried about germs everywhere
+
+        Washed his hands about 2000 times a day
+
+        Would spend all of his time washing his hands but neglecting the rest
+        of his body, pooping his pants, etc.
+
+        Repetitive thoughts - boy thinking that he is being poisoned
+
+        Repetitive behaviours - checking things over and over again - a few
+        times isn't debilitating, but a few hundred times can be
+
+        Obsessions (repetitive thoughts):
+            
+            dirt/germs/toxins: 40% (among children/adolescents with OCD)
+            something terrible happening: 24%
+            Symmetry, order, exactness: 17%
+
+        Compulsions (repetitive behaviours):
+        
+            excessive handwashing, bathing, grooming: 85%
+            repeating rituals (in/out of door, chair): 51%
+            checking doors, locks, appliances, brakes, homework: 46% 
+
+    Lots of ways to treat anxiety disorders
+
+        Psychanalytic perspective - therapy
+
+            Solves some deep lying problem which is causing the disorder
+
+            Freud's Little Hans case study
+
+                Developed his ideas about Oedipus complex
+
+                Little Hans was very afraid of horses
+
+                Freud only talked to Hans' parents
+
+                Debilitating phobia back then - horses everywhere
+
+                Freud believed that Little Hans had anxiety arising from Oedipus
+                complex transferred onto horses; terrified that the father might
+                castrate him; horses have large penises and wear blinders, like
+                his father's glasses
+        
+        Learning perspective
+
+            Thinks people gain phobias like Little Albert - being afraid of
+            small, furry animals
+
+            Anxiety gained by associating stimuli with something aversive
+
+            Can generalize from one thing to another
+
+            Treatment via unconditioning, e.g. virtual reality training
+
+            OCD - dealt with by rewarding people for not doing their compulsions
+
+        Social cognitive perspective
+
+            Observational learning
+
+            Developed certain phobias by watching others and observing what they
+            are afraid of
+
+                e.g. Prof is slightly uncomfortable with dogs -> his son is
+                afraid of them
+
+            Use models who are doing non-fearful  behaviour to help overcome the
+            fear
+
+        Biological perspective
+
+            OCD can be treated by drugs in some cases
+
+            Phobias fall into natural categories over hsitory - inborn
+            biological fears
+            
+8b) Mood Disorders
+
+    In particular, depression.
+
+    Major Affective Disorder
+
+        AKA unipolar depression
+        Profoundly depressed and lasting over six months
+        Can interfere dramatically with your life
+        Fairly common, and pretty treatable
+
+        Other symptoms:
+            - poor appetite
+            - insomnia
+            - feeling worthless
+            - loss of interest in others
+            - sleeping 14-15 hours a day (or insomnia)
+            - weight gain due to lack of activity
+            - persistant
+            - clear thoughts of suicide "almost all people who commit suicide
+              have depression"
+
+    Bipolar Depression
+
+        Seen as a more extreme version of unipolar depression.
+        Used to be called manic depression.
+        Extreme highs and lows
+        Low side is major affective disorder or unipolar depression
+        High side is euphoric, grandiose, feeling unstoppable
+
+        e.g. Patiient's baseball story
+
+            "I was quite good, semi pro, eventually made the major leagues,
+             won three games as a pitcher. Also I was the top ace in the U.S.
+             military and got to meet the president. Then I decided to run for
+             president, and I became the president. Then, I decided to become
+             god! I still am god!"
+
+        Negative side of euphoria - easily agitated, can be violent, reckless,
+        risk-taking, wasting money
+
+        A number of famous people who have been manic depressive - Winston
+        Churchill, poets.
+
+        Pressured speech - words being pushed out before they are even fully
+        formed. Usually someone in this state is bouncing off the walls with
+        energy and not sleeping.
+
+        Rate of mood change:
+         - Rapid cycling (hours/days)
+         - Months, or even years
+         - Seems to vary within people
+
+        Women suffer from depression more than men (10% of 18-24 year olds vs
+        5% for men).
+        Men are more likely to kill themselves than women, though.
+
+    Explanation of Mood Disorders
+
+        Psychoanalytic perspective
+         - depression is anger turned inward
+         - part of the therapy is to express your anger at the appropriate
+           target
+
+        Biological perspective
+         - strong genetic influences - both unipolar and bipolar disorders run
+           in the same family
+         - certain neruotransmitters there seems to be a depletion in depressed
+           individuals - in particular, noradrenalin and seratonin
+         - drugs that elevate the levels of noradrenalin and seratonin are
+           effective anti-depressants
+         - do the highs and lows of bipolar balance out eventually?
+            - probably not
+            - may be due to poor regulation of neurotransmitters in the synapse
+            - neruotransmitter levels may sometimes be too high, and sometimes
+              too low
+
+        Social cognitive perspective
+         - treatments combine drugs with social cognitive approach are most
+           affective
+         - attributions for failure as internal, stable, or global
+            - internal: it's my fault
+            - stable: it's always going to be this way
+            - global: it will affect my whole life
+         - vicious cycle of negative thoughts/moods
+         - therapy can break this vicious cycle
+
+8d Psychotic Disorders - Schizophrenia
+
+    Thinking is scattered; people don't make any sense.
+
+    Disorganized thinking
+    Delusions - beliefs that are provably false but they still believe it
+    Often delusions of persecution, e.g. "the CIA is spying on me"
+    Disturbed perceptions
+     - auditory hallucinations (hearing voices/sounds that aren't there)
+     - inappropriate emotions and actions
+        - catatonia - can be posturing
+        - emotions not matching the situation
+     - social withdrawl
+        - don't like spending time with people or having anything to do with
+          others
+     - flat affect
+        - no emotion/responsiveness
+        - monotone voice
+
+    Types of Schizophrenia:
+     - Paranoid (preoccupied with delusions/hallucinations)
+     - Disorganized (speech, behaviour, or emotions)
+     - Catatonic (immobility, negativism, parrotlike repeating of others)
+     - Undifferentiated (catch-all; many and varied symptoms)
+     - Residual (withdrawl, after hallucinations/delusions disappeared)
+
+    Two types of symptoms that stand out:
+     - positive symptoms (delusions, hallucinations)
+     - negative emotions (social withdrawl, inappropriate emotions, and flatness
+       or affect)
+
+    Explanations of Schizophrenia
+
+        Psychoanalytic perspective
+         - focus on unconscious
+         - Freud believed unconscious was irrational
+         - he thought that schizophrenia was the overflowing of the irrational
+           unconscious
+
+        Biological perspective
+         - genetic influences
+         - brain neurotransmitters (dopamaine)
+         - one schizophrenic twin means the other has a 50% chance of having it
+
+        Social cognitive perspective
+         - Stress Diathesis Model
+         - suggest schizophrenia is a combination of two things
+         - genetic predisposition is combined with stress experienced
+
+8e Dissociative Disorders - Multiple Personalies
+
+    Note: very different from schizophrenia.
+    Consciousness can be divided, can lose sense of who they are
+    Fugue State
+     - a person disappears and becomes someone totally different
+       "woke up and started a new life"
+     - skeptics say that individuals may just be purposefully leaving their life
+       behind
+     - never the same person at the same time
+
+    Dissociative Identity Disorders
+     - one body can be different identities, often in threes
+     - Three Faces of Eve - Eve White, Eve Black, and Jane
+       "Went through fifteen sets of three personalities."
+     - is this real?
+        - some say this is a real, serious problem
+           - there are distinct patterns of brain activities
+           - seen as a way to cope with anxiety
+           - may be a result of abuse or trauma as a child
+             "being different people in order to cope"
+        - some say it isn't real
+           - social phenomena created by hypnosis in therapy
+           - between 1930-1960 there were two cases per decade
+           - in the 1980s there were 20000 cases
+
+8f Personality Disorders
+
+    Traditionally seen as a very different type of disorder; classified
+    differently by psychiatrists (medical doctors).
+    Difficulty getting along wiht other people.
+    Ranges dramatically.
+    Most prominant/important: Antisocial Personality Disorder
+        - Almost as if they have no conscience
+        - Can commit brutal acts
+        - Can be very charming or charismatic
+        - Many famous mass murderers have antisocial personality disorders
+        - Not upset/aroused by acts that hurt other people, etc.
+        - Coherent thinking; seem normal
+
+    Histrionic
+     - 95% diagnosed are women
+    Narcissistic
+     - 80% diagnosed are male
+    Borderline personality
+     - mostly women
+
+    All three above:
+     - impulsive
+     - dramatic
+     - dramatic style of relating to others
+     - can't get along with other people
+     - tend to be strongly disliked
+
+    Avoidant Personality Disorders
+     - high anxiety and social withdrawl
+     - nowadays would be said to have social phobia
+
+    Schizoid Personality Disorder
+     - mild form of schizophrenia
+     - eccentric behaviour
+     - classified by social withdrawl, magical thoughts
+
+    Classifications of Personality Disorders
+     - Antisocial: destructive people, no conscience
+     - Histrionic, Narcissistic, and Borderline: terrible ways of interacting
+       with others
+     - Avoidant and Schizoid: weak forms of other disorders
+

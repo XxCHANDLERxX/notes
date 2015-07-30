@@ -1,0 +1,116 @@
+10a Social Psychology I: The Power of the Situation
+
+Kurt Lewin and his two classic statements
+ - behaviour is a function of the person and the situation
+ - there is nothing wuite so practical as a good theory
+
+Conformity and Obedience (in Nazi Germany)
+
+Bystander Intervention (Why do people not do anything when someone needs help?)
+ - often the opposite reasons of what you would expect
+
+10b Kurt Lewin and His Two Classic Statements
+
+Kurt Lewin
+ - the father of the field of social psychology
+ - most people in the field can trace their training back to him
+ - very eclectic psychologist
+ 
+ 1. Behaviour is a function of the person and the situation.
+  - the power of the situation must be examined alongside behaviour
+  - that statement has been fundamental in the understanding of social
+    psychology
+  - most people think that they are not controlled by the situation
+  - social psychologists believe that most people can be treated the same and
+    are affected in the same way by the situation
+
+  2. There is nothing quite so practical as a good theory
+   - approach of social psychology is that you need to have a good theory about
+     what is going on to understand and do something about a problematic
+     situation
+   - concerned with real issues that have a powerful affect on people
+
+10c Conformity and Obedience
+
+The Sherif Norm Formation Study
+ - wanted to understand how people came to have a certain set of beliefs and
+   why these are shared throughout society
+ - Sherif thought of these beliefs as norms
+ - took advantage of a perceptual illusion called the Autokinetic Effect
+    - pinpoint of light fixed on a dark room wall looks like it is moving,
+      since the movement of our eyes is hard to sense, it looks like it's
+      moving
+    - asked people how much the light moved
+    - people's estimates become consistant over time
+    - people with estimates placed in the same room tend to equalize their
+      estimates
+    - groups of people ended up giving a census estimate
+    - a confederate was thrown into the group to give a really small number
+      or a really big number, swaying the consensus
+
+The Solomon Asch Conformity Study
+ - was a Jewish contemporary of Lewin who also fled Nazi Germany
+ - thought that he would find more conformity in Germany than in the US
+ - would people say that long was short if pressured by conformity?
+    - everyone looked at three lines and picked the standard line on their own
+    - but when 7 people before you say 'line 3' (the shorter line), people
+      changed their answers
+    - 70% of people in the study gave the wrong answer at least once
+    - so, almost everyone went with the group, despite unambiguous stimuli
+
+The Stanley Milgrim Obedience Study
+ - felt that Asch's study did not explain the horrendous acts of Nazi Germany
+ - tested whether people would obey authority
+ - will people commit acts of cruelty just because they are told to?
+    - subjects are told that electric shocks will help people learn
+    - teacher instructs student to shock a confederate who gets small shocks
+      and acts nervous; acts in pain
+    - most subjects went to 300 volts (confederate goes silent)
+    - 63% of subjects keep going to 450 volts
+ - conclusion: we are a lot more susceptible to social pressure and obeying
+   authority figures than would be recognized
+ - psychiatrists estimated less then one tenth of one percent would have done
+   it
+ - women and men both come out to 63%
+ - Situation is very powerful. Why?
+    - person feels trapped; they agreed to do this
+    - only do 15 volt steps each time
+    - experimenter doesn't make it easy for the subject to stop
+ - very controversial study; led to ethics review boards
+ - only one of 40 regretted being in this experiment
+
+10d Bystander Intervention
+
+Kitty Genovese (1968)
+ - viciously attacked outside her apartment building
+ - 23 people were woken up and heard her scream, each one heard her,
+   but police weren't called until after the crime was done
+ - common sense notion was that new yorkers just didn't care
+
+Latane and Darley
+ - wanted a theory to understand this
+ - most people believe safety in numbers
+ - Latane and Darley believe that the more people that are around,
+   the less likely they are to help
+ 
+ Smoke filled room study
+  - 55% report smoke in their room when alone
+  - 12% report the smoke when in a group of three
+ 
+ The Seizure Study
+  - set up so that no one else is there to respond
+  - man fakes a seizure
+  - likelihood of someone helping is a direct, negative relation
+    of how many other people are available to help
+  - "breaking down on a lonely road is better than a busy one"
+ 
+ Model of Helping
+  - learning this phenomenon makes it less likely to happen
+  - to help, someone must:
+     - notice the incident
+     - interpret the incident as an emergency "everyone tries to be cool"
+     - assume responsibility "it's my job to help" "diffusion of 
+       responsibility"
+  - once someone attempts to help, there is a conformity effect
+    - one person seeing the incident as an emergency cues others to come
+      and help
