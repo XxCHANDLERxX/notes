@@ -1,0 +1,185 @@
+Lecture July 20 2015
+
+Recall: New/delete
+ - alloc.merl given to us and must be linked *last* Add to prologue: .import
+   init .import new .import delete
+ 
+ Function init sets up the allocator's data structures.
+  - Call it once in the prologue.
+  - Takes a param in $2.
+     - If calling mips.array (i.e. int wain(int*...)), $2 = length of the
+       array.
+     - $2 already holds the size of the array, so we don't have to do anything
+       special :)
+     - If we aren't calling it with mips.array, $2 must equal 0 (because the
+       array is placed right before the heap, and its size must be known).
+
+ Function new:
+  - $1 = the number of words needed.
+  - returns ptr to memory in $3
+  - returns 0 if allocation fails (we are given 4k, so it will be tested)
+     - recall: C++ raises a bad_alloc exception in this case
+     - alloc.merl is actually older than wlp4; it's a generic allocation
+       library
+        - we must turn this 0 into a 1 (NULL) in order to error correctly
+ 
+    code(new int [expr]) = code(expr) add $1, $3, $0 call new bne $3, $0, $11 ;
+    if new failed, skip the next line add $3, $11, $0
+
+ Function delete:
+  - Recall: freeing a NULL pointer is safe in C/C++
+  - alloc.merl doesn't know what NULL is or how to handle it
+     - we must check; if NULL, don't call the function
+  
+    code(delete [] expr) = code(expr) beq $3, $11, skipY add $1, $3, $0 call
+    delete skipY:
+
+"That's it for pointers!" "Now, for the last topic of code generation."
+
+Compiling Procedures
+    
+    int f(...){...} int g(...){...} int wain(.,.){...}
+    
+    Becomes (roughly): [ block of code for main ] f:[ block of code for f ] g:[
+    block of code for g ]
+    
+    Where each block has a prologue and an epilogue.
+    
+    Note: Wain needs to be first because that is what needs to be run.  If wain
+    is not output first, we should label it wain and then do: lis $5 .word wain
+    at the top of the output.
+    
+    Main prologue/epilogue: "things we have already discussed"
+     - save $1, $2 on the stack
+     - import print, init, new, delete
+     - set $4, $11, etc. if desired
+     - set $29
+     - call init ...
+     - reset $30, jr $31
+    
+    Procedure-specific prologue/epilogue:
+     - Don't need .imports, set constants
+     - set $29 "new stack frame"
+     - save registers "you can't trample all over the registers and expect the
+       caller to be happy" ...
+     - restore registers and reset $30, jr $31
+
+Saving and Restoring Registers
+
+    Procedures need to save every register it will modify.  How do you know
+    which registers to save?
+     - The "right" way to do things is to generate the code for the body of the
+       procedure being called and only store the ones that were used.
+     - The easy way is to save them all.
+     - Observe that our code generation scheme in this class uses no registers
+       past $6 (plus $29-$31), then just save those.
+     - Don't forget to save and restore $29!
+    
+    Two approaches to saving registers: Caller-save vs. callee-save.  Suppose f
+    calls g.  Caller-save:
+            
+            g saves all registers it will modify, so f doesn't have to worry
+            about what g might be doing.
+          
+        Callee-save:
+        
+            f will save the registers it cares about before it calls g, then
+            doesn't worry about what g does. Then, g doesn't worry about what
+            f's registers are.
+
+    Our approach has been: caller-save for $31 callee-save for everything else
+    
+    Q: Who should save $29? Caller or callee?
+    
+        Suppose we do callee-save (g saves its registers, including $29, and g
+        sets $29 to the bottom of the new stack frame).
+        
+        It would be much easier to set $29 first, then some registers.
+        However, we can't change $29 before it has been saved.  So: save $29,
+        set $29, and save the other registers. "Nothing wrong with that, it
+        works!"
+        
+        The other option:
+        
+            Just let the caller save $29.
+            
+            f() { ...  g(); ...  }
+            
+            f: ...  push($29) push($31) lis $5 .word g jalr $5 pop($31)
+            pop($29)
+        
+        "If you are following closely, something about this does not work. We
+        will fix it, though!"
+
+We have a problem if we try to compile code with procedures "print", "init",
+etc.
+
+    This would mean the code would compile but not assemble.  We should stop
+    this from happening.  "We have the technology to check for arbitrary label
+    obfuscation in marmoset." >:)
+
+    Solution: For functions f, g, and h, use the labels Ff, Fg, Fh.  Then,
+    reserve labels starting with 'F' as denoting functions.  Then, make sure
+    all compiler-generated labels don't start with 'F'.  "Even if marmoset is
+    evil and tries 'Ff', it will compile to 'FFf'!" :)
+
+Parameters "Magnifies the problem that I eluded to earlier, which we will fix
+after."
+
+    We could use registers, but we could get functions that have > 30
+    parameters.  So, we should push them on the stack.
+    
+    factor -> ID(expr1, ..., exprN)
+    
+        code(factor) = push($29) push($31) code(expr1) push($3) ...
+        code(exprN) push($3) lis $5 .word F___ jalr $5 ...  pop(arguments
+        1...n) ...  pop($31) pop($29)
+
+    procedure -> INT ID (params) { dcls stmts return expr; }
+    
+        code(procedure) = sub $29, $30, $4 push registers code(dcls) ; local
+        variables code(stmts) pop registers add $30, $29, $4 jr $31
+        
+        Stack now looks like:
+        
+            [    ...       ] [g's local vars] <- $30 [   registers  ] <- $29
+            [arguments of g]   \ [      $31     ]   |- f's frame [      $29
+            ]   / [      ...     ] [ wain's frame ]
+        
+        Suppose g looks like:
+        
+            int g(int a, int b, int c) { int d = 0; int e = 0; int f = 0;
+        
+        Then, the symbol table looks like:
+        
+            Name Offset from $29 a    0      \ b    -4      | params c    -8
+            /
+        
+            d    -12    \ e    -16     | locals f    -20    /
+        
+        Problem: Offsets are wrong, since parameters are in f's stack frame.
+        Solution: Keep this as-is - notice that parameters should have positive
+        offsets, and local variables should have negative offsets.
+                  
+                  Accomplish this by adding 4*numArguments to every offset.
+                  
+                  Name Offset from $29 a    12      \ b    8        | params
+                  (now correct!) c    4       /
+       
+                  d    0    \ e    -4    | locals (still wrong...) f    -8   /
+                  
+         The locals are still incorrect, because the registers are in between.
+         Solution: Save the local registers *after* pushing local variables.
+         
+         [    ...       ] [   registers  ] <- $30 [g's local vars] <- $29
+         [arguments of g]   \ [      $31     ]   |- f's frame [      $29     ]
+         / [      ...     ] [ wain's frame ]
+         
+         Note: We are lucky to be able to do this in wlp4.  Why do we get to
+         save local variables before saving registers?
+         
+            Because wlp4 denotes that we must initialize variables to
+            constants.  This wouldn't work if we could initialize dynamic
+            values.
+            
+"This is all you need to complete A10 (minus the bonus)."

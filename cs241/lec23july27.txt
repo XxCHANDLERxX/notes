@@ -1,0 +1,306 @@
+CS 241 Lecture July 27 2015
+
+Recall: Last class, we discussed optimization techniques.
+
+We have one more to discuss - it won't help you win the contest, but it is
+worth knowing because it is quite famous and significant.
+
+Tail Recursion
+
+    int fact(int n, int a) {
+        if (n == 0) return a;
+        else return fact(n-1, n*a);
+    }
+
+    "Once the recursive call finishes, there is nothing else to do."
+    There is no pending work to do when the recursive call to fact returns.
+    All the local variables, registers, etc. are no longer needed, because when
+    the recursive call comes back we will just return.
+    The contents of the current stack frame (local variables, etc.) will not be
+    used again.  "Since we won't be using this stack frame for anything new
+    later, why not just reuse this stack frame?"
+    Don't create a new frame - reuse the current frame.
+    This program now uses a fixed amount of stack space, and recurse many times!
+    Note: It doesn't necessarily speed up your program or make it shorter,
+    though.
+    
+    Can this be done in WLP4?
+    
+        No.
+        In WLP4, though, return is always at the end,
+        and we cannot have a return in an if statement.
+        
+        But... we could expand the language after parsing and mutate the parse
+        tree. We can apply a very basic transformation to our programs to
+        create tail
+        recursive calls:
+        
+            If RETURN immediately follows if-then-else, push it inside both
+            branches.  In other words, whenever x follows assignment to x,
+            merge.
+            Before:
+                
+                x = f(...);
+                return x;
+            
+            After:
+             
+                return f(...);
+            
+            This may create some tail recursive calls!
+            
+            e.g.
+            
+                int f(...) {
+                    if (...) {
+                        if (...) {
+                            if (...) {
+                            } else {
+                            }
+                        } else {
+                        }
+                     }
+                     return x;
+                 }
+                 
+                 ... can be transformed to:
+                 
+                 int f() {
+                    if (...) {
+                        if (...) {
+                        } else {
+                        }
+                        return x;
+                    } else {
+                        return x;
+                    }
+                    return x;
+                }
+                
+                ... can be transformed to:
+                
+                 int f() {
+                    if (...) {
+                        if (...) {
+                            return x;
+                        } else {
+                            return x;
+                        }
+                    } else {
+                        return x;
+                    }
+                }
+
+    Generalization: tail call optimization
+    
+        "Have you ever wondered, 'why does the tail recursive call have to be
+         recursive?' Wouldn't we be able to reuse the same stack frame with
+         *any* function call?"
+         
+        When a function's last action is any function call (recursive or not),
+        we can reuse the stack frame.
+        
+        Aside: Scheme standard calls for all Scheme compilers to optimize for
+        all tail calls.
+
+"That's it for optimization. Now we will discuss what sort of things might come
+ up if we asked you to extend WLP4."
+
+Overloading
+
+    What would happen:
+    
+        int f(int a) {...}
+        int f(int a, int *b) {...}
+    
+    Assuming we can solve the problem of looking up the correct function name
+    in our symbol table, we will run into the problem of having duplicate
+    labels for f.
+    
+    How do we fix this?
+    The naive solution of appending an arbitrary number to the labels will
+    break when we consider collaborative code environments - we can't make any
+    assumptions.
+    
+    Solution: Encode the signature into the label (name mangling).
+    
+Name Mangling
+    
+    Encode types of params as part of the label.
+    
+    Example convention:
+        
+        "F" + type info + "_" + name
+        
+        e.g.
+        
+            int f() {...}              // F_f
+            int f(int x) {...}         // Fi_f
+            int f(int a, int *b) {...} // Fip_f:
+            
+    C++ compilers will do this because C++ has overloading.
+    "You can do g++ -S (?) and analyze how the mangling was implemented."
+    There is *no* standard mangling convention - all compilers are different,
+    so that makes it hard (if not impossible) to link code from different
+    compilers.
+    
+    But, there are good reasons to not defining a standard. This is by design.
+    Compilers differ in other aspects of calling conventions, and we *don't*
+    want to link successfully if the conventions don't truly match.
+    
+    C has no overloading, though, and therefore no mangling.
+    "There are no half measures here. Either you mangle everything or you
+     mangle nothing, else conflicts will arise between mangled and non-mangled
+     code."
+    And yet, C and C++ code call each other all the time.
+    
+    How is this done?
+    
+        "Since C came first, C++ must be backwards-compatible."
+        We need to suppress mangling in C++.
+        If you want to call C from C++, write the following:
+        
+            extern "C" int f(int x); // "f is coming to me from C, so expect
+            its name to be unmangled."
+            
+            This tells the compiler to look for an unmangled name when linking.
+            
+        If you want to allow C to call C++:
+        
+            extern "C" int g(int x) {...}
+            
+        If you have lots of these, you can also do the following:
+         
+            extern "C" {
+                ...
+                int f(int x);
+                ...
+            }
+          
+    Note: Obviously, we cannot overload functions that use extern "C".
+
+We have given you a big story in this class, with little "magic" left over
+(with the exception of OS-related problems like running more than one program
+at once). The one thing we did sweep under the rug was new and delete.
+
+Reminder: A10 is due at 11:59pm tomorrow. Also, we have class tomorrow.
+"Today is Victoria day; tomorrow is Canada day!"
+
+Memory management and the Heap
+
+    WLP4, C, C++:
+    
+        The user does explicit memory management (free/delete).
+    
+    In languages like Java, Scheme, and others:
+    
+        Implicit memory management, where the user is not expected to say when
+        they are done using certain memory.
+        This is called garbage collection.
+    
+    In both, though, the act of freeing memory and giving it back to the heap
+    looks the same.
+    
+    How do new/delete (or malloc/free) work? There are a variety of
+    implementations.
+    
+        1) A list of free blocks.
+            
+            - maintain a linked list of blocks of free RAM.
+            - initially, before the program has asked for any memory, the
+              entire heap should be free, so our linked list contains only one
+              entry
+            - so let's suppose our heap is 1K (1024 bytes) "We only gave you 4K
+              in alloc.merl."
+                
+                free -> [1024 | entire heap (1020) ] "one pointer points to the
+                entire array"
+            
+            Suppose the user asks for 16 bytes to be allocated.
+            We need to keep track of how far the pointer has gone from the
+            start of our heap. So we actually allocate 20 bytes: 16 bytes + 4
+            bytes (an Int to say how much memory we have).
+            
+                [20 |  (16 bytes) ]   // 20 total bytes
+                   
+                   ^ Return a pointer to the second word, so that the size in
+                     memory is just before the pointer that comes back.
+                     
+                   "Store size just before the returned pointer."
+                
+                The free list now becomes:
+                
+                    free -> [1004 | (1000 bytes) ]
+            
+            Suppose 28 more bytes are requested - allocate 32.
+            
+            --------\/
+                [20 | (16 bytes) ]
+                
+            --------\/
+                [32 | (28 bytes) ]
+                
+            Free list:
+            
+                free -> [972 | (968 bytes) ]
+            
+            Suppose the first block is freed. Add to the free list:
+                              ,.-----------.,
+                free -> [20 | ^ |    ]    [972 | / |     ]
+                
+            Suppose the other block is freed:
+            
+                            ,.---------.    ,.---------.,
+                            |          |   |            |
+                free -> [20|^|    ]    [32|^|      ]    [972|/|    ]
+                        p                 q
+                
+                Notice p + *p == q, therefore blocks are next to each other,
+                therefore merge them.
+                
+                free -> [52|^|   ]   [972|/|   ]
+                p                    r
+                
+                Now p + *p == r, therefore merge again.
+                
+                free -> [1024|/|                ]
+                
+                "back to where we started!"
+                
+            Note: When we repeatedly allocate/deallocate, it creates "holes" in
+            our heap.
+            
+                e.g.
+                
+                    alloc 20 [20|          ]
+                    alloc 40 [20|40|       ]
+                    free 20  [  |40|       ]
+                    alloc 5  [5||40|       ]
+                    
+                This is called fragmentation.
+                    
+                    Even if n bytes are free, we may not be able to allocate a
+                    block of n bytes.
+                    
+                    Assuming the big space is 100 bytes, we have 115 free bytes
+                    free, but if the user asks for 115 bytes we can't give that
+                    to them because the space is not continuous.  We can't give
+                    them a pointer to the beginning of 115 free bytes.
+                    
+                    "You might be familiar with this concept if you worked with
+                    a Windows machine in the past decade." The computer starts
+                    with files a, b, and c nicely in order: [a|b|c] If you
+                    reopen file b and edit it, we don't have enough space, and
+                    must move it: [a| |c|b*] Over time, this fragments the hard
+                    drive, and slows down the computer.  Solution: Defragment
+                    the hard drive - stop everything, reorganize the hard
+                    drive, and then start again.
+                    
+                However, in memory, we can't just stop everything - we need
+                help from the OS.  We would have to find those pointers and
+                change them.  But, as in lecture 1, we can't reach into the
+                computer and identify all the pointers - where are they all?
+                
+            In Java, it runs in a virtual machine that can keep track of
+            pointers.  In C/C++, we pick the right chunk of RAM to use to
+            minimize fragmentation.

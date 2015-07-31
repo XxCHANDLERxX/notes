@@ -1,0 +1,202 @@
+CS 241 Lecture July 22 2015
+
+Recall: push locals first, then save registers
+
+$30 -> [        ] [ regs   ] $29 -> [ locals ] [ args   ] [ $31    ] [ $29    ]
+[        ] [ wain   ]
+       
+    Symbol table offsets are now correct!
+    
+Alternative: Save registers in caller.
+
+$30 -> [        ] [ locals ] [ args   ] [ $31    ] [ $29    ] [ regs   ]
+
+BUT: int f() { g(); g(); g(); g(); }
+     
+     Callee save (in g) saves your registers once per function.  When you do
+     caller save (in f), the code to save the registers is once per call, which
+     costs us lots of space (must wrap each call in saving/loading).  So,
+     callee saving leads to shorter (better) code.
+
+factor -> ID(expr1, ..., exprn) code(factor) = push($29) push($31) code(expr1)
+push($3) ...  code(exprn) push($3) lis $5 .word FID jalr $5 pop all args
+pop($31) pop($29) code(proc) = sub $29, $30, $4 push(decls) push(regs)
+code(stmts) code(expr) pop registers add $30, $29, $4 jr $31
+
+Optimization
+ 
+    A computationally unsolvable problem; we can only approximate the ideal
+    solution.  "There is always room to write a better compiler." "It's always
+    possible to do a little better."
+    
+    e.g. code(1+2)
+    
+        Following the guidelines from class:
+        
+        lis $3 .word 1 sw $3, -4($30) sub $30, $30, $4 lis $3 .word 2 lw $5,
+        0($30) add $30, $30, $4 add $3, $5, $3
+        
+        9 words of assembly to accomplish 1+2!  How can we do better?
+        
+        lis $3 .word 3
+        
+        "The compiler knows what 1+2 is, so why bother generating code to
+        evaluate that at runtime."
+        
+        This is called constant folding.  Surprisingly useful because
+        unevaluated constants are actually very common.
+        
+    Related to constant folding: Constant propagation.
+    
+        e.g. code(x=1; x+x)
+        
+            lis $3 .word 1 sw $3, -4($30) sub $30, $30, $4 lw $3, -12($29)  //
+            assuming x is at -12($29) sw $3, -4($30) sub $30, $30, $4 lw $3,
+            -12($29) lw $5, 0($30) add $30, $30, $4 add $3, $5, $3
+            
+        However, we know x=1, and thus can evaluate expressions using x.
+        
+            lis $3 .word 1 sw $3, -4($30) sub $30, $30, $4  // still put x onto
+            the stack lis $3 .word 2
+        
+        If we do not use x anymore, it doesn't need a stack entry.
+        
+            lis $3 .word 2
+    
+    "Does this mean that everything can propogate down to a single .word
+    result?" No, some things depend on input, and procedures/loops/etc. are
+    hard to propagate.
+    
+    But be careful - our optimizations must still be correct.
+    
+    Watch out for aliasing!
+    
+        int x = 1; int *y = NULL; y = &x; *y = 2; return x + x;
+        
+        We can't naively look at x's declaration - its value has been changed
+        to 2!  Figuring out what points to what is hard (as in, computationally
+        unsolvable and a topic of current research).
+    
+    Note: Constant folding evaluates expressions made up of constants; constant
+    propagation substitutes known variables for their constant equivalents
+    (then folding can fold them in).
+    
+    Even if x's value is not known, we could recognize that $3 already contains
+    x:
+    
+        lw $3, -12($29) add $3, $3, $3
+        
+    The above is an example of common subexpression elimination.
+    
+        e.g. (a+b)*(a+b)
+        
+        Use a register to hold (a+b) then multiply it by itself, rather than
+        computing it twice.  However, duplicate side effects can disappear
+        (e.g. printing something, or changing the value at a pointer).
+        
+        We aren't allowed to change the observable behaviour of the program! If
+        it is typed twice, then it must happen twice! Doing otherwise is
+        illegal.
+
+    Dead Code Elimination
+    
+        e.g. if ($0 == $0) { ... } else { ... }
+        
+        If the condition of an if statement is always true or always false,
+        then one branch of the if statement (as well as the if statement) can
+        be eliminated.  If we can prove that a loop condition is always true,
+        it won't terminate, so we can eliminate code after it (though this
+        cannot be tested for).  If we can prove a loop condition is always
+        false, we can eliminate the loop.
+        
+        "I once heard of an aggressively-optimizing Fortran compiler that
+        output no code if there were no print statements."
+    
+    Register Allocation
+    
+        "This should probably be a later optimization that you make."
+    
+        Registers are cheaper (faster) to use than the stack for variables.  It
+        also saves us from overusing sw and lw as much.  "The register usage
+        currently in our compiler is pretty embarassing." We aren't using
+        registers $12-28 at all!
+        
+        At the very least, we could let these registers hold 17 of our
+        variables, and use the stack for the rest.
+        
+        Which 17 variables, though?  Simple answer - the first 17 variables.
+        Better answer - the most-used variables in your code.
+        
+        If one variable stops being used before another starts being used, two
+        variables can share a register!
+        
+        Issue: '&' (addressOf operator). Registers don't have variables.
+        
+            If you take the address of a variable, it can't be in registers -
+            it must be in RAM.
+        
+        Solution:
+        
+            Manipulate the program so that the addressOf operator isn't needed.
+    
+    Strength Reduction
+    
+        "Not particularly useful in this course's challenge, but worth
+        knowing."
+        
+        Add is usually faster than mult, so prefer add when possible.  e.g.
+        Multiplying by 2.
+        
+            lis $2 .word 2 mult $3, $2 mflo $3
+        
+        Improved:
+        
+            add $3, $3, $3
+    
+    "One other techique you might want to look into is called loop unrolling,
+    where if you have a loop that runs 10 times, we can speed it up a bit by
+    simply running the loop 10 times, so we don't need to branch, track the
+    counter, etc. It makes the code longer, but faster, so it isn't really
+    useful for us."
+     
+    
+    What does WLP4 stand for?
+    
+        CS241 has been around for a very very long time.  Pre-2006, we used
+        "SL" (Small Language), which is basically WLP4 plus strings and
+        structs.  SL varied a lot from term to term, which happened because we
+        did not rely on marmoset infrastructure.  When CS241 was moved from 2B
+        to 2A, pointers and procedures were stripped from SL, and WL (Water
+        Language) was created.  When CS241 moved back to 2B, pointers were
+        added back, and WLPP (Water Language Plus Pointers) was created.  Then,
+        we decided that procedures should be added back, and WLP4 (Water
+        Language Plus Pointers Plus Procedures) was created! :)
+    
+    Procedure-Specific Optimizations
+    
+        int f(int x) { return x+x; }
+        
+        int wain(int a, int b) { return f(a); }
+        
+        It would be much simpler if we just did the function's job instead of
+        doing all the work of calling the function?
+        
+        int wain(int a, int b) { return a+a; }
+        
+        This is called inlining - replacing the function call with its body,
+        right in the caller.  This saves us from the overhead of a function
+        call.
+        
+        But is this always a win?
+        
+            If f is called many times, then we get many copies of its body,
+            which can be bad.  Then, we must ask - which is bigger? The size of
+            the body of the function, or the code used to call it?
+            
+            Some functions are easier to inline than others.  In particular,
+            recursive functions can't be inlined because you can't get rid of
+            the function call.
+            
+        If all calls to f are inline, then we don't need f any more.
+    
+    Tail recursion will be covered on Monday.

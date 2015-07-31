@@ -1,0 +1,182 @@
+CS 241 Lecture July 28 2015
+
+Recall: Fragmentation - means that even if you have n bytes of free RAM,
+you may not be able to allocate a block of n bytes.
+
+To reduce fragmentation, you don't always have to pick the first block of RAM
+big enough to hold the request.
+
+    e.g.
+    
+        [ (20) | (15) | (100) ]
+        allocate(10) - where do I put it?
+        Under the first fit heuristic, put it in the 20-byte block.
+        Best fit heuristic: put it in the 15-byte block.
+            - This gives a better fit, and hopefully less waste.
+            - Block 15 wasn't a perfect fit either, though, but this implies
+              that we would need to search the whole heap to find the best fit
+              every time.
+
+Searching the heap (available RAM) takes time - it's not free.
+Note: You never know what is coming next, so best fit is your best option.
+Lesson: Fragmentation always happens to some extent, so for efficiency, use the
+registers as much as you can.
+
+2) Binary Buddy System
+
+    Assume the size of the heap is a power of 2.
+    For example, heap is 4K (4096 bytes, or 1024 words).
+    Suppose the user requests 20 words (new int[20]).
+    We need one word for bookkeeping => 21 words requested in total.
+    But, memory here is allocated in blocks of size 2^k, so allocate 32 words.
+    1024 is too big - split it into two heaps ("buddies") of size 512, and
+    allocate from one of those.
+    
+        [ (512) | (512) ]
+
+    That's still too big, so split again:
+    
+        [ (256) | (256) | (512) ]
+    
+    Still too big...
+    
+        [ (128) | (128) | (256) | (512) ]
+    
+    ...
+    
+        [  |32|64|128|256|512]
+         ^
+         |
+         allocate our 32 words and return a pointer
+                                               |
+                                        [ (1) | (31) ]
+         "The pointer points to the end of the one 'bookkeeping' byte."
+     
+     Now, request 63 words (+1 = 64):
+     
+        [  |32|  |128|256|512]
+        
+     Note: You can take advantage of this while writing code - if you know you
+     are working with a buddy system allocator, allocate arrays of size (2^n)-1
+     rather than 2^n (prefer 1023 to 2014) so that there is less waste.
+     
+     Request 50 words +1 = 51 => 64 words:
+     
+        [  |32|  |  |64|256|512]
+     
+     Now, if the first 64-bit block is released:
+     
+        [  |32|64|  |64|256|512]
+     
+     And release the 32-word block:
+     
+        [32|32|64|  |64|256|512]
+        
+        It's buddy is also free! Merge them!
+        
+        [64|64|  |64|256|512]
+        
+        Now that block's buddy is also free, so merge them too:
+        
+        [128|  |64|256|512]
+        
+     Now if we release the last block, it looks like:
+     
+        [128|64|64|256|512]
+        
+        Which, after merging repeatedly, goes back to where we started:
+        
+        [1024]
+        
+        Note: Only "children" of the same larger block can be buddies, so in
+        some cases you could get two blocks of the same size next to each other
+        that aren't buddies.
+    
+    Although it lessens external fragmentation (holes), we are also vulnerable
+    to internal fragmentation (over-allocation, or empty space inside a block).
+    
+    Deallocation into:
+    
+        -----\
+           [-|     ]
+            ^
+            |
+            deallocation
+    
+        alloc.asm: gives each block a code
+        entire heap: [            ] = 1
+        512-word buddies [512|512]
+                          10  11
+        
+        256-word buddies [256|256|256|256]
+                          100 101 110 111
+        
+        "Binary code represents going left/right from the root node."
+        The first word, or "buddy code" (in front of the pointer) stores the
+        binary value.  If you know the total size of the heap beforehand, then
+        we can calculate the size of that block based on the length of the
+        binary value.  Flip the last bit to find your buddy!
+        Merging - buddy code of result = dropping the last bit (>>1).
+
+Implicit Memory Management (Garbage Collection)
+
+    Recall: The way the heap is managed doesn't really change based on implicit
+    or explicit memory management. What changes is who has the responsibility
+    to say when a piece of memory is done being used.
+    
+    We will cover 3 garbage-collection algorithms.
+    
+    1) Mark + Sweep
+    
+        Scan the stack, looking for pointers.  For each pointer you find, take
+        a look at what it's pointing at, and mark that heap block.  Then, from
+        that heap object, follow any pointers it contains, mark the blocks,
+        etc.  Then, scan the heap, reclaim any blocks that aren't marked, and
+        clear the marks.
+        
+        "Reclaim the things we couldn't get to from the stack - we can't access
+         them, so we don't need them!"
+        
+        Note: This implies that program execution that needs to be paused to do
+        garbage collection - this causes a small delay.
+    
+    2) Reference Counting
+    
+        For every heap block, count how many pointers point at it (its
+        reference count).  We must watch every pointer and update the reference
+        counts (decrement the old, increment the new) each time a pointer is
+        reassigned.  If a reference block's count hits 0, reclaim it.
+        
+        Advantage: We can do this without stopping our program!
+        But, it's not perfect.
+        
+        Problem: Circular references.
+        
+            [    ] <-> [    ]
+            
+            Both have a reference count of 1, but are collectively
+            inaccessible.  There are ways to fix this, like detecting cycles
+            and breaking one of the cycles.
+            
+    3) Copying GC
+    
+        Heap is in two halves - front and to.
+        Only allocate from from.
+        When from fills up, all *reachable* data is copied from from to to,
+        and the roles of from and to are reversed.
+        Presumably, there is a lot of stuff we won't copy, so in the new heap
+        we will have more room again.
+        
+        Very significant advantage: built-in compaction. "A trash compactor!
+        Or, uh, a non-trash compactor." All the new stuff is copied right next
+        to each other, and we have continuous free space.  It's guarunteed that
+        after the swap, all reachable data is in contigious memory - no
+        fragmentation.
+        
+        But, we can only use half the heap at a time.
+        Also, it adds a lot of overhead. We must know where the pointers are in
+        order to adjust them from heap to heap. This also requires that the
+        program must be stopped while heaps are shifted around.
+
+Note: Pre-enrollment for the winter starts on Thursday!
+Lushman is also teaching CS442 in the Winter - we have the CS240 prereq already.
