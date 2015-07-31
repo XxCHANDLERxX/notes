@@ -4981,7 +4981,882 @@ New/delete
     In the runtime environment! "You don't have to write them, I had to write them!"
     alloc.merl "About 600 lines of MIPS"
     Link to assembled MIPS.
-    Must be linked last! It needs to know where the end of the program is.CS 241 Tutorial 1 May 15 2015
+    Must be linked last! It needs to know where the end of the program is.Lecture July 20 2015
+
+Recall: New/delete
+ - alloc.merl given to us and must be linked *last* Add to prologue: .import
+   init .import new .import delete
+ 
+ Function init sets up the allocator's data structures.
+  - Call it once in the prologue.
+  - Takes a param in $2.
+     - If calling mips.array (i.e. int wain(int*...)), $2 = length of the
+       array.
+     - $2 already holds the size of the array, so we don't have to do anything
+       special :)
+     - If we aren't calling it with mips.array, $2 must equal 0 (because the
+       array is placed right before the heap, and its size must be known).
+
+ Function new:
+  - $1 = the number of words needed.
+  - returns ptr to memory in $3
+  - returns 0 if allocation fails (we are given 4k, so it will be tested)
+     - recall: C++ raises a bad_alloc exception in this case
+     - alloc.merl is actually older than wlp4; it's a generic allocation
+       library
+        - we must turn this 0 into a 1 (NULL) in order to error correctly
+ 
+    code(new int [expr]) = code(expr) add $1, $3, $0 call new bne $3, $0, $11 ;
+    if new failed, skip the next line add $3, $11, $0
+
+ Function delete:
+  - Recall: freeing a NULL pointer is safe in C/C++
+  - alloc.merl doesn't know what NULL is or how to handle it
+     - we must check; if NULL, don't call the function
+  
+    code(delete [] expr) = code(expr) beq $3, $11, skipY add $1, $3, $0 call
+    delete skipY:
+
+"That's it for pointers!" "Now, for the last topic of code generation."
+
+Compiling Procedures
+    
+    int f(...){...} int g(...){...} int wain(.,.){...}
+    
+    Becomes (roughly): [ block of code for main ] f:[ block of code for f ] g:[
+    block of code for g ]
+    
+    Where each block has a prologue and an epilogue.
+    
+    Note: Wain needs to be first because that is what needs to be run.  If wain
+    is not output first, we should label it wain and then do: lis $5 .word wain
+    at the top of the output.
+    
+    Main prologue/epilogue: "things we have already discussed"
+     - save $1, $2 on the stack
+     - import print, init, new, delete
+     - set $4, $11, etc. if desired
+     - set $29
+     - call init ...
+     - reset $30, jr $31
+    
+    Procedure-specific prologue/epilogue:
+     - Don't need .imports, set constants
+     - set $29 "new stack frame"
+     - save registers "you can't trample all over the registers and expect the
+       caller to be happy" ...
+     - restore registers and reset $30, jr $31
+
+Saving and Restoring Registers
+
+    Procedures need to save every register it will modify.  How do you know
+    which registers to save?
+     - The "right" way to do things is to generate the code for the body of the
+       procedure being called and only store the ones that were used.
+     - The easy way is to save them all.
+     - Observe that our code generation scheme in this class uses no registers
+       past $6 (plus $29-$31), then just save those.
+     - Don't forget to save and restore $29!
+    
+    Two approaches to saving registers: Caller-save vs. callee-save.  Suppose f
+    calls g.  Caller-save:
+            
+            g saves all registers it will modify, so f doesn't have to worry
+            about what g might be doing.
+          
+        Callee-save:
+        
+            f will save the registers it cares about before it calls g, then
+            doesn't worry about what g does. Then, g doesn't worry about what
+            f's registers are.
+
+    Our approach has been: caller-save for $31 callee-save for everything else
+    
+    Q: Who should save $29? Caller or callee?
+    
+        Suppose we do callee-save (g saves its registers, including $29, and g
+        sets $29 to the bottom of the new stack frame).
+        
+        It would be much easier to set $29 first, then some registers.
+        However, we can't change $29 before it has been saved.  So: save $29,
+        set $29, and save the other registers. "Nothing wrong with that, it
+        works!"
+        
+        The other option:
+        
+            Just let the caller save $29.
+            
+            f() { ...  g(); ...  }
+            
+            f: ...  push($29) push($31) lis $5 .word g jalr $5 pop($31)
+            pop($29)
+        
+        "If you are following closely, something about this does not work. We
+        will fix it, though!"
+
+We have a problem if we try to compile code with procedures "print", "init",
+etc.
+
+    This would mean the code would compile but not assemble.  We should stop
+    this from happening.  "We have the technology to check for arbitrary label
+    obfuscation in marmoset." >:)
+
+    Solution: For functions f, g, and h, use the labels Ff, Fg, Fh.  Then,
+    reserve labels starting with 'F' as denoting functions.  Then, make sure
+    all compiler-generated labels don't start with 'F'.  "Even if marmoset is
+    evil and tries 'Ff', it will compile to 'FFf'!" :)
+
+Parameters "Magnifies the problem that I eluded to earlier, which we will fix
+after."
+
+    We could use registers, but we could get functions that have > 30
+    parameters.  So, we should push them on the stack.
+    
+    factor -> ID(expr1, ..., exprN)
+    
+        code(factor) = push($29) push($31) code(expr1) push($3) ...
+        code(exprN) push($3) lis $5 .word F___ jalr $5 ...  pop(arguments
+        1...n) ...  pop($31) pop($29)
+
+    procedure -> INT ID (params) { dcls stmts return expr; }
+    
+        code(procedure) = sub $29, $30, $4 push registers code(dcls) ; local
+        variables code(stmts) pop registers add $30, $29, $4 jr $31
+        
+        Stack now looks like:
+        
+            [    ...       ] [g's local vars] <- $30 [   registers  ] <- $29
+            [arguments of g]   \ [      $31     ]   |- f's frame [      $29
+            ]   / [      ...     ] [ wain's frame ]
+        
+        Suppose g looks like:
+        
+            int g(int a, int b, int c) { int d = 0; int e = 0; int f = 0;
+        
+        Then, the symbol table looks like:
+        
+            Name Offset from $29 a    0      \ b    -4      | params c    -8
+            /
+        
+            d    -12    \ e    -16     | locals f    -20    /
+        
+        Problem: Offsets are wrong, since parameters are in f's stack frame.
+        Solution: Keep this as-is - notice that parameters should have positive
+        offsets, and local variables should have negative offsets.
+                  
+                  Accomplish this by adding 4*numArguments to every offset.
+                  
+                  Name Offset from $29 a    12      \ b    8        | params
+                  (now correct!) c    4       /
+       
+                  d    0    \ e    -4    | locals (still wrong...) f    -8   /
+                  
+         The locals are still incorrect, because the registers are in between.
+         Solution: Save the local registers *after* pushing local variables.
+         
+         [    ...       ] [   registers  ] <- $30 [g's local vars] <- $29
+         [arguments of g]   \ [      $31     ]   |- f's frame [      $29     ]
+         / [      ...     ] [ wain's frame ]
+         
+         Note: We are lucky to be able to do this in wlp4.  Why do we get to
+         save local variables before saving registers?
+         
+            Because wlp4 denotes that we must initialize variables to
+            constants.  This wouldn't work if we could initialize dynamic
+            values.
+            
+"This is all you need to complete A10 (minus the bonus)."
+CS 241 Lecture July 22 2015
+
+Recall: push locals first, then save registers
+
+$30 -> [        ] [ regs   ] $29 -> [ locals ] [ args   ] [ $31    ] [ $29    ]
+[        ] [ wain   ]
+       
+    Symbol table offsets are now correct!
+    
+Alternative: Save registers in caller.
+
+$30 -> [        ] [ locals ] [ args   ] [ $31    ] [ $29    ] [ regs   ]
+
+BUT: int f() { g(); g(); g(); g(); }
+     
+     Callee save (in g) saves your registers once per function.  When you do
+     caller save (in f), the code to save the registers is once per call, which
+     costs us lots of space (must wrap each call in saving/loading).  So,
+     callee saving leads to shorter (better) code.
+
+factor -> ID(expr1, ..., exprn) code(factor) = push($29) push($31) code(expr1)
+push($3) ...  code(exprn) push($3) lis $5 .word FID jalr $5 pop all args
+pop($31) pop($29) code(proc) = sub $29, $30, $4 push(decls) push(regs)
+code(stmts) code(expr) pop registers add $30, $29, $4 jr $31
+
+Optimization
+ 
+    A computationally unsolvable problem; we can only approximate the ideal
+    solution.  "There is always room to write a better compiler." "It's always
+    possible to do a little better."
+    
+    e.g. code(1+2)
+    
+        Following the guidelines from class:
+        
+        lis $3 .word 1 sw $3, -4($30) sub $30, $30, $4 lis $3 .word 2 lw $5,
+        0($30) add $30, $30, $4 add $3, $5, $3
+        
+        9 words of assembly to accomplish 1+2!  How can we do better?
+        
+        lis $3 .word 3
+        
+        "The compiler knows what 1+2 is, so why bother generating code to
+        evaluate that at runtime."
+        
+        This is called constant folding.  Surprisingly useful because
+        unevaluated constants are actually very common.
+        
+    Related to constant folding: Constant propagation.
+    
+        e.g. code(x=1; x+x)
+        
+            lis $3 .word 1 sw $3, -4($30) sub $30, $30, $4 lw $3, -12($29)  //
+            assuming x is at -12($29) sw $3, -4($30) sub $30, $30, $4 lw $3,
+            -12($29) lw $5, 0($30) add $30, $30, $4 add $3, $5, $3
+            
+        However, we know x=1, and thus can evaluate expressions using x.
+        
+            lis $3 .word 1 sw $3, -4($30) sub $30, $30, $4  // still put x onto
+            the stack lis $3 .word 2
+        
+        If we do not use x anymore, it doesn't need a stack entry.
+        
+            lis $3 .word 2
+    
+    "Does this mean that everything can propogate down to a single .word
+    result?" No, some things depend on input, and procedures/loops/etc. are
+    hard to propagate.
+    
+    But be careful - our optimizations must still be correct.
+    
+    Watch out for aliasing!
+    
+        int x = 1; int *y = NULL; y = &x; *y = 2; return x + x;
+        
+        We can't naively look at x's declaration - its value has been changed
+        to 2!  Figuring out what points to what is hard (as in, computationally
+        unsolvable and a topic of current research).
+    
+    Note: Constant folding evaluates expressions made up of constants; constant
+    propagation substitutes known variables for their constant equivalents
+    (then folding can fold them in).
+    
+    Even if x's value is not known, we could recognize that $3 already contains
+    x:
+    
+        lw $3, -12($29) add $3, $3, $3
+        
+    The above is an example of common subexpression elimination.
+    
+        e.g. (a+b)*(a+b)
+        
+        Use a register to hold (a+b) then multiply it by itself, rather than
+        computing it twice.  However, duplicate side effects can disappear
+        (e.g. printing something, or changing the value at a pointer).
+        
+        We aren't allowed to change the observable behaviour of the program! If
+        it is typed twice, then it must happen twice! Doing otherwise is
+        illegal.
+
+    Dead Code Elimination
+    
+        e.g. if ($0 == $0) { ... } else { ... }
+        
+        If the condition of an if statement is always true or always false,
+        then one branch of the if statement (as well as the if statement) can
+        be eliminated.  If we can prove that a loop condition is always true,
+        it won't terminate, so we can eliminate code after it (though this
+        cannot be tested for).  If we can prove a loop condition is always
+        false, we can eliminate the loop.
+        
+        "I once heard of an aggressively-optimizing Fortran compiler that
+        output no code if there were no print statements."
+    
+    Register Allocation
+    
+        "This should probably be a later optimization that you make."
+    
+        Registers are cheaper (faster) to use than the stack for variables.  It
+        also saves us from overusing sw and lw as much.  "The register usage
+        currently in our compiler is pretty embarassing." We aren't using
+        registers $12-28 at all!
+        
+        At the very least, we could let these registers hold 17 of our
+        variables, and use the stack for the rest.
+        
+        Which 17 variables, though?  Simple answer - the first 17 variables.
+        Better answer - the most-used variables in your code.
+        
+        If one variable stops being used before another starts being used, two
+        variables can share a register!
+        
+        Issue: '&' (addressOf operator). Registers don't have variables.
+        
+            If you take the address of a variable, it can't be in registers -
+            it must be in RAM.
+        
+        Solution:
+        
+            Manipulate the program so that the addressOf operator isn't needed.
+    
+    Strength Reduction
+    
+        "Not particularly useful in this course's challenge, but worth
+        knowing."
+        
+        Add is usually faster than mult, so prefer add when possible.  e.g.
+        Multiplying by 2.
+        
+            lis $2 .word 2 mult $3, $2 mflo $3
+        
+        Improved:
+        
+            add $3, $3, $3
+    
+    "One other techique you might want to look into is called loop unrolling,
+    where if you have a loop that runs 10 times, we can speed it up a bit by
+    simply running the loop 10 times, so we don't need to branch, track the
+    counter, etc. It makes the code longer, but faster, so it isn't really
+    useful for us."
+     
+    
+    What does WLP4 stand for?
+    
+        CS241 has been around for a very very long time.  Pre-2006, we used
+        "SL" (Small Language), which is basically WLP4 plus strings and
+        structs.  SL varied a lot from term to term, which happened because we
+        did not rely on marmoset infrastructure.  When CS241 was moved from 2B
+        to 2A, pointers and procedures were stripped from SL, and WL (Water
+        Language) was created.  When CS241 moved back to 2B, pointers were
+        added back, and WLPP (Water Language Plus Pointers) was created.  Then,
+        we decided that procedures should be added back, and WLP4 (Water
+        Language Plus Pointers Plus Procedures) was created! :)
+    
+    Procedure-Specific Optimizations
+    
+        int f(int x) { return x+x; }
+        
+        int wain(int a, int b) { return f(a); }
+        
+        It would be much simpler if we just did the function's job instead of
+        doing all the work of calling the function?
+        
+        int wain(int a, int b) { return a+a; }
+        
+        This is called inlining - replacing the function call with its body,
+        right in the caller.  This saves us from the overhead of a function
+        call.
+        
+        But is this always a win?
+        
+            If f is called many times, then we get many copies of its body,
+            which can be bad.  Then, we must ask - which is bigger? The size of
+            the body of the function, or the code used to call it?
+            
+            Some functions are easier to inline than others.  In particular,
+            recursive functions can't be inlined because you can't get rid of
+            the function call.
+            
+        If all calls to f are inline, then we don't need f any more.
+    
+    Tail recursion will be covered on Monday.
+CS 241 Lecture July 27 2015
+
+Recall: Last class, we discussed optimization techniques.
+
+We have one more to discuss - it won't help you win the contest, but it is
+worth knowing because it is quite famous and significant.
+
+Tail Recursion
+
+    int fact(int n, int a) {
+        if (n == 0) return a;
+        else return fact(n-1, n*a);
+    }
+
+    "Once the recursive call finishes, there is nothing else to do."
+    There is no pending work to do when the recursive call to fact returns.
+    All the local variables, registers, etc. are no longer needed, because when
+    the recursive call comes back we will just return.
+    The contents of the current stack frame (local variables, etc.) will not be
+    used again.  "Since we won't be using this stack frame for anything new
+    later, why not just reuse this stack frame?"
+    Don't create a new frame - reuse the current frame.
+    This program now uses a fixed amount of stack space, and recurse many times!
+    Note: It doesn't necessarily speed up your program or make it shorter,
+    though.
+    
+    Can this be done in WLP4?
+    
+        No.
+        In WLP4, though, return is always at the end,
+        and we cannot have a return in an if statement.
+        
+        But... we could expand the language after parsing and mutate the parse
+        tree. We can apply a very basic transformation to our programs to
+        create tail
+        recursive calls:
+        
+            If RETURN immediately follows if-then-else, push it inside both
+            branches.  In other words, whenever x follows assignment to x,
+            merge.
+            Before:
+                
+                x = f(...);
+                return x;
+            
+            After:
+             
+                return f(...);
+            
+            This may create some tail recursive calls!
+            
+            e.g.
+            
+                int f(...) {
+                    if (...) {
+                        if (...) {
+                            if (...) {
+                            } else {
+                            }
+                        } else {
+                        }
+                     }
+                     return x;
+                 }
+                 
+                 ... can be transformed to:
+                 
+                 int f() {
+                    if (...) {
+                        if (...) {
+                        } else {
+                        }
+                        return x;
+                    } else {
+                        return x;
+                    }
+                    return x;
+                }
+                
+                ... can be transformed to:
+                
+                 int f() {
+                    if (...) {
+                        if (...) {
+                            return x;
+                        } else {
+                            return x;
+                        }
+                    } else {
+                        return x;
+                    }
+                }
+
+    Generalization: tail call optimization
+    
+        "Have you ever wondered, 'why does the tail recursive call have to be
+         recursive?' Wouldn't we be able to reuse the same stack frame with
+         *any* function call?"
+         
+        When a function's last action is any function call (recursive or not),
+        we can reuse the stack frame.
+        
+        Aside: Scheme standard calls for all Scheme compilers to optimize for
+        all tail calls.
+
+"That's it for optimization. Now we will discuss what sort of things might come
+ up if we asked you to extend WLP4."
+
+Overloading
+
+    What would happen:
+    
+        int f(int a) {...}
+        int f(int a, int *b) {...}
+    
+    Assuming we can solve the problem of looking up the correct function name
+    in our symbol table, we will run into the problem of having duplicate
+    labels for f.
+    
+    How do we fix this?
+    The naive solution of appending an arbitrary number to the labels will
+    break when we consider collaborative code environments - we can't make any
+    assumptions.
+    
+    Solution: Encode the signature into the label (name mangling).
+    
+Name Mangling
+    
+    Encode types of params as part of the label.
+    
+    Example convention:
+        
+        "F" + type info + "_" + name
+        
+        e.g.
+        
+            int f() {...}              // F_f
+            int f(int x) {...}         // Fi_f
+            int f(int a, int *b) {...} // Fip_f:
+            
+    C++ compilers will do this because C++ has overloading.
+    "You can do g++ -S (?) and analyze how the mangling was implemented."
+    There is *no* standard mangling convention - all compilers are different,
+    so that makes it hard (if not impossible) to link code from different
+    compilers.
+    
+    But, there are good reasons to not defining a standard. This is by design.
+    Compilers differ in other aspects of calling conventions, and we *don't*
+    want to link successfully if the conventions don't truly match.
+    
+    C has no overloading, though, and therefore no mangling.
+    "There are no half measures here. Either you mangle everything or you
+     mangle nothing, else conflicts will arise between mangled and non-mangled
+     code."
+    And yet, C and C++ code call each other all the time.
+    
+    How is this done?
+    
+        "Since C came first, C++ must be backwards-compatible."
+        We need to suppress mangling in C++.
+        If you want to call C from C++, write the following:
+        
+            extern "C" int f(int x); // "f is coming to me from C, so expect
+            its name to be unmangled."
+            
+            This tells the compiler to look for an unmangled name when linking.
+            
+        If you want to allow C to call C++:
+        
+            extern "C" int g(int x) {...}
+            
+        If you have lots of these, you can also do the following:
+         
+            extern "C" {
+                ...
+                int f(int x);
+                ...
+            }
+          
+    Note: Obviously, we cannot overload functions that use extern "C".
+
+We have given you a big story in this class, with little "magic" left over
+(with the exception of OS-related problems like running more than one program
+at once). The one thing we did sweep under the rug was new and delete.
+
+Reminder: A10 is due at 11:59pm tomorrow. Also, we have class tomorrow.
+"Today is Victoria day; tomorrow is Canada day!"
+
+Memory management and the Heap
+
+    WLP4, C, C++:
+    
+        The user does explicit memory management (free/delete).
+    
+    In languages like Java, Scheme, and others:
+    
+        Implicit memory management, where the user is not expected to say when
+        they are done using certain memory.
+        This is called garbage collection.
+    
+    In both, though, the act of freeing memory and giving it back to the heap
+    looks the same.
+    
+    How do new/delete (or malloc/free) work? There are a variety of
+    implementations.
+    
+        1) A list of free blocks.
+            
+            - maintain a linked list of blocks of free RAM.
+            - initially, before the program has asked for any memory, the
+              entire heap should be free, so our linked list contains only one
+              entry
+            - so let's suppose our heap is 1K (1024 bytes) "We only gave you 4K
+              in alloc.merl."
+                
+                free -> [1024 | entire heap (1020) ] "one pointer points to the
+                entire array"
+            
+            Suppose the user asks for 16 bytes to be allocated.
+            We need to keep track of how far the pointer has gone from the
+            start of our heap. So we actually allocate 20 bytes: 16 bytes + 4
+            bytes (an Int to say how much memory we have).
+            
+                [20 |  (16 bytes) ]   // 20 total bytes
+                   
+                   ^ Return a pointer to the second word, so that the size in
+                     memory is just before the pointer that comes back.
+                     
+                   "Store size just before the returned pointer."
+                
+                The free list now becomes:
+                
+                    free -> [1004 | (1000 bytes) ]
+            
+            Suppose 28 more bytes are requested - allocate 32.
+            
+            --------\/
+                [20 | (16 bytes) ]
+                
+            --------\/
+                [32 | (28 bytes) ]
+                
+            Free list:
+            
+                free -> [972 | (968 bytes) ]
+            
+            Suppose the first block is freed. Add to the free list:
+                              ,.-----------.,
+                free -> [20 | ^ |    ]    [972 | / |     ]
+                
+            Suppose the other block is freed:
+            
+                            ,.---------.    ,.---------.,
+                            |          |   |            |
+                free -> [20|^|    ]    [32|^|      ]    [972|/|    ]
+                        p                 q
+                
+                Notice p + *p == q, therefore blocks are next to each other,
+                therefore merge them.
+                
+                free -> [52|^|   ]   [972|/|   ]
+                p                    r
+                
+                Now p + *p == r, therefore merge again.
+                
+                free -> [1024|/|                ]
+                
+                "back to where we started!"
+                
+            Note: When we repeatedly allocate/deallocate, it creates "holes" in
+            our heap.
+            
+                e.g.
+                
+                    alloc 20 [20|          ]
+                    alloc 40 [20|40|       ]
+                    free 20  [  |40|       ]
+                    alloc 5  [5||40|       ]
+                    
+                This is called fragmentation.
+                    
+                    Even if n bytes are free, we may not be able to allocate a
+                    block of n bytes.
+                    
+                    Assuming the big space is 100 bytes, we have 115 free bytes
+                    free, but if the user asks for 115 bytes we can't give that
+                    to them because the space is not continuous.  We can't give
+                    them a pointer to the beginning of 115 free bytes.
+                    
+                    "You might be familiar with this concept if you worked with
+                    a Windows machine in the past decade." The computer starts
+                    with files a, b, and c nicely in order: [a|b|c] If you
+                    reopen file b and edit it, we don't have enough space, and
+                    must move it: [a| |c|b*] Over time, this fragments the hard
+                    drive, and slows down the computer.  Solution: Defragment
+                    the hard drive - stop everything, reorganize the hard
+                    drive, and then start again.
+                    
+                However, in memory, we can't just stop everything - we need
+                help from the OS.  We would have to find those pointers and
+                change them.  But, as in lecture 1, we can't reach into the
+                computer and identify all the pointers - where are they all?
+                
+            In Java, it runs in a virtual machine that can keep track of
+            pointers.  In C/C++, we pick the right chunk of RAM to use to
+            minimize fragmentation.
+CS 241 Lecture July 28 2015
+
+Recall: Fragmentation - means that even if you have n bytes of free RAM,
+you may not be able to allocate a block of n bytes.
+
+To reduce fragmentation, you don't always have to pick the first block of RAM
+big enough to hold the request.
+
+    e.g.
+    
+        [ (20) | (15) | (100) ]
+        allocate(10) - where do I put it?
+        Under the first fit heuristic, put it in the 20-byte block.
+        Best fit heuristic: put it in the 15-byte block.
+            - This gives a better fit, and hopefully less waste.
+            - Block 15 wasn't a perfect fit either, though, but this implies
+              that we would need to search the whole heap to find the best fit
+              every time.
+
+Searching the heap (available RAM) takes time - it's not free.
+Note: You never know what is coming next, so best fit is your best option.
+Lesson: Fragmentation always happens to some extent, so for efficiency, use the
+registers as much as you can.
+
+2) Binary Buddy System
+
+    Assume the size of the heap is a power of 2.
+    For example, heap is 4K (4096 bytes, or 1024 words).
+    Suppose the user requests 20 words (new int[20]).
+    We need one word for bookkeeping => 21 words requested in total.
+    But, memory here is allocated in blocks of size 2^k, so allocate 32 words.
+    1024 is too big - split it into two heaps ("buddies") of size 512, and
+    allocate from one of those.
+    
+        [ (512) | (512) ]
+
+    That's still too big, so split again:
+    
+        [ (256) | (256) | (512) ]
+    
+    Still too big...
+    
+        [ (128) | (128) | (256) | (512) ]
+    
+    ...
+    
+        [  |32|64|128|256|512]
+         ^
+         |
+         allocate our 32 words and return a pointer
+                                               |
+                                        [ (1) | (31) ]
+         "The pointer points to the end of the one 'bookkeeping' byte."
+     
+     Now, request 63 words (+1 = 64):
+     
+        [  |32|  |128|256|512]
+        
+     Note: You can take advantage of this while writing code - if you know you
+     are working with a buddy system allocator, allocate arrays of size (2^n)-1
+     rather than 2^n (prefer 1023 to 2014) so that there is less waste.
+     
+     Request 50 words +1 = 51 => 64 words:
+     
+        [  |32|  |  |64|256|512]
+     
+     Now, if the first 64-bit block is released:
+     
+        [  |32|64|  |64|256|512]
+     
+     And release the 32-word block:
+     
+        [32|32|64|  |64|256|512]
+        
+        It's buddy is also free! Merge them!
+        
+        [64|64|  |64|256|512]
+        
+        Now that block's buddy is also free, so merge them too:
+        
+        [128|  |64|256|512]
+        
+     Now if we release the last block, it looks like:
+     
+        [128|64|64|256|512]
+        
+        Which, after merging repeatedly, goes back to where we started:
+        
+        [1024]
+        
+        Note: Only "children" of the same larger block can be buddies, so in
+        some cases you could get two blocks of the same size next to each other
+        that aren't buddies.
+    
+    Although it lessens external fragmentation (holes), we are also vulnerable
+    to internal fragmentation (over-allocation, or empty space inside a block).
+    
+    Deallocation into:
+    
+        -----\
+           [-|     ]
+            ^
+            |
+            deallocation
+    
+        alloc.asm: gives each block a code
+        entire heap: [            ] = 1
+        512-word buddies [512|512]
+                          10  11
+        
+        256-word buddies [256|256|256|256]
+                          100 101 110 111
+        
+        "Binary code represents going left/right from the root node."
+        The first word, or "buddy code" (in front of the pointer) stores the
+        binary value.  If you know the total size of the heap beforehand, then
+        we can calculate the size of that block based on the length of the
+        binary value.  Flip the last bit to find your buddy!
+        Merging - buddy code of result = dropping the last bit (>>1).
+
+Implicit Memory Management (Garbage Collection)
+
+    Recall: The way the heap is managed doesn't really change based on implicit
+    or explicit memory management. What changes is who has the responsibility
+    to say when a piece of memory is done being used.
+    
+    We will cover 3 garbage-collection algorithms.
+    
+    1) Mark + Sweep
+    
+        Scan the stack, looking for pointers.  For each pointer you find, take
+        a look at what it's pointing at, and mark that heap block.  Then, from
+        that heap object, follow any pointers it contains, mark the blocks,
+        etc.  Then, scan the heap, reclaim any blocks that aren't marked, and
+        clear the marks.
+        
+        "Reclaim the things we couldn't get to from the stack - we can't access
+         them, so we don't need them!"
+        
+        Note: This implies that program execution that needs to be paused to do
+        garbage collection - this causes a small delay.
+    
+    2) Reference Counting
+    
+        For every heap block, count how many pointers point at it (its
+        reference count).  We must watch every pointer and update the reference
+        counts (decrement the old, increment the new) each time a pointer is
+        reassigned.  If a reference block's count hits 0, reclaim it.
+        
+        Advantage: We can do this without stopping our program!
+        But, it's not perfect.
+        
+        Problem: Circular references.
+        
+            [    ] <-> [    ]
+            
+            Both have a reference count of 1, but are collectively
+            inaccessible.  There are ways to fix this, like detecting cycles
+            and breaking one of the cycles.
+            
+    3) Copying GC
+    
+        Heap is in two halves - front and to.
+        Only allocate from from.
+        When from fills up, all *reachable* data is copied from from to to,
+        and the roles of from and to are reversed.
+        Presumably, there is a lot of stuff we won't copy, so in the new heap
+        we will have more room again.
+        
+        Very significant advantage: built-in compaction. "A trash compactor!
+        Or, uh, a non-trash compactor." All the new stuff is copied right next
+        to each other, and we have continuous free space.  It's guarunteed that
+        after the swap, all reachable data is in contigious memory - no
+        fragmentation.
+        
+        But, we can only use half the heap at a time.
+        Also, it adds a lot of overhead. We must know where the pointers are in
+        order to adjust them from heap to heap. This also requires that the
+        program must be stopped while heaps are shifted around.
+
+Note: Pre-enrollment for the winter starts on Thursday!
+Lushman is also teaching CS442 in the Winter - we have the CS240 prereq already.
+CS 241 Tutorial 1 May 15 2015
 
 Recall the definition of a fibonacci number:
     Fn = Fn-1 + Fn-2
@@ -5308,6 +6183,178 @@ CS 241 Tutorial 4
      .word abc
 
     "De-linking like this requires knowledge of at least one of the MERL files."
+
+CS 241 Tutorial 6
+
+Topics
+
+    Non-Derterministic Finite Automata (NFAs)
+    Context-Free Languages
+
+NFAs
+
+    SIGMA - input alphabet
+    Q - finite set of states
+    q_0 IN Q - starting state
+    A SUBSET Q - set of accepting states
+    DELTA: QxSIGMA -> 2^Q - transition function
+        (where 2^Q is some subset of states)
+    DELTA: QxSIGMA -> Q
+
+CFGs
+
+    SIGMA/T - finite set of terminals
+    V/N - finite set of rewrite/production rules
+    S - starting non-terminal
+
+NFA Problems
+
+    1) SIGMA = { a, b, c }
+       L = { strings ending in abc or cab }
+
+       start state -> c -> a -> b (accept)
+                   -> a -> b -> c (accept)
+                   (start loops on itself on a, b, c)
+
+       "It always guesses right."
+       "It keeps all options open until it hits a snag."
+
+    2) Convert the previous NFA into a DFA using subset construction.
+
+        "On each possible state, know where we can go, and keep track of a
+         possible set of states we can be in."
+        "Assume there aren't any error states - the NFA made correct choices."
+        "Start by numbering all of our original states."
+
+        start (1) -> 5 -> 6 -> 7
+                  -> 1 -> 2 -> 3
+
+        Start: we can only be in the starting state 1.
+
+        {1}
+
+        On input a, we can be in {1,2}.
+        On input b, we loop back to {1}.
+        On input C, we go to {1,5}.
+        
+        From {1,2}:
+            a: {1,2} (loop back)
+            b: {1,3}
+            c: {1,5}
+
+        From {1,5}:
+            a: {1,2,6}
+            b: {1}
+            c: {1,5} (loop back)
+
+        From {1,3}:
+            a: {1,2}
+            b: {1}
+            c: {1,4,5} (accepting)
+
+        From {1,2,6}:
+            a: {1,2}
+            b: {1,3,7} (accepting)
+            c: {1,5}
+
+        From {1,4,5}:
+            a: {1,2,6}
+            b: {1}
+            c: {1,5}
+
+        From {1,3,7}:
+            a: {1,2}
+            b: {1}
+            c: {1,4,5} (accepting)
+
+        "We know we're done because we have three edges on every possible state.
+         Every state has handled every possible input."
+        "Any state with a 4 or a 7 is accepting."
+
+        "We can do this by filling in a table for all possible inputs."
+
+        DELTA 1    2    3    4    5    6    7
+        a     1,2 ...
+        b     1
+        c     1,5
+
+    "How do we make an NFA again?"
+
+        Build the simple pieces that have to be there (like a->b->c) and then
+        let the non-determinism speak for itself and make the correct choices.
+
+Context-Free Grammars (CFGs)
+
+    1) Construct a CFG that generates the same language as the NFA above.
+
+        "Start with the things you need - cab and abc."
+        "Start with a start symbol S and an arrow to the important bits."
+
+        S -> abc | cab (shorthand for S -> abc; S -> cab)
+
+        "Trivia: If we separate the letters, it's called Chomsky-Normal Form."
+        "We aren't done yet, we need the rest of the leading cahracters of the
+         string."
+
+        S -> abc | cab | TS
+        T -> a|b|c
+
+        Note: This expands infinitely to handle all sizes of strings.
+        S -> TS -> TTS -> TTTS etc.
+
+    2) SIGMA = { 0, 1 }
+       L = { 0^n 1^n | n >= 0 }
+       "n zeros followed by n ones"
+
+       S -> EPSILLON | 0S1
+
+    "Midterm review session next... Wednesday? Check Piazza."
+
+    3) Similar CFG problem we're skipping
+
+4) 1 S -> F(A)
+   2 S -> g(A,A)
+   3 A -> x
+   4 A -> y
+   5 A -> S
+
+   Leftmost derivation of g(f(x),g(x,y)) and parse tree.
+   "Left canonical means the same thing."
+
+   s =2> g(A,A) =5> g(S,A) =1> g(f(A),A) =3> g(f(x),A) =5> g(f(x),S)
+   =2> g(f(x),g(A,A)) =3> g(f(x),g(x,A)) =4> g(f(x),g(x,y))
+
+   Parse Tree:
+
+   "Another representation of the derivation."
+
+    S
+    |\\\\
+    g(A,A)
+      | \_
+    //|\  |\\\\
+    f(A)  g(A,A)
+      |     | |
+      x     x y
+
+5) Given a CFG:
+    S -> (S)
+    S -> SS
+    S -> EPSILLON
+
+    Give pseudocode to return the maximum level of nesting in a string.
+
+        e.g. (()())() == 2
+
+    Note: It has to terminate eventually - we are dealing with finite strings.
+
+    "Structure our code based on the three rules - we can get away with three
+     lines of code."
+
+    eval(tree):
+        if(rule == "S -> EPSILLON") return 0;
+        else if (rule == "S -> (S)") return 1 + eval(S);
+        else if (rule == "S -> SS) return max(eval(S1), eval(S2));
 
 CS 241 Tutorial 6
 
