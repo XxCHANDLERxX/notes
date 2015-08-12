@@ -1,0 +1,303 @@
+Summary
+1 - top-down parsing
+2 - bottom-up parsing
+3 - error checking
+4 - code generation
+5 - optimization
+6 - memory management
+
+Top Down Parsing (LL(1))
+    First(sequence of symbols)
+    Follow(nonterminal A)
+    Predict(nonterminal A, terminal a)
+    
+    Problem 1 - build predictor table and parse |-dfeaccb-|
+    0. S' -> |-S-|
+    1. S -> aYb
+    2. S -> XS
+    3. y -> ccZY
+    4. y -> EPSILLON
+    5. X -> dZe
+    6. Z -> f
+    7. Z -> EPSILLON
+    
+    first(S') = {|-}
+    first(S) = {a,d}
+    first(Y) = {c}
+    first(X) = {d}
+    first(Z) = {f}
+    
+    EPSILLON isn't in any first set because it isn't a terminal!
+    It's a string containing no terminals.
+    
+    follow(S') = {} "the whole string, nothing can come after"
+    follow(S) = {-|}
+    follow(y) = {b}
+    follow(X) = {first set of S} = {a,d}
+    follow(Z) = {e, first set of y, follow set of y} = {e, c,b} "y is nullable, so include its follow set"
+    
+    Nullable rules: 4,7
+    
+    Table:
+    
+    "|- is in the first set of S', so put rule 0 in that cell"
+    "first half of rule - terminal is in first(nonterminal)"
+    
+        |-    -|    a    b    c    d    e    f
+    
+    S'  0
+    
+    S               1              2
+    
+    Y                         3
+    
+    X                              5
+    
+    Z                                        6
+    
+    "now the second part - rule is nullable and terminal is in follow(left hand side of rule)"
+    
+        |-    -|    a    b    c    d    e    f
+    
+    S'  0
+    
+    S               1              2
+    
+    Y                    4    3
+    
+    X                              5
+    
+    Z                    7    7         7    6
+    
+    This grammar is LL(1), since there is no cell with more than one item.
+    Now for the parsing:
+                       
+                       top.....bot
+        Action         Stack       Unread
+        initialize     S'          |-dfeaccb-|   "one symbol of lookahead - S',|- => use rule 0"
+        expand 0       |-S-|       |-dfeaccb-|   "remember to push on stack in reverse - label top/bottom of stack if needed"
+        match |-       S-|           dfeaccb-|   "match top of stack with unread input" "only change the unread input when you do a match"
+        expand 2       XS-|          dfeaccb-|
+        expand 5       dZeS-|        dfeaccb-|
+        match d        ZeS-|          feaccb-|
+        
+        "The rest is left as an exercise."
+        "If the symbol  on our stack is a nonterminal, look to our predictor table."
+        "If the symbol on top of our stack is a terminal, match."
+        Accept when our stack is empty.
+        Reject if we reach a blank cell in our predictor table.
+
+Bottom Up Parsing - LR(1) - one char of lookahead
+
+    |-ababaab-|
+    0. S' -> |-X-|
+    1. X -> XbAb
+    2. X -> XaBa
+    3. X -> EPSILLON
+    4. A -> An
+    5. A -> EPSILLON
+    6. B -> Bb
+    7. B -> EPSILLON
+    
+    "Shift-reduce table" "tabular DFA" "list of transitions"
+    "could get graphical DFA instead"
+    
+    0 |- S 3
+    1 a R 1
+    1 a R 1
+    1 b R 1
+    1 -| R 1
+    2 a R 2
+    2 b R 2
+    2 -| R 2
+    3 a R 3
+    3 b R 3
+    3 -| R 3
+    3 X S 10
+    4 a R 5
+    4 b R 5
+    4 A S 5
+    5 a S 9
+    5 b S 1
+    6 a R 6
+    6 b R 6
+    7 a R 7
+    7 b R 7
+    7 B S 8
+    8 a S 2
+    8 b S 6
+    9 a R 4
+    9 b R 4
+    10 a S 7
+    10 b S 4
+    10 -| S 11
+    
+    "Top of stack should always be the current state."
+    "Always push/pop pairs of state,char."
+    
+    Action    Stack         Unread
+    init      0             |-ababaab-| "In state 0, lookahead and see -|, so shift -| (and new state)"
+    shift -|  0|-3            ababaab-| "In state 3, lookahead to a, so reduce 3" "pop 0 symbols (0 in LHS of rule 3)" "push X, state"
+                                        "X is in state 10 because of rule '3 X S 10'"
+    reduce 3  0|-3X10         ababaab-|
+    shift a   0|-3X10a7        babaab-|
+    reduce 7  0|-3X10a7B8      babaab-|
+    shift b   0|-3X10a7B8b6     abaab-| "reduce 6 now - pop two pairs because RHS(6) == 2" "then push LHS(6) == B,8"
+                                        "we are in state 7 after popping 2, so lookup 7,B,S,8 -> we are in state 8 again"
+    reduce 6  0|-3X10a7B8
+    shift a   0|-3X10a7B8a2      baab-| "reduce 4 - pop 4, only |-3 remains, LHS is X so lookup 3,X,S,10 -> in state 10"
+    reduce 2  0|-3X10
+    ...
+    
+    Accept when you read EOF (-|).
+    Reject when we have an invalid (state, lookahead). e.g. (6,-|)
+    
+    Proving LR(0): compute DFA and look for shift-reduce or reduce-reduce conflicts.
+
+Error Checking
+
+    int wain(int *a, int *b) {
+        int c = 5;
+        if (c1 !=== a) {
+            (*a + 4) = c;
+        }
+        return b;
+    }
+    
+    What errors are in the above code, and what type of errors?
+    
+    semantic error - second arg of wain is a pointer
+    scanning error - !=== "two tokens not separated by whitespace is invalid" (would be a parsing error if there was whitespace)
+    parsing (grammar/syntax) error - if not followed by else
+    semantic error - return statement doesn't return an integer
+    semantic error - (*a + 4) not an lvalue, should be *(a + 4) "star binds more tightly than plus"
+    
+    "Know how to find and classify WLP4 errors."
+    
+Code generation
+
+    - want to add simple for loop
+        - exactly one assignment in initializer portion
+        - exactly one test
+        - exactly one assignment in increment portion (i = i + 1)
+        - new variables can't be made in initializer portion
+        
+    What changes do we make to our compiler?
+     - add new token
+       
+           FOR "for"
+    
+     - add new grammar rules "try to be specific as possible" "assign used to be part of statement"
+       
+           statement -> FOR LPAREN assign SEMI test SEMI assign RPAREN LBRACE statements RBRACE
+           assign -> lvalue = expr
+           
+     - add type rules
+     
+           wellTyped(assign1), wellTyped(test), wellTyped(assign2), wellTyped(statements)
+           -----------------------------------------------------------------------------------
+                           wellTyped(for(assign1, test, assign2) {statements})
+     
+     - add code generation statement
+     
+        code(stmt -> for(assign1;test;assign2) {stmts}) =
+            code(assign1)
+            forX:
+            code(test)
+            beq $3, $0, skipX
+            code(stmts)
+            code(assign2)
+            beq $0, $0, forX
+            skipX:
+
+    What if we want to add >>, << bitshift operators?
+     - add tokens
+     
+        >> RSHIFT
+        << LSHIFT
+     
+     - grammar rules "mimick existing hierarchy" "like 'expr -> expr + term'"
+        "let's give the bitshifts the lowest precedence, so put it higher in the tree"
+     
+        bitexpr -> expr
+        bitexpr -> bitexpr << expr
+        bitexpr -> bitexpr >> expr
+        
+        ** must also replace expr with bitexpr in all existing rules
+        
+            statement -> lvalue BECOMES expr should now use bitexpr instead
+        
+     - type rules left as exercise
+     - code generation (for LSHIFT) "multiply bitexpr by 2^expr"
+     
+        code(bitexpr -> bitexpr LSHIFT << expr) =
+            code(bitexpr)
+            push($3)
+            code(expr)
+            pop($5)
+            lis $2
+            .word 2
+            topX:
+            beq $3, $0, endX
+            mult $5, $2
+            mflo $5
+            sub $3, $3, $11
+            beq $0, $0, topX
+            endX:
+            add $3, $5, $0
+            
+     - code of RSHIFT is a bit trickier (odd negative numbers), left as exercise
+
+Optimization
+
+    Constant propagation
+    
+        Known value in program pushed through the rest of the program.
+        Problems: aliasing, mutation
+    
+    Constant folding
+    
+        Reducing constant expressions (e.g. 6+2+3 -> 11)
+    
+    Dead code elimination
+    
+        Don't generate code for code that will never run (if (false) {...}).
+    
+    Common subexpression elimination
+    
+        Two subexpressions that look the same (a+a -> 2*a) (a-a -> 0).
+        Problem: side effects (does the subexpression print something?)
+        
+    Register allocation
+    
+        Use registers as much as you can to avoid excessive stack usage.
+    
+    Strength reduction
+    
+        Taking some sequence or operation in assembly and encode it as something more efficient.
+        e.g. (do add $r1, $r1, $r1 instead of lis $2, .word 2, mult $r1, $2)
+    
+    Procedure inlining
+    
+        Less overhead for calling a function if it isn't worth it.
+        Just replace call to function with the body of the function.
+    
+    Tail recursion
+    
+        If the last thing the function does is call itself, we can just loop.
+
+Memory Management
+
+    Fragmentation
+     - external (blocks getting scattered)
+     - internal (memory within block is unused, e.g. asking for 10 bytes and 16 bytes is returned)
+     
+    Explicit
+     - Binary Buddy System
+    
+    Implicit (Garbage Collection)
+     - mark and sweep "follow trails and mark used blocks, then free unmarked blocks"
+     - reference counting "track number of references to a particular block"
+     - copying garbage collector "chop the heap in half, from/to, and swap copy reachable memory when from is full"
+        pro: compaction
+        con: using only half of the heap
