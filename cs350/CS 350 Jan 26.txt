@@ -1,0 +1,161 @@
+CS 350 Jan 26
+
+Recall: Two different types of semaphores, condition variables, solving the producer/consumer problem.
+Blocking lock and binary semaphore are different because:
+- Blocking locks can only be released by the thread that acquired the lock.
+- This is because we just want to provide mutual exclusion, so we use this lock to surround our
+  critical section.
+
+Condition variable usage:
+1. Acquire a lock before enterring critical section.
+   The condition is probably a shared variable.
+2. If the condition is false, block inside the critical section.
+   Blocking is to momentarily step out of the critical section while releasing the lock.
+   This avoids deadlock because the interrupt needs access to the lock to function correctly. (?)
+
+Example: Stock Trading App
+Tbuy (<$500)
+Tsell (>$1000)
+Tupdate
+condition variables: cv_sell true if stock >1000, cv_buy true if <500.
+
+
+Critical section visualization:
+
+----|  |----------.
+   lock_acquire   |
+                  | cv_sell queue
+                  '---------.
+                   Tsell    |
+                  -'''''''''
+ int StockPrice   |
+                  | cv_buy queue
+                  '---------.
+                   Tbuy     |
+   lock_release   -'''''''''
+-----|   |--------'
+   
+Tbuy has a critical section.
+Entering the critical section: lock_acquire
+Check the stock price (a shared variable - this is why we are in a critical section)
+Tbuy checks the price and sees $700. It wants <$500, so we sleep.
+Instead of exiting and trying over and over again (inefficient), we sleep until cv_buy
+becomes true. So we call cv_wait(cv_buy) and "line up" in wait for that variable's signal.
+By going to sleep, we temporarily step out of the critical section, so we must release the lock.
+Problem: releasing the lock before going to sleep could lead to another thread changing the proce
+and triggering cv_buy's signal before you go to sleep.
+So we implement this the same way we implemented semaphores (see previous example).
+i.e. We release the lock after exiting the critical section and entering the queue.
+
+Important idea for A1: one critical section can have multiple blocking condition variables.
+
+Now Tsell comes into the critical section.
+ - it acquires the lock
+ - it checks cv_sell condition, sees that it's still false
+ - sleeps on cv_sell, stepping out of critical section and releasing the lock
+
+Now Tupdate comes into the critical section and updates the stock from $700 to $1010.
+Tupdate must now signal or broadcast cv_sell's blocked threads (should NOT broadcast to *all*
+condition variables, that would be inefficient).
+Tsell thread now becomes "ready", it can't run right away because:
+ - it needs to be scheduled first
+ - Tupdate thread still has lock on critical section
+
+Note: The condition variables we are covering here are technically "Mesa-style". Other
+styles of condition variables exist and behave slightly differently, but we won't be
+covering them.
+
+Code example: Synchronization slides 45-46.
+Notice that Produce() and Consume() both call cv_wait() inside a while loop.
+This is to confirm that the condition is true before breaking and leaving the while loop.
+Note that the call to cv_wait is inside a while loop *after* we acquire a lock.
+cv_wait automagically releases the lock, and regains it for you before returning.
+
+Deadlocks
+Suppose two locks, lockA and lockB, both initially unlocked.
+Suppose these events occur:
+1. Thread 1 does lock_acquire(lockA)
+2. Thread 2 does lock_acquire(lockB)
+3. Thread 1 does lock_acquire(lockB) and blocks, because thread 1 already has it.
+4. Thread 2 does lock_acquire(lockA) and blocks, because thread 2 already has it.
+Steps 3 and 4 will repeat themselves, so we are stuck.
+Another thread can't step in to release one of the locks, because they must be released
+by the thread that acquired it.
+
+Another example of deadlocking:
+64MB of memory.
+1. ThreadA requests 30MB of memory.
+2. ThreadB starts and requests 30MB of memory.
+3. ThreadA requests an additional 8MB of memory, but the kernel blocks because only 4MB are left.
+4. ThreadB requests an additional 8MB of memory, but the kernel blocks because only 4MB are left.
+
+A real world example: Picture of intersection where cars from all four sides tried entering the
+intersection but got stuck halfway when they hit against the other cars.
+||
+\/<---
+--->/\
+    ||
+We can think about the intersection as a collection of 4 resources.
+  |  |
+-- AB --
+-- CD --
+  |  |
+In order for a car to drive from the south to the north in the right lane, it needs resources B
+and D. Note that naively acquiring resource D without resource B leads to the deadlock above.
+Even though we don't necessarily need resource D AND B until we are halfway through the intersection,
+we are at risk for getting stuck.
+Note: this scenario is NOT related to A1, we should solve it in a much simpler way without using
+"resources" in the intersection like this.
+
+Ways to prevent deadlocks:
+1. Prevent "hold and wait" scenarios, where a car (a thread) is holding onto a resource (D)
+while waiting for another (B). Acquire the needed resources all at once, or drop your held resouce
+and try again later if B can't be acquired.
+This solution isn't complete, because we could end up with traffic from all sides simultaneously
+pulling into the intersection, backing up, pulling back in, etc. This is a "live lock" situation.
+
+Another "live lock" situation is a Canadian four-way stop where everyone tries to let the car on
+there right go first - it goes around the circle, and nobody progresses!
+
+2. Preemption. One thread says "I'm more important, give me that resource".
+Analogously, this is like introducing a Firetruck to the intersection, and everyone knows to
+give the firetruck the right of way.
+
+Problem: Some threads may not know how to act around a firetruck. We need to enforce the rules.
+Firetrucks also have large bumpers desiged to push cars out of the way. Involuntary preemption!
+"This thread just kills the other thread and takes the resource by force."
+
+3. Resource ordering. Order (i.e. number, alphabetize) the resource types and require that each
+thread acquires resources in an increasing order. All threads must acquire resources in the same
+order.
+
+This  doesn't fit our analogy, because it's like having a car throw pilons around the intersection
+and saying, "I call this spot!" but it makes sense when we consider threads and locks.
+e.g. Car from the north acquires A, then C.
+     Car from the East then tries to acquire A and B, but blocks on A.
+     Car from the West tries to acquire C then D, and blocks on C.
+     Car from the south acquires B then D.
+Note: We won't deadlock if South goes first, acquires B and D, and East/West acquire A and C
+respectively, and block waiting for South to release B or D. South has all the resources it
+needs and will eventually release them - it isn't deadlocked. This is expensive, but it works.
+
+Alternatively: Deadlock detection and recovery. This approach is commonly used in databases.
+Since deadlocks are relatively rare, and since database transactions are atomic (can be safely
+aborted and restarted later), this works.
+We can detect a deadlock and, say, terminate the "least useful" thread.
+
+Now let's talk about the traffic problem in A1.
+Conditions for entering the intersection:
+ - Imagine the road has infinite lanes from each side. If all cars are going from South to north or
+   North to South, all of them can go.
+ - If the destination is different, and one or both of the cars are making a right turn, that's okay.
+We must implement an enter function and an exit function.
+When entering, check: "Three hints."
+ - If no other cars are in the intersection, we can go.
+ - If there are cars in the intersection:
+   - If the other cars are going the same direction as your, you can go.
+   "Keep track of the source and destinations of cars in the intersection."
+ - When you leave the intersection, you might want to wake up cars that were waiting for you to exit.
+ "Selectively wake up cars that were specifically waiting on you."
+ "Keep track of how many cars are waiting in any particular direction, to satisfy the fairness
+  requirement of the question. We need to keep them cycling through."

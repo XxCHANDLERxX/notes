@@ -1,0 +1,157 @@
+CS 350 Lec 2 Jan 7
+
+Review: Program Execution
+Registers
+ - program counter, stack pointer...
+ - PC contains address of next instructions
+ - Jump, branch, etc. change PC (or it auto-increments by 4)
+ - Other registers are input params or output from functions
+ - Stack pointer points at the top of the stack
+ - Program stack contains procedure activation records (call stack, local vars, etc.)
+Memory
+ - program code
+ - program data
+ - program stack containing procedure activation records
+CPU
+ - fetches and executes instructions (fetch, execute loop)
+ 
+ Threads
+ A thread represents the control state of an executing program.
+ An abstraction of the execution of a sequential program.
+ Each thread runs a sequential program one instruction at a time.
+ Thread context is the state information needed to run the program.
+ "Save everything that this thread touches."
+ "Basically a copy of all the registers, but we'll talk more about what needs to be saved later."
+ Context consists of:
+  - CPU state
+  - A stack located in the address space of the thread's process (local vars, return addrs, etc.)
+
+See thread context diagram on slide 3 of this module.
+
+Concurrent Threads
+In a single-core CPU, running multiple threads would require something called context switching.
+Only one of them can be running at a time.
+See next diagram on slide 5.
+One set of CPU registers => single-core CPU.
+Thread 1 is populating the registers => thread 1 is running.
+Thread 2 is paused and waiting, and its context has been stored in the program data.
+The thread library manages this context storage.
+Also note that there is an extra stack for the second thread.
+Students tend to forget this: each thread has its own stack!
+Is it possible to have two threads sharing one stack?
+Picture a stack growing downward, starting with function A with function B called below.
+Then the other thread calls function C and D and those go below B.
+If we go back to thread 1, the memory below D is now the top of the stack. Bad things happen.
+Note that thread 1 would have no idea what happens, and tries to use the stack pointer as usual.
+If thread 1 were to try accessing a local variable in B, it would actually look at D's memory! Oh noes!
+"But the stack pointeris a register. It gets stored in the thread's context, so the old stack pointer
+ gets restored, and the correct reference is maintained. That problem goes away, but other problems still
+ exist."
+Two stacks would be interweaved/overlapped. It gets very complicated.
+Other single-stack solutions are hacky and inneficient - motivating separate stacks.
+
+Thread Interface for OS/161
+A thread library implements threads.
+thread_fork is used to create a new thread. Note that (func*)(...) is a function-pointer parameter.
+ - This doesn't automatically execute the function, just sets of the thread.
+ - Note that thread_fork's function param has a specific format: returns void, first arg is void*, second arg is ulong.
+thread_exit destroys and cleans up a thread.
+ - note that in thread_exit(void), void means that the function takes no parameters.
+thread_yield is where a thread says "I'm not done yet but I'll let another process have the CPU for a while". "voluntary context switch"
+
+/************************************************** 
+Thread creation example: cat and mouse (from slide)
+**************************************************/
+
+for (index = 0; index < NumMice; index++) {
+    error = thread_fork("mouse_simulation thread", NULL, mouse_simulation, NULL, index);
+    if (error) {
+        panic("mouse_simulation: thread_fork failed: %s\n",
+        strerror(error));
+    }
+}
+
+/* wait for all of the cats and mice to finish */
+// "signalling primative used here to wait for all threads to finish"
+for(i=0;i<(NumCats+NumMice);i++) {
+    P(CatMouseWait);
+}
+
+/* This function is going to be passed to thread_fork */
+static void mouse_simulation(void * unusedpointer, unsigned long mousenumber)
+{
+    int i; unsigned int bowl;
+    for(i=0;i<NumLoops;i++) {
+
+        /* for now, this mouse chooses a random bowl from
+        * which to eat, and it is not synchronized with
+        * other cats and mice
+        */
+
+        /* legal bowl numbers range from 1 to NumBowls */
+        bowl = ((unsigned int)random() % NumBowls) + 1;
+        mouse_eat(bowl);
+    }
+
+    /* indicate that this mouse is finished */
+    V(CatMouseWait);
+    /* implicit thread_exit() on return from this function */
+}
+
+/***************************************************/
+
+
+Context Switching, Scheduling, and Dispatching
+(Thread) context switching is the act of pausing the execution of one thread and resuming another.
+When we context switch:
+1. Decide which thread to run next "select"
+2. Save context of currently running thread "save"
+3. Restore the context of the currently running thread "restore"
+Dispatching is just saving context of current thread and restoring the context of the thread being "dispatched".
+Sounds simple, but is actually tricky - it's architecture-specific, must be done carefully, and tricky to understand
+what is actually happening.
+
+Scheduling
+Scheduling is deciding which thread to run next.
+Scheduling policy algorithm impacts machine performance a lot.
+Simple model: round robin. New threads get put at the end of a "ready queue" that is FIFO.
+Scheduler pops the first item of of this queue to run next, and pushes the current thread to the back of the queue.
+
+Causes of Context Switches
+1. A thread decides to call thread_yield and voluntarily gives up the CPU.
+   This tells the OS to let someone else to run.
+   e.g. If a thread is "far ahead" of other threads and wants them to catch up, maybe if it needs resources from
+        another thread, it might call thread_yield.
+2. A thread calls thread_exit (just a context switch but the current thread isn't queued again).
+3. A thread blocks - it is waiting for an event to happen (like waiting for a network packet) - and sleeps until
+   the event to happen. While waiting, you pause, and then are woken up when the packet arrives.
+   "Like when you are young, instead of constantly asking "are you there yet?" which wastes time and energy, you go to sleep!"
+4. A thread is preempted - "an involuntary context switch". The thread library decides, "hey, you've been running long enough,
+   time to run another thread".
+   This is important because we have threads that run continuously without calling thread_yield. Relying on thread_yield takes
+   control away from the kernel and tends to promote "selfish" programs that hog resources and reduce concurrency.
+
+Preemption
+Without preemption, a running thread could run forever! A buggy thread could freeze the system!
+Preemption ensures fair access to the CPU for the thread library.
+Preemption happens via interrupts.
+
+Interrupts
+An event that occurs during the execution of a program.
+It is caused by system hardware (like a network card) and tells the OS that the hardware needs to be "serviced".
+It transfers control to a specific location in memory - an interrupt handler.
+An interrupt handler handles the interrupt
+ - it saves the thread context
+ - determines which piece of hardware raised the interrupt and performs device-specific processing
+ - restores the saved thread context and resumes its execution
+The primary hardware device we will use to generate interrupts is a timer.
+Once a certain amount of time passes, an interrupt is raised, and a context switch happens.
+This is how we implement preemption in an OS! With a timer.
+Note that if only one thread is active in the system, an interrupt just immediately restores that thread.
+
+Implementing Preemptive Scheduling
+ - timer interrupts generates every T time units (e.g. 1ms)
+ - suppose thread library uses time quantum q = 500t (preempts a thread every 500ms)
+ - to implement this, keep a variable of runningtime that increments with each timer interrupt
+ - when a thread is initially dispatched, runningtime is set to 0
+ - if runningtime == q, we preempt the thread

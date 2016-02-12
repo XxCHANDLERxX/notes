@@ -1,0 +1,99 @@
+CS 350 Jan 12
+
+A1 is posted but we haven't covered any of the material yet :P
+A1 is on synchronization. We implement two sync primatives: a lock and a condition variable.
+We also have the primitive of a semaphor(?) implemented for us. That is good example code!
+Then we need to implement a simulated traffic problem.
+ - Naive solution: one car in the intersection at a time is safe, but removes concurrency.
+ - We should allow parralel lanes to both be in the intersection at a time.
+ - We will have a list of rules outlining what is safe or unsafe.
+ - Performance is one aspect. Fairness is another. Any one car shouldn't have to wait for too long.
+   "Avoid someone yelling YOLO and jumping the gun in road rage."
+
+Recall: Threads
+A thread is an abstraction for sequential execution.
+If you want more than one thing running, you need multiple threads.
+With one CPU, you must context switch between threads.
+Context switching involves:
+ 1. Scheduling the next thread "determine which thread to run next"
+ 2. Save the thread context (stack, registers)
+ 3. Restore the thread context of the other thread
+Causes of a context switch:
+ 1. Thread calls thread_yield "you might want other threads to catch up" "being nice"
+    "thread_yield while waiting for a resource isn't very efficient, you should sleep instead"
+ 2. A thread blocks - sleeps in an "await channel" until an event happens (e.g. a device driver retrieving a packet)
+ 3. Interrupts for preemption (a timer) when a thread is running for its full time quantum
+ 4. When a thread is done
+ 
+ Picture a thread, t, running a "load, modify, store" operation:
+ --> lw
+     add
+     sw
+If an interrupt happens in the middle of the lw, it will let the load finish.
+Next, execution jumps to an interrupt handler. (In OS/161, this is the Common Exception Handler)
+We are still in thread 1 and using thread 1's stack.
+Inside the interrupt handler, we:
+ 1. Save the thread context.
+ 2. Service the interrupt.
+ 3. Restore the context.
+ 4. Resume execution (start executing the next instruction).
+ 
+Implementing Preemptive Scheduling
+ - Maintain a running_time variable.
+ - When running_time = q = 500t, raise an interrupt.
+ - In that interrupt's handler, we call thread_yield on behalf of the thread to trigger a context switch.
+ Note: jumpimg to an interrupt handler isn't a context switch, we aren't going to an "OS thread", we are still in the same thread.
+ Question: can we improve performance of our system by changing the timer to raise interrupts once every 500ms instead
+  of every 1ms?
+ Answer: it's not that simple - threads that run for <500ms and call a thread_yield at, say, 490ms, would trigger a context
+  switch to the other thread, which gets preempted after 10ms! Then thread 1 gets to run again for 490ms - not good!
+
+Stack after voluntary context switch: context stored in "switchframe" on thread's stack.
+Stack after Preemption: context caught in "trapframe", and if t == q, thread_Switch creates a switchframe.
+Q: What's the difference betwseen trapframes and switchframes?
+A: They are snapshots of context at different points in time.
+   Switchframe saves state after the interrupt handling functions are called. The interrupt handler needs to clean up still.
+   The trapframe saves the context of the user program exactly when the interrupt fires.
+Note that we have to save more registers in a trapframe than in a switchframe
+
+Example:
+Thread 1 is currently running (stack 1 has no switchframe or trapframe).
+We can deduce that thread 2 executed a voluntary context switch, because there is a switchframe but no trapframe in stack 2.
+Suddenly, a timer interrupt!
+ - Jump execution to the interrupt handler.
+   Note: there is a special kernel register that keeps track of the return address (using the return_from_interrupt(?))
+ - Handler immediately saves the thread context into a trap frame.
+ - First, the handler determines the type of interrupt and whether a context switch is required.
+ - If a context switch is required, we call thread_yield, which:
+   1. saves a switchframe to stack 1.
+   2. determines the next thread to run (with round robin in this system of two threads, it is thread 2)
+   3. restore the context of thread 2 - returns to the execution of thread_yield and thread_switch which finish and return to the user's code
+Then thread 2 calls thread_yield for a voluntary context switch. thread_yield is called, which calls switch_thread and creates a switchframe.
+This context switch transfers back to thread 1, where the switchframe is restored, and thread_yield restores the trapframe before returning.
+
+Implementing threads
+ - OS/161's thread library uses a thread control block to track thread metadata.
+ - In the code, /kern/include/thread.h has `struct thread { ... }`. This is our thread control block.
+   - Look at this code and its comments. Note that each thread has a "kernel level stack", which we'll cover later.
+   - We have thread name, wait channel name, thread state, and a bunch of other data here.
+
+Review: MIPS Register Usage
+R0, zero = always returns 0
+R1, at = used by the assembler
+R2, v0 = return value / system call number
+R3, v1 = return value
+R4, a0 = 1st argument (to subroutine)
+R5, a1 = ...
+
+t0 to t9 are saved by trapframe but not switchframe (?)
+R16 to R31 must be saved (?)
+
+Dispatching on the MIPS "saving the context and restoring the context"
+ - See /kern/arch/mips/thread/switch.S
+ - It saves the necessary registers that must be preserved across function calls.
+ - Note that r7 is a "hack" in OS/161 that always points to the current thread structure, so it doesn't need to be saved.
+ - It gets the new stack ponter from the new thread.
+ - It then restores the registers. Note that restore offsets should be consistent with the save offsets.
+Not all registers are saved during a context switch (not all the temporary registers).
+In a trap frame, essentially all registers need to be saved (with the exception of r0 and kernel registers).
+"Involuntary context switches thus take longer than voluntary context switches."

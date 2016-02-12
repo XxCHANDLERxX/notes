@@ -1,0 +1,167 @@
+CS 350 Jan 21
+
+Recap: Motivations for TestAndSet atomic function, and related MIPS instructions.
+TestAndSet(addr,value){
+    old=*addr;
+    *addr=value;
+    return old;
+}
+Naively translated to lw, sw, and return in MIPS.
+This won't work, because two calls to the same function will result in a missed
+update. To do this correctly, we need to use LoadLink (ll) and StoreConditional (sc):
+R2=1;
+ll R1 0(addr); // R1=0 (not lw)
+sc R2 0(addr); // not sw
+if(R2==0) return 1; // "somebody could be inside the lock in this iteration, please try again"
+return R1;
+
+LoadLink sets a "watch" on R1, and StoreConditional tells us if the variable hasn't
+been touched.
+
+Recall: Thread Blocking
+Thread sleeps while waiting for a resource, a lock, etc.
+For OS/161, we use wait channels to implement thread blocking.
+We will use wait channels in assignment 1!
+waitchannel_lock: modify the wc structure safely by acquiring a wchan_lock
+wchan_unlock: unlocks the spinlock; later we never really need to call this
+wchan_sleep: puts calling thread to sleep, saves context similarly to thread_yield
+ - instead of being added to a thread queue, the thread gets added to the wait channel's
+   block queue
+ - like sleeping beauty, she can't be woken up on her own, a condition must be met (prince charming!)
+wchan_wakeone: wake one sleeping thread "usually the one that's waiting the longest" "if there's a line of sleeping beauties"
+wchan_wakeall: wakes up everyone "like a fire alarm"
+wchan_sleep: calling thread is voluntarily giving up the CPU
+
+Important diagram: thread states
+1. Running
+ - becomes ready when quantum expires (involuntary context switch) or thread_yeild (voluntary)
+ - becomes blocked when waiting for resource or event (echan_sleep())
+2. Blocked
+ - becomes running when a resource is free or event happens (wchan_wakeone/all())
+3. Ready
+ - runs when dispatched by the thread scheduler
+"The scheduler should be the only one deciding which thread runs next. One point of reference."
+Clarification: Scheduler is the only thing that determines which ready thread runs next, but different
+parts of the thread library could be dispatching.
+
+Semaphores (Also used in A1!)
+A higher-level synchronization construct.
+A spinlock and wait channel are all we need to solve synchronization problems, but they are low-level
+and tricky to use.
+A semaphore is a counter with two functions to manipulate it:
+ - semaphore.P(): if counter > 0, semaphore--
+ - semaphore.V(): semaphore++
+"Just a way of managing a counter."
+"Why is it P and V?" Djikstra implemented this, so the variables are Dutch. (?)
+Counting semaphors: any non-negative value
+Binary semaphore: 1 or 0
+
+Mutual Exclusion Using a Semaphore
+struct semaphore *s;
+s = sem.create("MySem1", 1); // initial value is 1
+P(s); // before critical section, decrement (if it can't, block this thread and wait)
+// critical section (e.g. remove_front())
+V(s); // after critical section, increment to free up the critical section and wake up 1 blocked thread
+"V wakes up blocked threads and activates a ready one."
+
+In add() and subtract() from before:
+...
+P(sem);
+total++ or total--; // critical section
+V(sem_;
+...
+
+OS/161 Semaphores
+kern/include/synch.h and kern/thread/synch.h
+
+struct semaphore {
+    char *name;
+    struct wchan *sem_chan;
+    struct spinlock sem_lock; // protects variables in the semaphore structure
+    struct spinlock sem_lock; // provides mutual exclusion to semaphore vars
+    volatile int sem_count;
+}
+
+semaphore:P()
+"Two assert statements: check the pointer exists, and check you aren't inside the interrupt handler."
+"Never use semaphores inside our interrupt handlers so that we don't deadlock."
+"Don't sleep with the lock and key!"
+1. acquire spinlock
+2. check the count value (greater than 0 => decrement, release lock, return)
+3. if count == 0, block (wchan_sleep)
+   particular order:
+    - acquire wchan_lock
+    - release spinlock
+    "If we release the spinlock first, an interrupt could mess up our semaphore."
+    "Always hold onto at least one lock (wchan or semaphore)."
+    - wchan_sleep automatically releases the wchan_lock "so someone can come wake you up"
+    - get woken up after sem.V(): re-acquire the spinlock so you can check and decrement the counter
+    - very important to have a while loop here, NOT an if statement
+    - check sem->sem_count==0 again, and sleep if it is 0 again
+semaphore:V()
+ - acquire spinlock
+ - increment the count
+ - wake one person (if there are no other threads, this does nothing)
+ "Note that wakeone and wakeall automatically acquires and releases the wchan lock."
+ "Only wchan_sleep doesn't know how to acquire the wchan lock."
+ "We have to release the spinlock explicitly after acquiring the wchan lock in sem.P(), so we do it manually."
+ - release the spinlock
+
+Example: while loop is critical, can't be an if statement
+Thread1 calls P(), context switches, Thread2 calls P(), fails and blocks.
+Context switch to Thread3 for a while, then back to T1.
+T1 calls V() and wakes up T2, adding it to the ready queue.
+Context switch to T3, calls P() and enters the critical section before T2!
+
+Example: spinlock is released before wchan_lock acquired
+T1 calls P(), 0, blocks, eventually calls spinlock_release(), context switches to T2.
+T2 calls V(), increments to 1, calls wchan_wakeone, eventually context switches to T1.
+T1 calls wchan_lock and wchan_sleep - it missed the wakeone and will sleep forever.
+"Before sleeping beauty sleeps, she leaves the room for a second, prince charming comes, doesn't see her, leaves,
+ then she comes back and sleeps forever."
+
+Example: (real implementation) wchan lock acquired before releasing spinlock
+T1 calls P(), wchan_lock, spinlock_release(), context switch to T2.
+T2 calls V(), calls wakeone, spins while trying to acquire wchan lock.
+Eventual context switch to T1, T1 calls wchan_sleep.
+T2 can now call wchan_wakeone, then spinlock_release.
+T1 can now call spinlock_acquire.
+
+Real-world example: Producer-Consumer model.
+A number of threads are producing data (producers) and threads consuming the data.
+The producers write data to a queue, and producers take it from the queue.
+We want to avoid consumers going faster than producers and asking, "is something there?" continually
+on an empty queue, wasting resources.
+We want consumers to sleep until there is data to consume.
+1. Initialize semaphore to 0 (the number of items currently in queue, a linked list or whatever).
+2. When the producer creates an item, it calls semaphore.V() (and loops).
+3. The consumer calls P() and then removes an item (and loops).
+However, this implementation isn't currently safe, we need a guard lock for the list.
+Add a binary semaphore: P() before adding/removing from the list, and V() after. (A critical section).
+Note: this was an unbounded buffer.
+
+Bounded buffer example: imagine producer is much faster than consumers, so the queue quickly fills up.
+If the buffer is full, the producer(?) needs to sleep.
+Two semaphores: occupied, set to 0, and unoccupied, set to N (# memory slots).
+Producer loop:
+1. P(unoccupied)
+2. add item to list (list_append())
+3. V(occupied)
+Consumer's loop:
+1. P(occupied) // initially 0, so it blocks until a producer creates data
+2. remove item from list (list_remove_front())
+3. V(unoccupied) // increments number of free spots available in the queue
+
+OS/161 Locks (Implementing on A1!)
+Similar to bin semaphore, except it also enforces that the same thread must call P() and V().
+If some other thread tries to release the lock, it crashes the system or something severe.
+That's the main difference between a blocking lock and a binary semaphore.
+
+Condition variables (Implementing on A1!)
+Like a light wrapper for a wait channel.
+Works with a blocking lock.
+wait: inside critical section, check condition, leave critical section, release blocking lock
+another thread can enter the critical section, change your condition, wake you up
+two variables: lock required to protect the critical section, and your condition variable
+signal/broadcast: wake up one or more threads that are waiting for a condition, releases blocking lock
+"only use condition variables inside the critical section"

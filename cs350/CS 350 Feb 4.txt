@@ -1,0 +1,141 @@
+CS 350 Feb 4
+
+There will be a hints lecture for each of the upcoming assignments.
+A2a hints lecture will be Thursday before reading week.
+
+Recall: System call slides.
+ - Program calls fork(), which creates a copy of the process and address
+   space, including the stack and program code and creates a new thread.
+ - Note that global variables AREN'T shared between processes, it's a
+   completely different address space.
+ - Fork returns the PID of the child to the parent, and 0 to the child.
+ - Child code and parent code run concurrently.
+ - Child terminates when _exit(...) is called.
+    - A2a has us figure out where in the kernel to keep the exit code.
+ - Parent code calls waitpid(...) to wait for child to exit.
+    - Parent blocks on waitpid and is awoken when the child exits.
+    - If the child exits before the parent calls waitpid, the exit status
+      has been stored somewhere and can be retreived and returned
+      immediately.
+ - Exit code and exit status (whether the child exited gracefully) are
+   encoded together.
+    - WEXITSTATUS extracts the exit *code*, the exit status used to be
+      called "termination status" but is now called the exit status.
+      Extract the exit status with WIFEXITED.
+
+Timesharing
+ - Context switching between processes.
+ - ALL context switching happens within the kernel.
+
+Process A's thread is running; B's thread is ready but not running.
+A gets interrupted and the kernel does a context switch (trapframe + switchframe).
+B's switchframe and trapframe are restored and execution begins in B's thread again.
+When B's thread is done running, the reverse happens, and A's thread returns from
+the kernel back to user space.
+
+Preemption
+ - Timer interrupt fires occasionally, and a count is compared to a time quantum.
+ - The thread is in user space when timer interrupts happen.
+ - When the timer fires an interrupt, we handle it in the kernel, which checks the
+   count, and returns to user space if the quantum isn't hit yet.
+    - Common exception handler -> mips_trap -> timer interrupt handler
+ - If the quantum is hit, the kernel performs a context switch.
+ - Recall: timer interrupts happen much more frequently than the quantum so that
+   threads can't "cheat" by voluntarily context switching just before the timer
+   fires. Other parts of the system also rely on the timer, so we must set it to
+   the lowest common denominator.
+
+New section: in the past a lot of students have trouble following this!
+
+Virtual and Physical Addresses
+ - Every process has its own address space.
+
+Simplest way to do this is to partition a certain portion of memory to each
+process. One problem with this approach is that certain processes may need more
+than the default amount of memory. We also have trouble forking more processes,
+we run into external fragmentation issues, etc. We also have access control
+issues where our address spaces aren't isolated from other user processes.
+
+Compiled code also needs to know the exact address of variables and functions.
+We don't know for sure that we will always be in the same place in memory.
+Ideally, we want every process to think that it owns the entire machine, and
+can say "this is my island". That's what we want to provide in the operating
+system with virtual address spaces, starting from 0 to whatever, so that programs
+can predictably play with the same block of memory. The OS will map the virtual
+address spaces to physical addresses.
+
+Every process is given its own "island". It may be loaded into a different "island"
+next time. We need a scheme to do this for all our islands.
+
+Simple Address Translation: Dynamic Relocation
+ - We simply shift the virtual address space by a given offset, stored in an offset
+   register.
+ - We store the virtual address space (0, ..., n) in a continuous, n-sized span of
+   memory in the physical address space. We store it in (0+o, ..., n+o), where o
+   is the offset.
+ - We can't split up the span into different chunks, it has to be continuous.
+ - Hardware MMU keeps relocation register (offset) and 
+   limit/bound/size register (size of memory).
+Trying to use a virtual address that is bigger than the limit register, we are
+trying to access memory we aren't allowed to use.
+Else we simply get our physical address by adding the virtual address to the offset.
+Clarification: global/shared variables are only between threads in the same process
+(or within the kernel).
+
+If we want to have multiple processes running at the same time, we would need
+multiple MMUs, so we would be very limited by our hardware.
+So instead we have one pair of registers in one MMU, the values of which are stored
+and restored in context switches. The MMU state is saved along with the thread's
+state.
+
+Problems: Virtual address spaces corresond to a continuous block of memory.
+When a process finishes and we free memory, we start getting fragmented.
+(External fragmentation, because the fragments are external to the process.)
+We can't fit a larger process into a smaller "hole" left by a killed program.
+1 approach: fail
+2nd approach: defragment the memory (moving large chunks of memory around and
+changing offsets is very expensive)
+"We defrag disks occasionally, but memory is crucial for performance, so we want
+ to avoid defragmenting it."
+ 
+[Diagram of MMU]
+It checks if address is < bound register. If it isn't, it adds it to the offset
+register.
+Example: fill in the blanks
+1) Make sure virtual address is < bound register; if not, write "Exception"
+2) Add virtual address and relocation register and put result in physical address
+"'Bound register' implies strictly smaller. Greater than or equal to is bad."
+"'Size register' implies less than or equal to is okay."
+"Don't worry, we won't make this a trick question." (seriously)
+
+"Getting fragmented is like losing Tetris. We want to make Tetris easier to win."
+If every program was the same size, it would be much easier to slot in new programs.
+
+Paging
+ - Divides virtual address spaces into fixed-size pages of memory.
+ - Our physical address space is broken down into fixed-size frames.
+"Tetris would be much easier if every piece was the square piece."
+[Diagram: address space diagram for paging]
+"Even if we want to allocate just four bytes of memory, we need to use an entire
+ page (something like 4KB)."
+This is internal fragmentation (holes of memory inside the user address space).
+No other process can use this wasted space in the allocated page.
+
+How the MMU translates virtual addresses
+ - the MMU has a page table base register (where in memory the first page of the
+   currently running process is stored)
+ - it also has a page table length register (how many page table entries we have
+   for the current process)
+ - given a virtual address, the first few bits are used to determine which page,
+   and the remaining bits are to specify where in the page we are interested
+   [page number][offset]
+ - page number must be smaller than the page table length register
+ - if it isn't we lookup that page (which contains a frame number we look up)
+ - we concatenate the offset to the frame number to get our full physical address
+
+"page table base register is just a pointer to our page table"
+"we look up the page number value (e.g. 4), and look up the frame number in the
+ table (e.g. the fifth entry here)"
+
+[Diagram: paging mechanism (virtual address translation process)]
+12 byte offset => 2^12 = 4KB page size

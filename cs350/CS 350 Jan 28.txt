@@ -1,0 +1,212 @@
+CS 350 Jan 28
+
+Remember for A1: Condition variable implementation is very similar to the existing binary semaphore implementation.
+Warning: This lecture is kinda dry because it has lots of assembly, but it's important for A2a!
+Recall: Three things we can do to avoid deadlocks.
+ 1. No hold and wait (instead, release resources, back out, and try again later).
+    But then we can get a "synchonized balet" of programs attempting to grab resources,
+    backing out, trying again, etc. This is a live lock.
+ 2. Preemption. Kill lower-priority threads. "The most common way to take something away from someone is
+    to kill them! :P" "Like a firetruck."
+ 3. Resource ordering. This avoids cycles in our resource allocation.
+    Easy way to illustrate: resource allocation graph...
+
+Box with a dot: resource type, dot = instance.
+Circle: thread
+
+A    B
+[.]  [.]
+
+O    O
+T1   T2
+
+Arrow from A to T1 (T1 acquires lock for T1).
+Arrow from T1 to B (T1 is waiting on resource B).
+Arrow from B to T2 (T2 acquired lock for B).
+Arrow from T2 to A (T1 waiting on lock for A).
+A cycle!
+
+With resource ordering:
+Arrow from A's dot to T1 (T1 acquires lock for A).
+Arrow from T2 to A's box (T2 waiting on A).
+Arrow from B's dot to T1 (T1 acquires B).
+When T1 finishes, it releases A and B (erase those two arrows).
+T2 now acquires A (extend arrow to A's dot).
+Arrow from B to T2 (B now acquires T2, too).
+
+Q: Does the order of releasing locks matter?
+A: No. T1 can release A and B in any order.
+
+New section: Processes and the Kernel
+
+What's a process?
+A process is different from a thread.
+A process is an abstraction of a program in execution.
+We can think of a program (word processor, etc.) as a process.
+A thread is an abstraction of sequential execution, where a process is an abstraction of a *program*.
+A process is like a container that can hold one or more threads. It always has at least 1.
+In OS/161, we only support one thread per process, but "real" operating systems can have more.
+A process is also a continer for other resources, e.g. address space (an allocation of shared memory for this
+process)
+Every process has its own address space, at least one thread for execution, meta-data for files/sockets opened
+by the program. When a process dies, it cleans up those resources.
+
+Multiprogramming "a formal term, similar to multithreading"
+Multiple processes existing or running at the same time.
+Key idea: multiple processes must share resources. One resource is memory, which we share by assigning
+address spaces - we access these via system calls from our process.
+Key feature of precesses: isolation. A thread inside process 1 can never go and modify memory that is in process 2.
+"It's like each thread in a process is in a different universe and can't read the memory of other address spaces."
+
+The OS Kernel
+The kernel is a program, and a core part of the operating system.
+It has code and data just like normal programs, but runs in privileged mode.
+Other programs don't do this - they run in "user mode".
+We don't want our user programs talking to our hardware!
+ - isn't isolated
+ - lets untrusted programs modify the resources of other programs
+ - we want user programs to have only certain permissions (e.g. network access should be blocked with a firewall)
+ - if we let a user program write to the network card, it can talk to anyone!
+ - the kernel address space must be isolated from other programs (this would give privileged execution to other
+   programs!)
+Privileged mode also has system-wide instructions like halt (to shut down), manipulate processor state (like
+the execution mode), and access to otherwise restricted memory.
+User programs can only have limited interaction with hardware via system calls.
+"Don't think of the kernel as a process - we will exaplin this more later."
+
+System Calls
+The only way to voluntarily ask the kernel to do something for us is through a system call.
+e.g. fork, waitpid, getpid, exit (must be implemented in A2a!) (one more (execv?) in a2b)
+"Assignment 2a has the largest learning curve, imo."
+e.g. sbreak - segment break, changes size of memory segment
+How does a system call work?
+System calls look like functions. In our program, we call a function in our assembled code by jumping and linking
+to a specific location (after setting up registers to pass parameters).
+However, these system calls are stored in the kernel address space (in order to prevent other programs from
+modifying them).
+But it's impossible to jump into kernel memory - we don't have the required privileges!
+MIPS (and others) provides a syscall instruction, which:
+ 1. Switches the processor into system (privileged) mode (but we must keep it contained to system calls).
+    It transfers control flow to a special location in memory, where we continue execution
+    This is kinda like an interrupt handler! In fact, this is called the system call handler.
+    Interrupts, exceptions, and system calls are all handles by the common exception handler - they are all
+    similar!
+    RFE (Return From Exception) is later run when the system call handler returns, which removes the thread's
+    privileges as we return the value to user mode.
+ 2. Key parts of the current thread context, like the PC, are saved (trap thread) by the common exception
+    handler. CEH calls MIPS trap.
+    MIPS trap determines whether it was triggered by an exception, sys call, etc.
+    If sys call: system call handler services the system call
+ 3. ...
+
+Q: Why not jsut protect the kernel address space by making it read-only?
+A: System call code most likely have to modify kernel resources; temporary local variables are stored on the
+   kernel's stack (rather than the user program's stack).
+Q: Why not have a different level of privilege where a certain privileged mode only has read access?
+A: That is possible, but not in OS/161. We will keep it simple with privileged or unprivileged.
+
+Common exception handler callls MIPS trap function.
+MIPS trap determines whether it was an interrupt, exception or system call.
+
+Graphically:
+
+Process          Kernel
+   |
+   | sys call
+   '----------------|
+                    |
+    sys call return |
+   -----------------|
+   |
+   |
+   \/
+
+If you implement this as-is, we would have to write assembly whenever we make system calls, which is a pain in the
+butt. So systems provide user-space system call library - a very thin layer that will translate your system call
+procedure for you. This is a system call software stack:
+
+Application
+----------------
+Syscall Library      Unprivileged mode
+--------------------------------------
+Kernel                 Privileged mode
+
+OS/161 'close' System Call Description
+#include <unistd.h>
+#include <errno.h>
+int main() {
+  int x;
+  x = close(999);
+  if (x < 0) {
+    return errno;
+  }
+  return x;
+}
+
+In assembly:
+00400050 <main>:
+addiu sp,sp-24
+sw ra, 16(sp) // store registers
+jal ... <close> // jump to close function "does its magic in the kernel then returns to bgez"
+                // the close instruction is in user space, and takes one parameter (in a0)
+li a0, 999 // parameter passed into a0, in delay slot of jump instruction
+bgez v0, 400070 // branch if v0 greater-than-or-equal-to zero
+nop
+lui v0, 0x1000 // load upper - address of errno into v0
+lw v0, 0(v0) // load value of errno into v0
+
+Note: search for "MIPS assembly" for references.
+
+OS/161 System Call Conventions
+Integer system call code should be in R2 (v0)
+Args should be in R4, R5, R6, R7 (a0, a1, a2, and a3)
+When the system call returns, R7 (a3) will be 1 if the call failed, else 0 (success).
+R2 (v0) will store the return value of the system call return value if it succeeded, else it will store
+the error code for our system call if the call failed.
+List of numbers: kern/include/kern/syscall.h
+Note: kern/include/kern/ has defninitions for lots of things that must be know by the user space AND the kernel.
+
+What does the user space library look like?
+Note: this is all automatically generated, not handwritten
+004001dc <close>:
+j 4000c0 <__syscall> // jump to syscall label
+
+<__syscall>:
+syscall
+beqz a3, 400dc <__syscall+0x1c> // jump to return if call succeeded (a3==0)
+// else, fetch the error code and store it to v0, and then store -1 to a3
+Note: this is all user code, it just makes things easier for us
+
+OS/161 MIPS Exception Handler
+
+common_exception:
+First three instructions: check whether we are coming from user space or from the kernel
+(an interrupt can be raised from inside the kernel)
+Last block of lines: Just trying to find the kernel stack for this particular thread.
+"Every single thread actually has two stacks - one in user space, and one in kernel space."
+Then, we save the thread context onto the kernel-space stack for this thread.
+"It's okay, we never have to touch assembly in this class!"
+"Functions like TestAndSet are provided!"
+The moment the program jumps from user-land to the kernel, all of its context is stored in the kernel
+stack until we leave. This is because:
+ 1) User stack is not guarunteed to have space
+ 2) Sensitive data from inside the kernel shouldn't be leaked out
+The common exception code then:
+ - allocates a trap frame (on the kernel stack!)
+ - calls MIPStrap to process the exception
+ - when mips_trap returns, we restore the application processor state from the trap frame to the registers
+
+System Call Handler code (called by mips_trap):
+ - parameter is a pointer to the trap frame for this particular thread (bottom of the kernel stack)
+ - the system call handler has access to the values within the trap frame, so that it can determine which
+   system call has been called (it needs to check v0 from within that trap frame - the value is still 49)
+    - v0 has probably changed since we called the common exception handler, mips_trap, etc.
+ - we then do a switch statement on the call number, and make the appropriate system call
+ e.g. case sys__reboot:
+  err = tf->tf_a0 // look inside trap frame's saved a0 for the parameter
+ - outside of the switch statement, we handle errors (set v0 to err, and set a3 to 1)
+ - if no errors happened, set v0 to return value and a3 to 0
+ - increment tf->PC by 4 (one instruction) so that we execute the isntruction AFTER the syscall
+   after returning (otherwise we would loop on the syscall)
+
+Spend time looking at the syscall implementation for A2a! We add stuff here!

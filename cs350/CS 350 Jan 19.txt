@@ -1,0 +1,154 @@
+CS350 Jan 19
+
+Recall: `total++;` compiles to load, add, and store instructions.
+A conflicting thread could be manipulating the same variable, resulting in a lost update,
+so this code touching the shared variable total is in the critical section.
+We use the `volatile` keyword to disable compiler optimization for a specific variable,
+which makes it easier to recognize the critical section and helps towards mutual exclusion.
+
+Mutual exclusion: Only one thread can access a shared variable at a time.
+Critical section: All code that accesses a shared variable.
+Simple implementation of mutual exclusion from last class: Disabling interrupts during the critical
+section.
+Three key downsides to disabling interrupts:
+ 1. Only works for one core.
+ 2. Ignoring the timer has side effects, such as losing track of time.
+ 3. It's very indescriminate - no context-switching can happen for everyone, even threads that don't
+    touch the critical section.
+
+How would we implement mutual exclusion in the real world?
+Imagine you are trying to get inside the only bathroom stall in a bathroom.
+When you walk into the bathroom, you check to see if someone is in the stall (it is locked).
+If it's occupied, you wait (or "spin") until you see the door become unlocked before enterring.
+Then you enter the stall (the critical section) and lock the door.
+
+In pseudocode:
+    while(lock==1){
+        lock=1;
+        ...
+        lock=0;
+    }
+
+Problem: the lock variable is shared, so the same problem arrises.
+Solution: Make `while(lock==1){lock=1;}` a single instruction, making it atomic.
+Many instruction sets give us such an instruction, most commonly called TestAndSet.
+
+Pseudocode:
+TestAndSet(addr, value){
+    old = *addr; // get old value of lock at addr
+    *addr = value; // write new value to addr
+    return old;
+}
+
+We can use this atomic instruction to implement locks.
+The "lucky" program that acquires the lock gets a 0 returned, and can enter the critical section.
+All other threads get a 1 returned, which says "the lock is still active".
+
+In x86, we have the xchg instruction:
+xchg src, dest
+Where src is a register and dest is an address.
+
+Alternatives to TestAndSet:
+CompareAndSwap(addr,expected,value){
+    old = *addr;
+    if (old == expected) *addr = value;
+    return old;
+}
+If used simply to build a spinlock, it's just as powerful as TestAndSet.
+However, it is more powerful when solving synchronization problems without a lock.
+For example:
+
+void add(){ // works without locks implemented!
+    int i;
+    int expected = total;
+    for(i=0; i<N; i++){
+        while(1){
+            int prev=expected;
+            expected = CompareAndSwap(&total, expected, expected+1);
+            if (expected==prev){
+                break;
+            }
+        }
+    }
+}
+"The above example isn't that important, it's jsut a glimpse at lock-free data structures."
+"Take CS 343."
+
+MIPS uses load-linked and store-conditional
+Load-linked: returns the current value of a memory location, and a subsequent store-conditional
+to the same memory location will store a new value only if no updates have occured since the
+load-linked.
+
+Starvation: When one thread of many fighting for a lock loses every time. In practice, it isn't
+something to worry about, but it could theoretically happen when implementing spin locks.
+
+A Spin Lock Using TestAndSet:
+boolean volatile lock; // one lock variable for each critical section
+while(TestAndSet(&lock, true)) {} // busy-wait until the thread enters critical section
+lock = false; // when thread leaves the critical path
+
+Spinlocks in OS/161
+struct spinlock {...}
+spinlock_init // 
+spinlock_cleanup // make sure the lock value is 0 (nobody inside critical section) when you cleanup a spinlock
+spinlock_data_set
+spinlock_acquire(struct spinlock *lk){ // lots of code:
+    splraise(IPL_NONE, IPL_HIGH);
+    // disable interrupts
+    //  - optimizes so that this function always acquires lock
+    //  - interrupts firing inside acquire_spinlock causes problems because future calls to acquire_spinlock
+    //    will fail, and since you're in the same thread trying to acquire the same lock we will get stuck
+    while(1){
+        // do Test-and-TestAndSet to reduce bus contention
+        if(spinlock_data_get(&lk->lk_lock) != 0) {
+            continue; // loop again now and avoid the expensive TestAndSet operation from saturating the memory bus
+        }
+        if(spinlock_data_testandset(&lk->lk_lock) != 0){
+            continue;
+        }
+        break;
+    }
+}
+
+TestAndSet saturates the memory bus:
+Picture two CPUs accessing main memory to get a value.
+They each store the value in their own CPU cache.
+If one CPU modifies the value, it writes back the value to memory,
+and invalidates the caches of the other CPU (via the memory bus again).
+So when the other CPU wants the value again, it must use the memory bus to get the value again.
+In our case, "accessing a variable" is calling TestAndSet on a shared value.
+CPU0 calls TestAndSet and recieves a new value into its local cache.
+CPU1 calls TestAndSet, which is a read and a write, invalidating CPU0's local cache.
+They take turns invalidating each other.
+The memory bus becomes the bottle neck, because CPU caches become useless.
+
+test-and-TestAndSet avoids the above problem, because the initial test only uses a read operation,
+in this case spinlock_data_get.
+The only time the memory bus is used is after there is some type of state transition of the lock (0 to 1 or 1 to 0).
+
+Implementing TestAndSet using only load_linked and store_conditional:
+
+spinlock_data_testandset(volatile spinlock_data_t *sd){...} // see Synchronization slide 23, 24
+"%0 represents the first local variable - load the value of the lock into the first local variable, x=*sd;"
+ll %0, 0(%2) // x = *sd
+sc %1, 0(%2) // *sd = y; y = success?
+// if y=0, ll and sc failed, and some other thread modified the shared variable, unsafe to proceed => return 1
+// returning 1 means that you were unable to acquire the lock (even if it's available, we cant ensure that)
+// return 1; => try again
+"You aren't absolutely sure if someone's in the washroom, so don't go in - check the lock again!"
+"Someone fiddled with the lock."
+
+spinlock_release // set value of the lock back to 0 and re-enable interrupts
+
+Pros and Cons of a Spinlock:
++ fairly efficient
++ works with multiple CPUs
+- CPU is busy while waiting for a lock (large critical sections will spin the CPU needlessly for a long time
+  as it is only checking the lock)
+- starvation is possible
+
+Thread Blocking
+If a thread needs to access a critical section that is busy, it must wait for the critical section to become free.
+Let's say you want to go to bed at 11pm and want to wake up at 6pm. We would ideally use an alarm clock.
+Spinlocks, though, would be like you are looking at the clock every second - very inefficient! No rest happens!
+To handle this, the thread scheduler blocks threads - the thread stops running until signaled to wake up.

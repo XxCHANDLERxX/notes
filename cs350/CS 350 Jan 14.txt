@@ -1,0 +1,163 @@
+CS 350 Jan 14
+
+Recall: First thing happens when an interrupt fires is to jump to the interrupt handler
+in memory, which saves a trap frame, determines the type of interrupt and services it, etc.
+
+switchframe_switch:
+/*
+a0 contains address of switchframe pointer of old thread
+a1 contains address of switchframe pointer of new thread
+thread2's control block has a pointer t_context, pointing to the switchframe on stack2.
+*/
+// 1. allocate stack space for saving 10 registers (10*4 = 40 bytes)
+addi sp, sp, -40
+// Save the registers
+...
+// Get new stack pointer from the new thread
+lw sp, 0(a1)
+// Restore the registers
+lw s0, 0(sp)
+lw s1, 4(sp)
+...
+lw ra, 36(sp)
+nop
+// return
+j ra
+addi sp, sp, 40 // in delay slot
+.end switchfram_switch
+
+The control block is stored by the thread library.
+Later we will find out it's in the kernel (rather than the user space).
+The kernel allocates some memory for the control blocks, etc.
+
+Concurrency
+When multiple threads need to talk to each other, synchronization problems surface.
+e.g. Two programs accessing the same variable.
+On multiprocessors. On uniprocessors, only one thread runs at a time, but preemption and
+timesharing make it appear that threads are running concurrently.
+However, concurrency and synchronization are important even on uniprocessors.
+It's a common misconception that uniprocessors don't have synchronization issues.
+Preemption still happens on uniprocessors.
+Timesharing between threads for a certain time quantum are outside of the control of the
+program, so from the perspective of the program, multiple threads are running at the same time.
+Any synchronization problems you have on multiprocessors, you can have on uniprocessors!
+
+Thread Synchronization
+Concurrent threads can interact in a variety of ways:
+ - sharing access to the system, devices, etc.
+   "don't want multiple programs writing to the screenbuffer at the same time"
+ - sharing access to program data, e.g. global variables
+   "program data and code are shared by threads of the same programming"
+   "we want mutual exclusion for global variable access between threads"
+
+Mutual exclusion: Only one thread can access a global variable at a time.
+Critical section: The part of a program in which the shared object is accessed.
+"Only one thread should be in the critical section at a time."
+"Memorize these two definitions."
+
+Critical Section Example (Part 0)
+int volatile total = 0;
+void add(total, N) {...} // executed by thread1
+void subtract(total, N) {...} // executed by thread2
+When compiled, local loop counter i becomes "loadaddr R8 total" and "loadaddr R10 total".
+Each i becomes a local copy of total that gets incremented/decremented.
+Each thread operating independently increments and decrements R9.
+Note that context switches preserve the value of R9 between the threads so that they each have
+a consistent view of R9.
+If thread2 writes to R9 before thread1 after one iteration, total will become -1, then 1. Not 0!
+This leads to very unpredictable results.
+
+The Volatile Keyword
+Tells C that this global variable shouldn't be optimized.
+Without volatile, the compiler could say, "I'll just move the load and store outside of the for
+loop."
+A smart compiler would just add N to the register rather than looping through and incrementing
+the register N times. Trying to fix this becomes very difficult!
+Volatile would tell the compiler not to perform optimizations on code that access that variable,
+i.e. it leaves lw and sw inside of the loop as-is.
+"Not the entire function remains unoptimized, just the part that accesses the global variable."
+This lets us identify the critical section more easily.
+This also slows down our code for the sake of correctness - repeated lw and sw are not fast.
+
+Critical section: "anywhere in your code that accesses a shared variable"
+
+// thread1 ... thread2
+total++;       total--;
+// critical section spans both code blocks between the two threads
+
+Only one thread can be inside the critical section at each time.
+
+Let's assume that there is only one critical section in each program.
+i.e. Begins and end in the code exactly once, rather than hopping in and out.
+
+Critical Section Example (Part 1)
+list_add_front(list *lp) {...} // entire function is critical section due to access of list *lp
+(Part 2)
+list_append(list *lp, int new_item) {...} // in the same critical section as list_add_front due
+// to potential conflicting access of list *lp
+
+Error example: thread1 and thread2 executing critical section list_remove_front at the same time
+What could go wrong?
+1. both threads return the same value
+2. decrements num_in_list twice even though only one item has been removed
+3. dereference an element that has been freed
+4. calling free() twice on the same element
+
+Another error example: thread1 running list_remove_front and thread2 running list_append
+thread2 `if(is_empty(lp)){lp->first=element;lp->last=element;}`
+What if a context switch happens immediately after the boolean if-statement check,
+and thread1 deletes the only element of lp?
+
+The critical section includes the entirety of both functions.
+Introducing locks would make the linked list safe to use across multiple threads.
+
+Enforcing Mutual Exclusion
+Several techniques:
+ - (difficult) exploit special hardware-specific instructions
+ - (simpler) control interrupts to ensure that threads are not preempted while they are executing a
+   critical section
+Disabling Interrupts
+ - i.e. Disabling interrupts at the beginning of the critical section and re-enabling them after.
+ - On a uniprocessor, violations happen when an involuntary context switch happens inside a critical
+   section that switches to a thread that enters the same critical section.
+ - Disabling interrupts makes this violation impossible (assuming thread_yield isn't called inside the
+   critical section).
+Q: Why can't a program arbitrarily disable interrupts and run forever?
+A: Later we will learn that the kernel runs in a "privileged mode" (instead of user mode(?)) and
+   only privileged mode can disable interrupts.
+
+Interrupts in OS/161
+This is one way that the kernel enforces mutual exclusion on a single processor. There is a simple
+interface:
+ - sp10() sets Interrupt Priority Level (IPL) to 0, enabling all interrupts
+ - splhigh() sets IPL to highest value, disabling all interrupts
+ - splx(s) sets IPL to s
+So we can enable and disable interrupts by calling spl0() or splhigh(), respectively.
+
+But this problem arrises:
+A() {
+    splhigh(); // disable interrupts
+    ...
+    B(); // enables interrupts :(
+    ...
+    spl0();
+}
+B() {
+    splhigh(); // disable interrupts
+    ...
+    spl0(); // enable interrupts
+}
+
+Solution: keep a counter of the number of times interrupts are disabled and enabled, and only
+re-enable interrupts when they have been enabled the number of times they were disabled.
+These are used by splx() and by the spinlock code:
+splraise(int oldipl, int newipl)
+spllower(int oldipl, int newipl)
+For splraise, NEWIPL > OLDIPL, and for spllower, NEWIPL < OLDIPL
+
+This is a nice solution, because it doesn't require special hardware, and works for any number
+of concurrent threads.
+However, this is very indiscriminate - it stops all preemption, not just preemption that would threaten
+the critical section. Ignoring timer interrupts also has side effects, i.e. ignoring the passage of time.
+It also doesn't enforce mutual exclusion on multiprocessors (interrupts are only disabled for one core at
+a time). Multiple cores means multiple threads running, even without context switching and interrupts.

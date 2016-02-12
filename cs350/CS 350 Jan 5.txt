@@ -1,0 +1,76 @@
+CS 350 Jan 5 2016
+
+A0 will be out later today, will be due "relatively soon"
+System call - how applications talk to OS
+Assignment portion is heavy - depends on how comfortable you are with the assignments and writing C code
+Each assignment can be a couple hundred lines of code.
+Debugging is tricky - start assignments early!
+
+Why is concurrency important?
+Increasing clock speed isn't ideal and we hit a ceiling around 4GHz.
+We need to do lots of things at once without adding heat and battery usage with a higher clock speed.
+"Our battery life would suck and we are burning a hole in our pants."
+Better CPU architecture can also increase computing speed, but innovations there are difficult.
+Google says that students need to be better at concurrent programming.
+Varak(?) 25 - medical device in the 80s - two modes, chest xray and radiation therapy. Older version had a mechanical switch. The 25 had a software switch, and the designers had a counter variable auto-increment when booted. Low numbers mean the machine is booting, and user input gets ignored. So unlucky people who pressed the button when the counter hit an integer overflow got the wrong dosage of radiation.
+Mars rover (2003, 2004) - rover had small amount of storage for photos. It enterred a reboot loop when its storage ran out of space by keeping meta-data from deleted photos.
+We will learn about file systems in this course!
+
+Assignments done individually.
+Exams are more important than assignments! Don't neglect studying by working on assignments too long.
+Assignments are cumulative - A2 depends on A1, etc.
+5 total slip days, at most 3 for each assignments ("days", not "business days")
+Only two slip days on last assignment (A3)?
+A2a tends to be the hardest, followed by A3 and A2b
+
+Plagiarism - don't use public GitHub repo, use git.uwaterloo.ca.
+Don't take code from blogs or other solutions! That makes Bernard feel bad.
+
+Course Intro
+
+What is an Operating System?
+Three views:
+ - Application view - what services does it provide? Lets software do certain things.
+ - System view - what problems does it solve? Ensure important programs have priorty access to resources, etc.
+ - Implementation view - how is it built?
+ 
+Application view
+OS provides an execution environment - processor time, memory space, I/O, network, GPU, etc.
+Provides an interface to these resources - useful abstractions to many potential hardware setups.
+DOS didn't provide these abstractions, so applications had to implement many different hardware drivers. This doesn't scale!
+OS also isolates running programs from one another - no undesirable interactions.
+We need to protect our program's memory from malicious/buggy programs. Lots of potential incompatabilities.
+
+System view
+OS enforces resource restrictions - one network card, only so much memory, etc.
+Must give the right resources to the right programs.
+Policies are difficult to enforce without an OS - only certain programs should be accessing the network, etc.
+"OS is a very sophisticated manager of resources."
+
+Implementation view
+OS is a concurrent, real-time program. NOt a simple sequential program.
+Must handle different events happening at the same time, different device components running and generating events at the same time.
+"Your OS only has a certain amount of time to read a packet from the network buffer."
+OS must deal with events with very strict time constraints.
+
+Some Terminology
+Kernal: OS kernal is core part of the OS that handles system calls, interrupts, and exceptions.
+Function calls to included/linked libraries use pre-defined "system calls", special programs that your program can call to talk to the kernel.
+Interrupts - service notice, shutdown, etc.
+Exceptions - bad/illegal behaviour, kernel kills the program.
+
+Operating System - includes the kernel and other related programs (services, utilities, libraries, interpreters).
+
+Top blobs on slide 5 are user programs. Bottom ones are system resources.
+Between them is the kernel.
+User programs talk to the kernel via system calls.
+Kernel sends commands and data to the system resources, which return data and interrupts.
+Then, the system call returns a value to the user program.
+
+Operating System Abstractions
+Gives each program its own individual "sandbox" - files and filesystems, address spaces, processes, threads, sockets, pipes.
+
+Why are these abstractions designed the way they are? How are they implemented?
+
+Course outline...
+Next class: concurrency.

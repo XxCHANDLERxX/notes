@@ -1,0 +1,177 @@
+CS 350 Feb 11
+
+Assignment 2A hints lecture
+Implement 4 system calls:
+1. pid_t fork(void): "the most important one"
+    Create a copy of the current process.
+    Return 0 for the child process, and the PID of the child process for the parent.
+    Note: Difference between fork and sys_fork - fork is user-space interface for the system call.
+    We are implementing the kernel-space sys_fork, so the parameters are up to us.
+2. pid_t waitpid(pid_t pid, int *status, int options)
+    Waits for the child process to terminate.
+    PID of the child was found via fork.
+    Status stores an encoding of the exit status and the exit code.
+    Note: int *status is an output variable that we will write to.
+    Returns the PID of the process on success, or -1 on error.
+    Return 0 if the option WNOHANG is specified and process PID has not exited (this is extra).
+    Another fun extra: passing in -1 as a PID to wait on ANY child to exit (that's why we return a PID).
+3. pid_t getpid(void)
+    Returns the PID of the current process.
+    This requires us to implement our PID management, figure out how to assign PIDs, etc.
+4. void _exit(int exitcode)
+    Causes the current process to exit.
+    Exit code is reported to parent process via the waitpid call.
+    There is no way to terminate gracefully without calling _exit (all graceful termination methods implicitly call _exit).
+
+Note: pid_t is typedef'd to an int (it's just cosmetic).
+
+Implementing fork
+1. Create a process struct for the child process
+   - Use proc_create_runprogram(...) to create the process structure.
+   - It sets up the VFS and console.
+   - Note: proc_create is lower-level, less useful, and called by the above. Don't use proc_create!
+   - Modifying proc_create_runprogram as you wish.
+   - DO NOT modify proc_create (it's called by proc_bootstrap, etc.)
+   - DO NOT acquire any locks inside proc_bootstrap (it's a good place to initialize variables).
+   - Don't forget to check for errors in the return value of proc_create_runprogram (i.e. NULL).
+   - If NULL is returned, we could:
+     - ignore it (bad)
+     - block on a wait channel (easy to deadlock here)
+     - return -1 and don't fork (ideal)
+
+2. Create and copy an address space (and data) from the parent to the child
+   - We get a helper function for this: as_copy()
+   - as_copy creates a new address space, and copies the old address space to the new one.
+   - Look at curproc_setas to figure out how to give a process an address space.
+   - Remember to handle errors if as_copy returns an error
+     - Make sure we free the memory we allocated in fork prior to this error.
+     - Look at proc_destroy to see how this is done
+
+3. Attach newly created address space to the child process structure.
+   - Trivial
+
+4. Assign PID to child process and create the parent/child relationship.
+   - How we do this is up to us.
+   - PIDs should be unique.
+   - PIDs should be reusable (dependant on your implementation of waitpid and _exit).
+     - If a child terminates before waitpid is called, we don't want to reuse the child's PID yet.
+     - A process isn't completely destroyed until every process interested in its exit code isn't.
+     - A process that is dead but still waiting around is a zombie.
+     - A process whose parents terminated but is still running is an orphan.
+   - Remember to provide mutual exclusion (via a lock) for any global structure like a PID table.
+     - Manage which PIDs are in use, etc.
+     - A "process table" with information about all of our processes, what PIDs they are using, and their parent-child
+       relationship.
+     - Resizeable array is suggested.
+     - This is just one possible implementation direction.
+   - There is a MAX_PID constant set to 32000.
+     - Note that an array of 32000 PIDs is bad and slow and will fail future (A3) tests.
+     - Use a resizable array (array.h provided; Piazza post with instructions).
+     - Security issue: creating tonnes of zombies to DOS the system (don't worry about this though).
+
+5. Create thread for child process (need a safe way to pass the trapframe to the child thread)
+   - Use thread_fork() to create new thread.
+   - Need to pass trapframe to the child thread.
+     - e.g. Pass a pointer of the parent's trapframe to the child (NOT SAFE!)
+     - Parent thread could leave kernel space, making the pointer invalid/garbage.
+     - Problem can be solved with additional synchronization.
+       - e.g. Put a condition variable that forces the parent to block until the child can copy the trapframe.
+       - Synchronization is complicated, other approaches are recommended.
+   - Note: trapframe is stored onto the child's stack. Think about what that means.
+ 
+6. Child thread needs to put the trapframe onto the stack and modify it so that it returns the current value
+   (and executes the next instruction).
+   - Child will modify return value of fork.
+
+7. Call mips_usermode in the child to go back to userspace.
+
+
+Implementing waitpid
+How do we use waitpid? Look at widefork.c.
+WIFEXITED checks if child exited gracefully.
+ - The only status we care about is graceful or not; ignore other statuses.
+We need to encode the value correctly in _exit, etc.
+"lots of corner cases in waitpid"
+1. Only the parent can call waitpid on its children. Not grandchildren.
+2. If waitpid is called before the child exits, the parent blocks.
+   - What should it block on? Up to you.
+   - Semaphore? CV in process table? CV specific to parent proc? To child proc?
+   - Simple solutions are best; don't worry too much about speed (correctness is golden).
+
+3. If waitpid is called after the child process has exited, then the parent should immediately get the exit status
+   and exit code.
+   - We can't lose this information! Must save it somewhere.
+
+4. PID ccleanup shouldn't rely on waitpid
+   - Parent process isn't guarunteed to call waitpid when it exits.
+
+5. How do we handle the case where the parent exits before its children?
+   - Can we free the parent process structure before its children exit?
+   - Do the children know how many child processes there are for its parent?
+
+6. Does your PID reuse mechanism rely on an exit order?
+Note: After we call waitpid once, the child is erased, so subsequent calls to waitpid should error.
+
+Encoding exit status and exit code
+ - exit code comes from _exit
+ - in this assignment, exit status should ALWAYS be __WEXITED
+ - kern/include/wait.h has comments about encoding exit code with exit status
+
+Waitpid fun extras!
+ - implement the WNOHANG option (if child is still alive, return ECHILD error isntead of blocking)
+ - add support for WAIT_ANY (-1 PID, an invalid PID); block until first child exits and return that child's PID.
+Note: Make sure PIDS are >= 1. 0 is a special return value.
+
+
+Implementing getpid "I recommend implementing this first"
+ - Simplest system call to implement, so consider implementing this first.
+ - Need to implement PID assignment.
+ - Need to perform process even with/before any fork calls.
+ - Note that fork is the WRONG place to implement PID management (first thread needs a PID, too!)
+   - First thread should get a valid response from getpid.
+ - proc_create_runprogram is a better place to implement PID assignment
+
+Implementing _exit
+ - This is where we should encode our exit code and status.
+ - In this course we don't worry about multithread processes.
+ - We don't expose thread_fork system call to the user, so every process in OS/161 has exactly one thread.
+ - Exit code is passed to the parent process.
+ - Note: traffic simulation program was entirely inside the kernel (no processes, many threads).
+ - Processes are userspace-specific things. Kernel processes aren't really a thing in this course, think of it as
+   a special program executed in kernel space.
+   
+Back to course material: Virtual memory slide 16
+Last class we spent a lot of time describing exactly how paging works.
+We also covered the main issue with paging: not internal fragmentation, but naive implementations
+store pages in memory, and the lookup table is also in memory, so we end up with multiple memory
+accesses (high latency!)
+This gets worse in systems with multi-level page tables, so we are accessing memory a lot.
+Solution: implement a cache: the TLB
+The TLB is a fully-associative cache. The key we look up is the page number, the TLB returns the frame number.
+If there is a TLB hit, everything is great - MMU checks if page number is in TLB. A TLB hit means the page number
+is in our TLB, then the MMU just replaces its virtual page number with the looked up frame number, and give the
+physical address to the CPU.
+If there is a TLB miss, it's not in the cache, and the MMU has to perform a lookup in the page table (lots of work) and
+update the TLB (yet more work).
+
+When we perform a context switch, the address space changes, and so the mappings stored in the TLB are no longer
+relavent, so we flush the TLB cache.
+If we don't invalidate the TLB, the new process could be allowed to access memory from the other process.
+A common improvement is to make the TLB store (part of) the PID so we don't have to flush it on every context switch.
+This is called a tag TLB.
+
+TLB Management
+ - Can be controlled by hardware or software
+ - Hardware control lets the OS developers be lazy
+   - Downside: Hard-coded page table scheme limits us to one memory management scheme for our OS!
+   - Another downside: More expensive (hardware access per use) and hard to implement mutual exclusion
+     (since the hardware is shared between processes, etc.)
+ - In a software controlled TLB, a TLB miss simply throws an exception from the MMU.
+   - The kernel then handles the exception and updates the TLB before returning from the exception.
+   - After the exception returns, MMU retries the instruction that failed.
+   - Downside: Handling exceptions is slow.
+
+The MIPS R3000 TLB
+ - We will be implementing TLB functions in this software-based TLB in A3.
+
+Speed of address translation

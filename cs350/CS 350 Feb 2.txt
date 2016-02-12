@@ -1,0 +1,147 @@
+CS 350 Feb 2
+
+Last-minute Intersection Problem Hints
+Imagine a car going straight through from N. A car is waiting to enter from the E.
+If another car arrives and wants to travel straight through from the S alongside the
+first car. Letting the new car through would increase performance, at the expense of
+fairness.
+Would we let an infinite stream of cars come in from the S?
+The alternative is a strictly temporal ordering - but this has poor performance.
+"Using more than one lock is hard. One lock is usually the fairest solution."
+"We don't have access to a timer."
+
+Recall: Main difference between kernel and processes is that it runs in privileged
+mode. This means that it can enable/disable interrupts, access the hardware, and
+access kernel memory.
+Recall: User code can use system calls (convenient API for these is the system call
+library).
+e.g. user-space close(999) function call:
+ - loads value 999 into a0 as an argument
+ - loads syscall code 49 into v0 to tell the kernel we are calling the close syscall
+syscall command:
+ - switches execution into privileged mode
+ - transfers thread context/execution(?) into a privileged section of memory
+ - all syscalls are handled inside the common exception handler
+common exception handler:
+ - takes a snapshot of the thread's register values (trapframe) and saves it in the
+   kernel stack
+ - common exception handler's second action is always to save a trap frame exactly
+   the same way
+ - calls mips_trap
+mips_trap:
+ - determines if we got here from an interrupt, an exception, or a system call
+ - if it's an interrupt, leave disabled interrupts disabled (else re-enable them)
+ - executes syscall(...)
+ - v0 must be grabbed from the original trapframe (v0 currently might have changed)
+ - e.g. sees 49 in v0 and calls sys_close()
+
+BAM! A timer interrupt happens as we're about to call sys_close():
+ - interrupt gets caught by the common exception handler
+ - a trapframe of the current thread is made (still inside the kernel)
+ - mips_trap determines the time quantum has been hit, time for an involuntary
+   context switch
+ - calls thread_yield
+ - calls thread_switch
+ - switch_frame is created
+Now there are two kernel stacks (and two user stacks)
+Note: "the trap frame is always in the kernel"
+ - We can tell that process 1 was already in the kernel because it has two trapframes,
+   and notably a switch immediately after a trapframe.
+ - Process 2 did not make a syscall and has one trapframe followed by a switchframe in
+   the kernel stack, so we can deduce it was in user mode before.
+Main takeaway from assembly from last class:
+ - it is trying to shift execution from the user stack to the kernel stack
+
+WAIT! Now imagine that timer interupt never happened.
+ - Let's say the syscall fails. We then  modify *in the trapframe* the return value
+   registers v0 (error code) and a3 = 1 (indicating error).
+ - If it succeeds, we set v0 to the return value in the trapframe, and a3 to 1.
+
+When returning from the kernel:
+ jr k0 (jump back to the thread's code)
+ rfe (in delay slot) (return from exception sets execution to unprivileged mode)
+
+^ "It's very important to understand this process for A2a." "Know when syscalls happen, etc."
+
+Exceptions
+ - Another way that control is transfered from a process to the kernel.
+ - Caused by user doing something bad - detected by the hardware. e.g. Divide-by-zero
+ - Since we can't recover from divide-by-zero, we kill the application.
+ - Other exceptions should be handled differently (e.g. page faults could be either
+   erroneous or not, it could just be a page/cache miss where the page needs to be brought
+   back from the disk.
+
+List of MIPS Exceptions
+EX_IRQ   0   // interrupt "a special type of exception"
+...
+EX_TLBL  2   // TLB miss on load "you will play with the TLB in A3"
+...
+EX_CPU   11  // Coprocessor unusable "floating point unit, not a missing cpu LOL"
+...
+
+Interrupts
+ - Triggered by the hardware (e.g. network card receives a packet, timer is timing)
+
+Summary: Three ways to go from userspace to kernel
+ - Interrupts
+ - System calls
+ - Exceptions
+
+System Calls for Process Management
+create: fork, execv
+destroy: exit
+synchronization: waitpid
+attribute management: getpid
+
+Code example with fork, waitpid, getpid. [Processes and the Kernel slide 30]
+Fork works by creating a new process that's exactly the same as the current process.
+A new address space is created, as a copy of the parent process' address space.
+Return value of fork is the process id of the child.
+For the child, the return value is zero.
+"Connect the dots - system call can return two different values by modifying the
+ trapframes of the two threads differently before returning."
+_exit(x); // exit code terminates the child process, gives the parent an int
+"The child is about to die, and has a final message (an int) to the parent."
+When the parent is done its thing and wants to know how the child is doing, we call
+waitpid on our child's pid, which grabs *an encoded version of the exit code*.
+p = waitpid(child_pid, &child_exit,0)
+The exit code is in there, along with the exit status.
+"The message along with how your child terminated"
+Pull out the info with WIFEXITED(child_exit), or WEXITSTATUS(child_exit) (?)
+"Wife exited lol"
+
+Note: Children can call fork again, which would return their child's pid (their
+parent's grandchild).
+Note: A thread has no idea about its grandchildren here, you can only keep track of
+your immediate childrens' PIDs.
+[diagram of three columns illustrating forking]
+
+execv is often used with fork, and we need it for A2b
+ - execv("path/to/executable", args)
+ - replaces program code and data with that fetched by the executable
+   program "image"
+ - code following the execv code won't be called unless execv failed
+ - execv jumps to execution of new code
+ - pid stays the same
+ - most commonly used for concurrently executing another program
+   i.e. parent calls fork, child calls execv
+
+Implemntation of Processes "a container of different resources"
+ - one or more threads
+ - file descriptors, etc.
+ - see kern/includes/proc.h
+    - spinlock provides mutual exclusion for variables in proc structure
+    - p_name
+    - pointer to addresspace struct
+    - pointer to current working directory (not concerned about this in this course)
+ 
+Functions:
+ - proc_create_runprogram creates a new process sturcture, initializes it so that it is
+   ready to have threads attached to it
+ - proc_destroy cleans up resources
+ - proc_addthread attaches a thread to a process
+ - proc_remthread removes a thread (only really used in proc_destroy)
+
+Timesharing
+Diagram: Two Processes in OS/161 (two processes context switching)
+Diagram: Timesharing example diagram (three vertical columns - proc A, kernel, proc B)
