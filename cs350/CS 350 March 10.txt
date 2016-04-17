@@ -1,0 +1,156 @@
+CS 350 March 10
+
+Implementing execv
+ - count # of args and copy them into the kernel
+ - copy program path into kernel
+ - copy-paste from [?]:
+   - open program using vfs_open
+   - create, attach, and activate new addr space
+   - using the opened program file, load using load_elf
+ - need to copy args into new addr space (both array and strings). Consider copying the args onto user space
+ - ?
+ - ?
+
+Note: You still need a trapframe before returning to userspace.
+Use copyin/out for fixed-size variables (ints, arrays).
+USe copyinstr/outstr when copying NULL-terminated strings.
+
+Useful macros:
+ - USERSTACK: base addr of stack (0x00000000)
+ - ROUNDUP: useful for memory alignment "next biggest number divisible by 8, 16, etc."
+   - Use this on A2b when computing addresses, doing memory-alignment things.
+
+Common mistakes:
+ - remember strlen does not count null terminator; include space for it!
+ - user pointers should be of type userptr_t
+   - e.g. interface for sys_execv should by (userptr_t progname, userptr_t args)
+ - Make sure to pass a pointer to the top of the stack to enter_new_process.
+   - You will likely manipulate the stack when doing arg passing, so it won't be set
+     to USERSTACK when calling enter_new_process
+
+Alignment
+When storing items on the stack, pad each item such that they are 8-byte aligned.
+Strings don't have to be 4 or 8-byte aligned, but pointers to strings must be 4-byte-aligned.
+
+HELLO = 6 bytes
+WORLD! = 7 bytes (incl null term)
+argument array placed below: 3 pointer entries, including one null pointer
+Allocate the memory before you write! It makes it easier to align memory and harder to accidentally
+write your args backwards (world hello).
+We want every entry (string or array) on the userstack to be 8-byte aligned. Individual entries don't have to be.
+So we allocate the following:
+[w][o][r][l][d][!][NULL][NULL]     // 7+1 padding
+[h][e][l][l][o][NULL][NULL][NULL]  // 6+2 padding
+// pad the following array to 8 bytes
+[][][][][]                         // +5 padding
+[NULL]                             // 1
+[&world]                           // 1
+[&hello]                           // 1
+
+args_size = ROUNDUP(args_size, 8)
+Note: MIPS has a strict 8-byte alignment; other architectures
+
+Address Translation: OS/161 dumbvm example [Virtual memory slide 23]
+Answers: (homework: try to get these answers)
+0x0020 0004 | 0x0050 0004
+0x0080 91A4 | Exception
+0x0010 01A4 | 0x00B0 01A4
+Exception   | Exception
+
+Initializing an Address Space
+Executable files are in Executable and Linking Format (ELF) Format
+ELF format:
+[ELF header    ] // platform details, 32-bit vs 64, etc.
+[program header] // tells us where the text segment is, and where the data segment is
+[text          ] // text
+[readonly data ] // text
+[data          ] // data
+[section header] // data
+
+Problem with preloading the whole ELF file at once: programs can be huge.
+If we have an unused Foobar function at the bottom of our text segment, we are wasting memory and time.
+
+Alternative: OS loads pages on-demand.
+i.e. only load the main function, and not Foobar, if Foobar isn't used.
+Disadvantage: on-demand requires disk to spin upwhen loading new pages; preloading is only benefits us
+when we know ahead of time that we will touch every aprt of the program.
+
+Note: When Foobar is on a page that's VALID but not PRESENT, which causes a page fault that loads the page into
+memory whenever a function is called for the first time.
+Note: OS161 uses preloading because it's easier. It used to be on-demand when we allowed group work.
+
+ELF Files "Not that important, but still kinda useful for A2b and A3"
+Segments make it easier for the ELF loader.
+ELF file contains a header describing segments, and segment images.
+ELF segments describe a contiguous region of the vaddr space.
+ELF header talks about entire executable, system arch, etc.
+Program eader includes an entry for each segment describing:
+ - vaddr os start of segment
+ - length of segment in vaddrspace
+ - location of the start of the segment image in the ELF file (if present)
+ - length of the segment image in the ELF file (if present)
+The image is an exact copy of the binary data that should be loaded into the specified
+portion of the vaddrspace.
+The image may be smaller than the address space segment, in which case the rest of the address space
+segment is expected to be zero-filled (0xdeadbeef ?)
+
+OS/161's ELF Files
+ - always two segments, text and data
+ - stack always starts empty, so we don't include it
+ - dumbvm creates a stack segment for each process, 12 pages long, ending at 0xffff ffff.
+
+ELF Sections and Segments
+.text: program code
+.rodata: readonly global data
+.data: initialized global variables
+.bss: block started by symbol (uninitialized global data)
+.sbss: small uninitialized global data (~1 word)
+Note: .text and .rodata typically grouped into text segment.
+The .data, .bss, and .sbss sections make up the data segment.
+Note: Space for local program variables is allocated on the stack at runtime.
+
+Takeaway: Don't be confused about Elves in your kernel when we later call "load_elf".
+
+[Skipping: More ELF slides, up to Virtual Memory slide 37]
+
+
+An Address Space for the Kernel
+Each process has its own addrspace, but what about the kernel?
+Three options:
+ - Kernel in physical space: disable address translation in privileged system execution mode,
+   enable it in unprivileged mode.
+    - This is difficult to write, since we need to avoid conflicts with physical memory already being
+       used for virtual address spaces.
+    - Note: Virtualized OSs aren't a problem, because we abstract memory at the hypervisor layer (?).
+    - The kernel will have trouble translating user addresses via the page table (must be done manually,
+      without hardware TLB speeding things up).
+ - Have kernel in a separate virtual address space.
+   - Advantage: promotes isolation
+   - Disadvantage: How does the kernel access user addresses in other address spaces? This would require
+     augmenting the kernel addrspace so that it maps user frames as well. This is very inefficient.
+   - Disadvantage: When switching address spaces, we flush the TLB, since the entries point to the old addrspace.
+     This means flushing the TLB on every system call!
+ - Kernel mapped into portion of address space of every process.
+   - This is what linux does.
+   - Less of a problem with 64-bit machines and 46-bit addr spaces than with 32-bit machines.
+   - Top half of each process' address space is mapped to a single kernel (one kernel in one place in physical
+     memory, not copied, but mapped to every one of our processes).
+   - Kernel starts above 0x8000 0000; user space starts at 0x0000 0000 (bottom half).
+   - Kernel address space above 0x8000 0000 is the same for every process!
+   - So When we jump to the kernel, we don't have to change address spaces or flush our TLB.
+   - This also lets the kernel access user data, since it's in the same address space, and the TLB/MMU can
+     still help us out.
+
+[Virtual memory slide 39]
+[cross-section of 4GB 32-bit address space on the MIPS R3000]
+[kuseg][kseg0][kseg1][kseg2]
+       ^0x80000000
+              ^0xa0000000
+Common exception handler is in kseg0 (most of the kernel is there).
+Translation for addresses between 0x8 and 0xa is just a matter of subtracting 0x8.
+Translation for kseg1 is just a matter of subtracting 0xa. (kseg0 and kseg1 are mapped to the same section of memory (?))
+kseg0 is unmapped, but cached (in L1/L2/L3 in CPU).
+kseg1 is unmapped, but uncached (it's where we read/write data to and from hardware) (IO stream buffer?)
+kseg2 - unused in OS161, won't talk about it.
+
+

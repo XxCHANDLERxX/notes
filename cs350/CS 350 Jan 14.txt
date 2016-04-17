@@ -161,3 +161,5 @@ However, this is very indiscriminate - it stops all preemption, not just preempt
 the critical section. Ignoring timer interrupts also has side effects, i.e. ignoring the passage of time.
 It also doesn't enforce mutual exclusion on multiprocessors (interrupts are only disabled for one core at
 a time). Multiple cores means multiple threads running, even without context switching and interrupts.
+
+

@@ -1,0 +1,222 @@
+CS 350 Feb 25
+Midterm Review
+Midterm is next Monday!
+
+Midterm review slides will be posted on Piazza.
+
+Threads and Concurrency
+Causes of a context switch:
+ - thread_yield
+   - voluntary context switch
+   - "yielding instead of blocking", "being nice"
+ - thread_exit
+   - thread is done, CPU no longer needed, so we must
+     context switch to another thread
+   - "similar to thread_yield", but doesn't create a switchframe,
+     because it destroys the thread (it doesn't need to run again)
+ - thread blocks on wait channel
+   - we save a switchframe when a thread blocks
+ - preemption
+   - involuntary context switch, prevents one thread monopolizing
+     CPU resources
+   - provides fairness
+   - accomplished through timer interrupts
+     - timer interrupt caught by common exception handler
+       - PC jumps to fixed point in memory where CEH lives
+       - trapframe saved onto kernel stack
+       - sees that it's an interrupt
+       - calls correct interrupt handler (timer)
+         - handler increments timer
+     - a quantum time limit is eventually reached
+
+Note: whenever we context switch, we save a switchframe
+
+Note: a trap frame is generated whenever we ___
+
+Note: A switchframe saves a subset of what we save in a trapframe.
+ arbitrary code is running when an interrupt fires, so we must save all
+ the registers to later restore them after the unexpected interruption.
+ 
+One type of scheduling: preemptive round-robin scheduling
+ - queue of threads waiting to run (FIFO)
+ - timer interrupts increment a timer
+ - when a time quantum is hit, the kernel performs a context switch
+ - quantum != timer interrupt interval because:
+   - we want to prevent cheating the system with a thread_yield before the timer
+   - other parts of the OS need finer-grained timing
+
+Thread Synchronization
+Mutual exclusion means only one thread can use a shared variable.
+Critical section is the part of the program in which a shred object is accessed.
+Volatile keyword tells the C compiler to not optimize access to the given global variable.
+Q: Does the volatile keyword provide mutual exclusion?
+A: No. It doesn't make operations atomic, it just makes it easier for us to define our
+   critical section. It forces the value to be in memory, rather than in a register.
+   
+Different ways to enforce mutual exclusion
+1. On a uniprocessor system, just disable interrupts
+ - without timer interrupts, we have no involuntary context switches
+ - we can ensure we are all the way through the critical section before
+   re-enabling interrupts, so it works!
+ - with a multiprocessor, we have more than one thread running at a time,
+   so conflicts can still arise even without context switches
+   - threads running in different CPUs can both try to access the critical section!
+ - note that we make sure that only the kernel can disable interrupts, otherwise
+   user programs can disable them and hog the CPU
+2. On a multiprocessor system, build spinlocks using atomic instructions
+ - test_and_set
+ - compare_and_swap
+ - lod_link and store_conditional
+ - e.g. while(test_and_set(&lock,true)) {}
+   - we wait to be the thread that causes the 0-to-1 transition
+   - reading the old value and setting the new value is done atomically, at the
+     same time
+   - this is inefficent, because of bus saturation (frequent writes invalidate cache)
+     - test_and_test_and_set is better (frequent reads - more cache-efficient)
+   - we can also have starvation/unfairness
+ - spinlocks are generally inefficient because we are constantly checking the lock,
+   which isn't productive
+
+Practice question: Implementation of test-and-set with load-linked and store-conditional
+li R1, 1
+ll R0, &lock // store old value of lock into r0
+// load linked keeps a watch on the variable &lock
+// store conditional fails if var is changed between these two isntructions
+// r1 = 0 if store conditional failed while we had a watch on it
+sc R1, lock // writes 1 into lock
+By inspecting the resulting values of r0 and r1, what can we determine about the ownership
+of the lock?
+
+1. If r0 = 0 and r1 = 0
+ - r0 = 0 => lock was available
+ - r1 = 0 => store conditional failed, so some other thread MIGHT own the lock, but all we
+   can say is that another thread modified the lock var(could have acquired AND released)
+ => not possible to determine if the lock is held or not
+
+2. If r0 = 0, r1 = 1
+ => lock was available and store-conditional succeeded => we own the lock!
+
+3. If r0 = 1, r1 = 0
+ => lock was held, and something modified it
+ => not possible to determine if the lock is held or not
+
+4. If r0 = 1, r1 = 1
+ => some other thread was holding the lock, and nothing changed since we called load-linked,
+    so the lock is still held by that particular thread
+
+
+Process and Kernel Review
+Process: a container consisting of an address space, at least one thread, and other resources
+Kernel: A program in privileged execution mode
+ - Privileges allow direct interaction with hardware, calling special instructions (halt),
+   and accessing any memory addresses
+
+System call
+ - Interface between process and kernel
+ - Needed because unprivileged processes shouldn't access privileged-mode-owned memory
+ - Need a special way for the kernel to talk to user processes
+ - When a system call is made, a user-level library function (e.g. fork()) is called,
+   which calls a sys_call instruction
+   - this switches processor to privileged mode
+   - jumps to a specific location in memory (PC := common_exception_handler)
+   - saves key parts of the thread context (like PC)
+     - PC is temporarily saved into a kernel register
+
+Three ways to go from user space to the kernel: exception, system call, interrupt
+Exceptions: "doing something bad", executing an illegal instruction, detected by hardware
+Interrupts: generated by external devices (hardware) when an event occurs (timer, disk,
+ network interface, etc.)
+ 
+
+Stacks
+ - Each user thread has a user space stack, and a kernel stack
+   - Anything generated in the privileged part of memory should stay there
+   - Not to be confused with processes, which may contain multiple threads (OS/161 has one each tho)
+ - Context switches are always performed inside the kernel
+   - thread_yield must be called from the kernel
+   - user-space equivalent is yield()
+   - timer triggers transition to kernel
+   - kernel checks if  thread has used its quantum
+
+
+System call example **COMMON MIDTERM QUESTION**
+"must understand exactly what happens in a fork call"
+main() {
+    int rc1, rc2, rc3;
+    rc1 = fork(); // rc1 > 0 for parent, rc1 = 0 for child
+    rc2 = fork(); // both processes fork here now (2 become 4)
+    // rc2 = 0 in both grandchildren
+    ...
+}
+
+|
+|---------------------|
+| rc1 > 0             | rc1 = 0
+|---------|           |------------------|rc2=0
+|         |           |                  | "A"
+|rc2>0    |rc2=0      |rc2>0             |---------|
+C         B           |"A"; rc2=0        |rc3>0    |rc3=0
+D         D           |-----|            B         B
+                      |     |rc3=0       D         D
+                      B     B
+                      D     D
+                      
+                      
+Virtual Memory Review
+- Main purpose of virtual address space is to provide isolation between different processes
+- We want our own "view of the world" as if we are the only process running, so we have a
+  consistent chunk of memory to reference that's unchanging
+- Hardware support: MMU
+
+Dynamic Relocation (virtual mem management)
+ - contiguous span of memory per address space
+ - shift address by offset
+ - MMU provides offset and length register
+ - Pro: easy, cheap, simple, simple MMU
+ - Con: external fragmentation
+
+Paging
+ - partitions vaddr space into fixed size pages
+ - partitions physical address space into fix sized frames
+ - page size = frame size
+ ...
+ [paging translation example]
+
+
+Example:
+ - 16bit virtual address size
+ - 24bit physical address size (!)
+ - 256bytes per page (2^8)
+ - single-level page table
+
+1. max # of entries to the page table?
+ - 8 bits for offset (pages are 2^8 bytes)
+ - 8 bits remaining for page #
+ => max entries is 256
+
+2. bytes per page table entry?
+ - pte stores (at least) the frame number
+   - frame number is 24-8(offset) = 16 bits for frame number
+   - a few extra bytes for valid, protection, etc.
+   => each PTE is 3 bytes
+ => max page table size is 768bytes or 3 frames
+ 
+ 
+Example:
+ - 2-level page table
+ - 48-bit addr space (v and phys)
+ - each page table should fit within a singel frame
+ - what is the minimal page size that we can use?
+Try 4kb:
+ - 12bit offset
+ - 18bit page #
+ - 2^18 = 256K page table entries
+ - each entry in table is 6 bytes (each first level PTE stores a pointer (6 bits, 2^6 = 48byte address)
+ - page table not big enough!
+Try 256KB?
+ - 18-bit offset
+ - 15-bit page #
+ - 32K entries, each entry is at most 6 bytes = 192KB
+ - internal fragmentation is at least 256-192 = ...
+
+

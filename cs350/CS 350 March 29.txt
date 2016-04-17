@@ -1,0 +1,134 @@
+CS 350 March 29
+
+Recall: Directories.
+Directories are essentially special files - their contents are restricted to a mapping of filenames
+iside the directory to their i-numbers. Since directories are files, they also have i-numbers.
+
+Hardlinks are references to i-numbers. I-number 6 has a hardlink count of 2 if exam1 and exam2 both
+reference i-number 6.
+
+When a file is created:
+    open(/a/b/c,O_CREATE|O_TRUNC) // creates a new file called /a/b/c if it doesn't exist already.
+    // it also creates a hardlink to the file in the directory /a/b
+
+Once a file is created, additional hard links can be made to it.
+    e.g. link(/x/b, /y/k/h) creates a new hard link (file) h in directory /y/k refering to the i-number of /x/b
+
+Note: We can't have hard links to directories, even though they have i-numbers.
+Q: Why do we not want this?
+A: Our directory is a tree, so we want it to be acyclic. Hard links to a directory could point up the tree and
+   create a cycle, so we don't allow them.
+
+Hard links can be removed:
+    unlink(/x/b) // hard link count goes down by one, but file still exists
+    // removes, say, exam2 entry from your directory
+    rm is implemented by calling unlink on the file(s) you want to remove.
+    It jsut removes the links in that directory.
+
+Referential integrity: Hard links all refer to an existing file. No hard links => no file.
+
+Note: There is no system call to delete a file. A file is deleted when its last hard link disappears.
+Note: File permissions are tied to the i-node (i-nodes are indexed by i-numbers).
+
+
+Symbolic links "soft links".
+Actually a special type of file, like a directory.
+It associates a name (string) to a pathname.
+It contains a pathname, say "/z/a". That's all it is.
+symlink(/z/a,/y/k/m) creates a symbolic link m in directory /y/k.
+m is a file.
+m has its own (new) i-number, since it's a file.
+The symbolic link refers to the pathname /z/a.
+
+Note: Cycles are technically allowed in symlinks. When we traverse the directory tree, we simply don't
+follow symbolic links.
+
+Symbolic links also don't provide referential integrity.
+Symlinks don't increase the hardlink count of a file.
+You can create a symlink to a file that doesn't exist.
+Deleting a file that was previously symlinked doesn't effect the symlink.
+Trying to open the symlink later would say "this file doesn't exist".
+
+cat > file1
+This is file1.
+
+ls -li
+685844 -rw------- 1 user group 15 2008-08-20 file1
+[inumber permissions hardlink-count filesize modified-date filename]
+
+ln file1 link1
+ln -s file1 sym1
+ln -s not-here sym2
+
+ls -li
+685844 ... file1
+685844 ... link1
+685845 ... 5 ... sym1 -> file1
+685846 ... 8 ... sym2 -> not-here
+
+Multiple File Systems
+When you plug a USB into a windows computer, assuming you have the drivers, it opens it with a new
+drive letter, like "F:\". Our main disk is C:\.
+
+Joey thinks: "One Directory sounds like One Direction lol."
+
+Unix has a hierarchal namespace and mounts additional drives to a leaf node in the directory tree.
+There is only one namespace in a unix filesystem.
+
+Automount service usually mounts external drives to the /mount directory (must create an empty directory within).
+We can override that behaviour and mount a drive to any leaf in our directory tree.
+
+Note: i-numbers are only unique within filesystems.
+So hardlinks can't span different filesystems.
+"You can't have it so that the only hardlink to a file on your disk is on your usb drive."
+You CAN have symlinks across filesystems, but the path may or may not stay correct.
+
+
+File System Implementation
+What needs to be persistently?
+ - file data and meta-data
+ - directories and links
+ - filesystem metadata
+What doesn't?
+ - open files per process (processes die, so we don't care)
+ - file position for each open file (ditto)
+ - cached copies of persistent data (disposable)
+ 
+File System Example:
+ - secto-raddressable, 512KB disk
+ - 64 blocks of data, grouped into sectors of 8 blocks
+
+[Diagram: VSFS (Very Simple File System)]
+Create an array of 80 i-nodes, each containing metadata for a file.
+This limits us to 80 files, which is reasonable given the small disk size.
+Index into the array is the file's index number.
+
+Most filesystems  also keep track of a data node bitmap, in addition to the inode bitmap.
+We keep these small bitmap data structures in memory so that we can scan through them when we need something.
+Scanning through the disk sectors themselves would be too slow.
+
+The first block is a spuerblock, containing a supernode specifying metadata for the entire filesystem.
+The second block is the inode-bitmap, and the second one is the datanode-bitmap.
+Remaining 5 blocks are our inode table, each iblock contains 16 inodes.
+Inodes are empty (null) until they are associated with a data block.
+
+Inodes
+Fixed-size index structure with a specified set of fields.
+[list of fields]
+
+VFSF i-nodes
+4-byte addresses => 16 terabyte max disk size (theoretical max file size limit)
+2^32 blocks, 4KB blocks
+in VSFS an i-node is 256 bytes
+ - assume there is room for 12 direct pointers to data blocks
+ - each pointer points to a different block for storing user data
+ - 12 data blocks * 4kb block size => 48kb max file size (great for small files)
+ - if we need larger files, we need an "indirect pointer to an indirect block"
+Instead of a direct pointer, we can use an indirect pointer, pointing to an indirect block (a data block storing
+pointers instead of data). 4kb of pointers, each pointing to data blocks. We now have 1024 extra pointers to work with.
+Maximum file size is now (12 + 1024)*4kb = 4144kb (~4mb).
+We can go even bigger by using double and triple indirect pointers (more examples next class).
+
+We will add indirect pointer(s) on top of the existing 12 direct pointers available.
+
+

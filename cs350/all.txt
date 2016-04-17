@@ -1,0 +1,2482 @@
+CS 350 Jan 5 2016
+
+A0 will be out later today, will be due "relatively soon"
+System call - how applications talk to OS
+Assignment portion is heavy - depends on how comfortable you are with the assignments and writing C code
+Each assignment can be a couple hundred lines of code.
+Debugging is tricky - start assignments early!
+
+Why is concurrency important?
+Increasing clock speed isn't ideal and we hit a ceiling around 4GHz.
+We need to do lots of things at once without adding heat and battery usage with a higher clock speed.
+"Our battery life would suck and we are burning a hole in our pants."
+Better CPU architecture can also increase computing speed, but innovations there are difficult.
+Google says that students need to be better at concurrent programming.
+Varak(?) 25 - medical device in the 80s - two modes, chest xray and radiation therapy. Older version had a mechanical switch. The 25 had a software switch, and the designers had a counter variable auto-increment when booted. Low numbers mean the machine is booting, and user input gets ignored. So unlucky people who pressed the button when the counter hit an integer overflow got the wrong dosage of radiation.
+Mars rover (2003, 2004) - rover had small amount of storage for photos. It enterred a reboot loop when its storage ran out of space by keeping meta-data from deleted photos.
+We will learn about file systems in this course!
+
+Assignments done individually.
+Exams are more important than assignments! Don't neglect studying by working on assignments too long.
+Assignments are cumulative - A2 depends on A1, etc.
+5 total slip days, at most 3 for each assignments ("days", not "business days")
+Only two slip days on last assignment (A3)?
+A2a tends to be the hardest, followed by A3 and A2b
+
+Plagiarism - don't use public GitHub repo, use git.uwaterloo.ca.
+Don't take code from blogs or other solutions! That makes Bernard feel bad.
+
+Course Intro
+
+What is an Operating System?
+Three views:
+ - Application view - what services does it provide? Lets software do certain things.
+ - System view - what problems does it solve? Ensure important programs have priorty access to resources, etc.
+ - Implementation view - how is it built?
+ 
+Application view
+OS provides an execution environment - processor time, memory space, I/O, network, GPU, etc.
+Provides an interface to these resources - useful abstractions to many potential hardware setups.
+DOS didn't provide these abstractions, so applications had to implement many different hardware drivers. This doesn't scale!
+OS also isolates running programs from one another - no undesirable interactions.
+We need to protect our program's memory from malicious/buggy programs. Lots of potential incompatabilities.
+
+System view
+OS enforces resource restrictions - one network card, only so much memory, etc.
+Must give the right resources to the right programs.
+Policies are difficult to enforce without an OS - only certain programs should be accessing the network, etc.
+"OS is a very sophisticated manager of resources."
+
+Implementation view
+OS is a concurrent, real-time program. NOt a simple sequential program.
+Must handle different events happening at the same time, different device components running and generating events at the same time.
+"Your OS only has a certain amount of time to read a packet from the network buffer."
+OS must deal with events with very strict time constraints.
+
+Some Terminology
+Kernal: OS kernal is core part of the OS that handles system calls, interrupts, and exceptions.
+Function calls to included/linked libraries use pre-defined "system calls", special programs that your program can call to talk to the kernel.
+Interrupts - service notice, shutdown, etc.
+Exceptions - bad/illegal behaviour, kernel kills the program.
+
+Operating System - includes the kernel and other related programs (services, utilities, libraries, interpreters).
+
+Top blobs on slide 5 are user programs. Bottom ones are system resources.
+Between them is the kernel.
+User programs talk to the kernel via system calls.
+Kernel sends commands and data to the system resources, which return data and interrupts.
+Then, the system call returns a value to the user program.
+
+Operating System Abstractions
+Gives each program its own individual "sandbox" - files and filesystems, address spaces, processes, threads, sockets, pipes.
+
+Why are these abstractions designed the way they are? How are they implemented?
+
+Course outline...
+Next class: concurrency.
+
+CS 350 Lec 2 Jan 7
+
+Review: Program Execution
+Registers
+ - program counter, stack pointer...
+ - PC contains address of next instructions
+ - Jump, branch, etc. change PC (or it auto-increments by 4)
+ - Other registers are input params or output from functions
+ - Stack pointer points at the top of the stack
+ - Program stack contains procedure activation records (call stack, local vars, etc.)
+Memory
+ - program code
+ - program data
+ - program stack containing procedure activation records
+CPU
+ - fetches and executes instructions (fetch, execute loop)
+ 
+ Threads
+ A thread represents the control state of an executing program.
+ An abstraction of the execution of a sequential program.
+ Each thread runs a sequential program one instruction at a time.
+ Thread context is the state information needed to run the program.
+ "Save everything that this thread touches."
+ "Basically a copy of all the registers, but we'll talk more about what needs to be saved later."
+ Context consists of:
+  - CPU state
+  - A stack located in the address space of the thread's process (local vars, return addrs, etc.)
+
+See thread context diagram on slide 3 of this module.
+
+Concurrent Threads
+In a single-core CPU, running multiple threads would require something called context switching.
+Only one of them can be running at a time.
+See next diagram on slide 5.
+One set of CPU registers => single-core CPU.
+Thread 1 is populating the registers => thread 1 is running.
+Thread 2 is paused and waiting, and its context has been stored in the program data.
+The thread library manages this context storage.
+Also note that there is an extra stack for the second thread.
+Students tend to forget this: each thread has its own stack!
+Is it possible to have two threads sharing one stack?
+Picture a stack growing downward, starting with function A with function B called below.
+Then the other thread calls function C and D and those go below B.
+If we go back to thread 1, the memory below D is now the top of the stack. Bad things happen.
+Note that thread 1 would have no idea what happens, and tries to use the stack pointer as usual.
+If thread 1 were to try accessing a local variable in B, it would actually look at D's memory! Oh noes!
+"But the stack pointeris a register. It gets stored in the thread's context, so the old stack pointer
+ gets restored, and the correct reference is maintained. That problem goes away, but other problems still
+ exist."
+Two stacks would be interweaved/overlapped. It gets very complicated.
+Other single-stack solutions are hacky and inneficient - motivating separate stacks.
+
+Thread Interface for OS/161
+A thread library implements threads.
+thread_fork is used to create a new thread. Note that (func*)(...) is a function-pointer parameter.
+ - This doesn't automatically execute the function, just sets of the thread.
+ - Note that thread_fork's function param has a specific format: returns void, first arg is void*, second arg is ulong.
+thread_exit destroys and cleans up a thread.
+ - note that in thread_exit(void), void means that the function takes no parameters.
+thread_yield is where a thread says "I'm not done yet but I'll let another process have the CPU for a while". "voluntary context switch"
+
+/************************************************** 
+Thread creation example: cat and mouse (from slide)
+**************************************************/
+
+for (index = 0; index < NumMice; index++) {
+    error = thread_fork("mouse_simulation thread", NULL, mouse_simulation, NULL, index);
+    if (error) {
+        panic("mouse_simulation: thread_fork failed: %s\n",
+        strerror(error));
+    }
+}
+
+/* wait for all of the cats and mice to finish */
+// "signalling primative used here to wait for all threads to finish"
+for(i=0;i<(NumCats+NumMice);i++) {
+    P(CatMouseWait);
+}
+
+/* This function is going to be passed to thread_fork */
+static void mouse_simulation(void * unusedpointer, unsigned long mousenumber)
+{
+    int i; unsigned int bowl;
+    for(i=0;i<NumLoops;i++) {
+
+        /* for now, this mouse chooses a random bowl from
+        * which to eat, and it is not synchronized with
+        * other cats and mice
+        */
+
+        /* legal bowl numbers range from 1 to NumBowls */
+        bowl = ((unsigned int)random() % NumBowls) + 1;
+        mouse_eat(bowl);
+    }
+
+    /* indicate that this mouse is finished */
+    V(CatMouseWait);
+    /* implicit thread_exit() on return from this function */
+}
+
+/***************************************************/
+
+
+Context Switching, Scheduling, and Dispatching
+(Thread) context switching is the act of pausing the execution of one thread and resuming another.
+When we context switch:
+1. Decide which thread to run next "select"
+2. Save context of currently running thread "save"
+3. Restore the context of the currently running thread "restore"
+Dispatching is just saving context of current thread and restoring the context of the thread being "dispatched".
+Sounds simple, but is actually tricky - it's architecture-specific, must be done carefully, and tricky to understand
+what is actually happening.
+
+Scheduling
+Scheduling is deciding which thread to run next.
+Scheduling policy algorithm impacts machine performance a lot.
+Simple model: round robin. New threads get put at the end of a "ready queue" that is FIFO.
+Scheduler pops the first item of of this queue to run next, and pushes the current thread to the back of the queue.
+
+Causes of Context Switches
+1. A thread decides to call thread_yield and voluntarily gives up the CPU.
+   This tells the OS to let someone else to run.
+   e.g. If a thread is "far ahead" of other threads and wants them to catch up, maybe if it needs resources from
+        another thread, it might call thread_yield.
+2. A thread calls thread_exit (just a context switch but the current thread isn't queued again).
+3. A thread blocks - it is waiting for an event to happen (like waiting for a network packet) - and sleeps until
+   the event to happen. While waiting, you pause, and then are woken up when the packet arrives.
+   "Like when you are young, instead of constantly asking "are you there yet?" which wastes time and energy, you go to sleep!"
+4. A thread is preempted - "an involuntary context switch". The thread library decides, "hey, you've been running long enough,
+   time to run another thread".
+   This is important because we have threads that run continuously without calling thread_yield. Relying on thread_yield takes
+   control away from the kernel and tends to promote "selfish" programs that hog resources and reduce concurrency.
+
+Preemption
+Without preemption, a running thread could run forever! A buggy thread could freeze the system!
+Preemption ensures fair access to the CPU for the thread library.
+Preemption happens via interrupts.
+
+Interrupts
+An event that occurs during the execution of a program.
+It is caused by system hardware (like a network card) and tells the OS that the hardware needs to be "serviced".
+It transfers control to a specific location in memory - an interrupt handler.
+An interrupt handler handles the interrupt
+ - it saves the thread context
+ - determines which piece of hardware raised the interrupt and performs device-specific processing
+ - restores the saved thread context and resumes its execution
+The primary hardware device we will use to generate interrupts is a timer.
+Once a certain amount of time passes, an interrupt is raised, and a context switch happens.
+This is how we implement preemption in an OS! With a timer.
+Note that if only one thread is active in the system, an interrupt just immediately restores that thread.
+
+Implementing Preemptive Scheduling
+ - timer interrupts generates every T time units (e.g. 1ms)
+ - suppose thread library uses time quantum q = 500t (preempts a thread every 500ms)
+ - to implement this, keep a variable of runningtime that increments with each timer interrupt
+ - when a thread is initially dispatched, runningtime is set to 0
+ - if runningtime == q, we preempt the thread
+
+CS 350 Jan 12
+
+A1 is posted but we haven't covered any of the material yet :P
+A1 is on synchronization. We implement two sync primatives: a lock and a condition variable.
+We also have the primitive of a semaphor(?) implemented for us. That is good example code!
+Then we need to implement a simulated traffic problem.
+ - Naive solution: one car in the intersection at a time is safe, but removes concurrency.
+ - We should allow parralel lanes to both be in the intersection at a time.
+ - We will have a list of rules outlining what is safe or unsafe.
+ - Performance is one aspect. Fairness is another. Any one car shouldn't have to wait for too long.
+   "Avoid someone yelling YOLO and jumping the gun in road rage."
+
+Recall: Threads
+A thread is an abstraction for sequential execution.
+If you want more than one thing running, you need multiple threads.
+With one CPU, you must context switch between threads.
+Context switching involves:
+ 1. Scheduling the next thread "determine which thread to run next"
+ 2. Save the thread context (stack, registers)
+ 3. Restore the thread context of the other thread
+Causes of a context switch:
+ 1. Thread calls thread_yield "you might want other threads to catch up" "being nice"
+    "thread_yield while waiting for a resource isn't very efficient, you should sleep instead"
+ 2. A thread blocks - sleeps in an "await channel" until an event happens (e.g. a device driver retrieving a packet)
+ 3. Interrupts for preemption (a timer) when a thread is running for its full time quantum
+ 4. When a thread is done
+ 
+ Picture a thread, t, running a "load, modify, store" operation:
+ --> lw
+     add
+     sw
+If an interrupt happens in the middle of the lw, it will let the load finish.
+Next, execution jumps to an interrupt handler. (In OS/161, this is the Common Exception Handler)
+We are still in thread 1 and using thread 1's stack.
+Inside the interrupt handler, we:
+ 1. Save the thread context.
+ 2. Service the interrupt.
+ 3. Restore the context.
+ 4. Resume execution (start executing the next instruction).
+ 
+Implementing Preemptive Scheduling
+ - Maintain a running_time variable.
+ - When running_time = q = 500t, raise an interrupt.
+ - In that interrupt's handler, we call thread_yield on behalf of the thread to trigger a context switch.
+ Note: jumpimg to an interrupt handler isn't a context switch, we aren't going to an "OS thread", we are still in the same thread.
+ Question: can we improve performance of our system by changing the timer to raise interrupts once every 500ms instead
+  of every 1ms?
+ Answer: it's not that simple - threads that run for <500ms and call a thread_yield at, say, 490ms, would trigger a context
+  switch to the other thread, which gets preempted after 10ms! Then thread 1 gets to run again for 490ms - not good!
+
+Stack after voluntary context switch: context stored in "switchframe" on thread's stack.
+Stack after Preemption: context caught in "trapframe", and if t == q, thread_Switch creates a switchframe.
+Q: What's the difference betwseen trapframes and switchframes?
+A: They are snapshots of context at different points in time.
+   Switchframe saves state after the interrupt handling functions are called. The interrupt handler needs to clean up still.
+   The trapframe saves the context of the user program exactly when the interrupt fires.
+Note that we have to save more registers in a trapframe than in a switchframe
+
+Example:
+Thread 1 is currently running (stack 1 has no switchframe or trapframe).
+We can deduce that thread 2 executed a voluntary context switch, because there is a switchframe but no trapframe in stack 2.
+Suddenly, a timer interrupt!
+ - Jump execution to the interrupt handler.
+   Note: there is a special kernel register that keeps track of the return address (using the return_from_interrupt(?))
+ - Handler immediately saves the thread context into a trap frame.
+ - First, the handler determines the type of interrupt and whether a context switch is required.
+ - If a context switch is required, we call thread_yield, which:
+   1. saves a switchframe to stack 1.
+   2. determines the next thread to run (with round robin in this system of two threads, it is thread 2)
+   3. restore the context of thread 2 - returns to the execution of thread_yield and thread_switch which finish and return to the user's code
+Then thread 2 calls thread_yield for a voluntary context switch. thread_yield is called, which calls switch_thread and creates a switchframe.
+This context switch transfers back to thread 1, where the switchframe is restored, and thread_yield restores the trapframe before returning.
+
+Implementing threads
+ - OS/161's thread library uses a thread control block to track thread metadata.
+ - In the code, /kern/include/thread.h has `struct thread { ... }`. This is our thread control block.
+   - Look at this code and its comments. Note that each thread has a "kernel level stack", which we'll cover later.
+   - We have thread name, wait channel name, thread state, and a bunch of other data here.
+
+Review: MIPS Register Usage
+R0, zero = always returns 0
+R1, at = used by the assembler
+R2, v0 = return value / system call number
+R3, v1 = return value
+R4, a0 = 1st argument (to subroutine)
+R5, a1 = ...
+
+t0 to t9 are saved by trapframe but not switchframe (?)
+R16 to R31 must be saved (?)
+
+Dispatching on the MIPS "saving the context and restoring the context"
+ - See /kern/arch/mips/thread/switch.S
+ - It saves the necessary registers that must be preserved across function calls.
+ - Note that r7 is a "hack" in OS/161 that always points to the current thread structure, so it doesn't need to be saved.
+ - It gets the new stack ponter from the new thread.
+ - It then restores the registers. Note that restore offsets should be consistent with the save offsets.
+Not all registers are saved during a context switch (not all the temporary registers).
+In a trap frame, essentially all registers need to be saved (with the exception of r0 and kernel registers).
+"Involuntary context switches thus take longer than voluntary context switches."
+
+CS 350 Jan 14
+
+Recall: First thing happens when an interrupt fires is to jump to the interrupt handler
+in memory, which saves a trap frame, determines the type of interrupt and services it, etc.
+
+switchframe_switch:
+/*
+a0 contains address of switchframe pointer of old thread
+a1 contains address of switchframe pointer of new thread
+thread2's control block has a pointer t_context, pointing to the switchframe on stack2.
+*/
+// 1. allocate stack space for saving 10 registers (10*4 = 40 bytes)
+addi sp, sp, -40
+// Save the registers
+...
+// Get new stack pointer from the new thread
+lw sp, 0(a1)
+// Restore the registers
+lw s0, 0(sp)
+lw s1, 4(sp)
+...
+lw ra, 36(sp)
+nop
+// return
+j ra
+addi sp, sp, 40 // in delay slot
+.end switchfram_switch
+
+The control block is stored by the thread library.
+Later we will find out it's in the kernel (rather than the user space).
+The kernel allocates some memory for the control blocks, etc.
+
+Concurrency
+When multiple threads need to talk to each other, synchronization problems surface.
+e.g. Two programs accessing the same variable.
+On multiprocessors. On uniprocessors, only one thread runs at a time, but preemption and
+timesharing make it appear that threads are running concurrently.
+However, concurrency and synchronization are important even on uniprocessors.
+It's a common misconception that uniprocessors don't have synchronization issues.
+Preemption still happens on uniprocessors.
+Timesharing between threads for a certain time quantum are outside of the control of the
+program, so from the perspective of the program, multiple threads are running at the same time.
+Any synchronization problems you have on multiprocessors, you can have on uniprocessors!
+
+Thread Synchronization
+Concurrent threads can interact in a variety of ways:
+ - sharing access to the system, devices, etc.
+   "don't want multiple programs writing to the screenbuffer at the same time"
+ - sharing access to program data, e.g. global variables
+   "program data and code are shared by threads of the same programming"
+   "we want mutual exclusion for global variable access between threads"
+
+Mutual exclusion: Only one thread can access a global variable at a time.
+Critical section: The part of a program in which the shared object is accessed.
+"Only one thread should be in the critical section at a time."
+"Memorize these two definitions."
+
+Critical Section Example (Part 0)
+int volatile total = 0;
+void add(total, N) {...} // executed by thread1
+void subtract(total, N) {...} // executed by thread2
+When compiled, local loop counter i becomes "loadaddr R8 total" and "loadaddr R10 total".
+Each i becomes a local copy of total that gets incremented/decremented.
+Each thread operating independently increments and decrements R9.
+Note that context switches preserve the value of R9 between the threads so that they each have
+a consistent view of R9.
+If thread2 writes to R9 before thread1 after one iteration, total will become -1, then 1. Not 0!
+This leads to very unpredictable results.
+
+The Volatile Keyword
+Tells C that this global variable shouldn't be optimized.
+Without volatile, the compiler could say, "I'll just move the load and store outside of the for
+loop."
+A smart compiler would just add N to the register rather than looping through and incrementing
+the register N times. Trying to fix this becomes very difficult!
+Volatile would tell the compiler not to perform optimizations on code that access that variable,
+i.e. it leaves lw and sw inside of the loop as-is.
+"Not the entire function remains unoptimized, just the part that accesses the global variable."
+This lets us identify the critical section more easily.
+This also slows down our code for the sake of correctness - repeated lw and sw are not fast.
+
+Critical section: "anywhere in your code that accesses a shared variable"
+
+// thread1 ... thread2
+total++;       total--;
+// critical section spans both code blocks between the two threads
+
+Only one thread can be inside the critical section at each time.
+
+Let's assume that there is only one critical section in each program.
+i.e. Begins and end in the code exactly once, rather than hopping in and out.
+
+Critical Section Example (Part 1)
+list_add_front(list *lp) {...} // entire function is critical section due to access of list *lp
+(Part 2)
+list_append(list *lp, int new_item) {...} // in the same critical section as list_add_front due
+// to potential conflicting access of list *lp
+
+Error example: thread1 and thread2 executing critical section list_remove_front at the same time
+What could go wrong?
+1. both threads return the same value
+2. decrements num_in_list twice even though only one item has been removed
+3. dereference an element that has been freed
+4. calling free() twice on the same element
+
+Another error example: thread1 running list_remove_front and thread2 running list_append
+thread2 `if(is_empty(lp)){lp->first=element;lp->last=element;}`
+What if a context switch happens immediately after the boolean if-statement check,
+and thread1 deletes the only element of lp?
+
+The critical section includes the entirety of both functions.
+Introducing locks would make the linked list safe to use across multiple threads.
+
+Enforcing Mutual Exclusion
+Several techniques:
+ - (difficult) exploit special hardware-specific instructions
+ - (simpler) control interrupts to ensure that threads are not preempted while they are executing a
+   critical section
+Disabling Interrupts
+ - i.e. Disabling interrupts at the beginning of the critical section and re-enabling them after.
+ - On a uniprocessor, violations happen when an involuntary context switch happens inside a critical
+   section that switches to a thread that enters the same critical section.
+ - Disabling interrupts makes this violation impossible (assuming thread_yield isn't called inside the
+   critical section).
+Q: Why can't a program arbitrarily disable interrupts and run forever?
+A: Later we will learn that the kernel runs in a "privileged mode" (instead of user mode(?)) and
+   only privileged mode can disable interrupts.
+
+Interrupts in OS/161
+This is one way that the kernel enforces mutual exclusion on a single processor. There is a simple
+interface:
+ - sp10() sets Interrupt Priority Level (IPL) to 0, enabling all interrupts
+ - splhigh() sets IPL to highest value, disabling all interrupts
+ - splx(s) sets IPL to s
+So we can enable and disable interrupts by calling spl0() or splhigh(), respectively.
+
+But this problem arrises:
+A() {
+    splhigh(); // disable interrupts
+    ...
+    B(); // enables interrupts :(
+    ...
+    spl0();
+}
+B() {
+    splhigh(); // disable interrupts
+    ...
+    spl0(); // enable interrupts
+}
+
+Solution: keep a counter of the number of times interrupts are disabled and enabled, and only
+re-enable interrupts when they have been enabled the number of times they were disabled.
+These are used by splx() and by the spinlock code:
+splraise(int oldipl, int newipl)
+spllower(int oldipl, int newipl)
+For splraise, NEWIPL > OLDIPL, and for spllower, NEWIPL < OLDIPL
+
+This is a nice solution, because it doesn't require special hardware, and works for any number
+of concurrent threads.
+However, this is very indiscriminate - it stops all preemption, not just preemption that would threaten
+the critical section. Ignoring timer interrupts also has side effects, i.e. ignoring the passage of time.
+It also doesn't enforce mutual exclusion on multiprocessors (interrupts are only disabled for one core at
+a time). Multiple cores means multiple threads running, even without context switching and interrupts.
+
+CS350 Jan 19
+
+Recall: `total++;` compiles to load, add, and store instructions.
+A conflicting thread could be manipulating the same variable, resulting in a lost update,
+so this code touching the shared variable total is in the critical section.
+We use the `volatile` keyword to disable compiler optimization for a specific variable,
+which makes it easier to recognize the critical section and helps towards mutual exclusion.
+
+Mutual exclusion: Only one thread can access a shared variable at a time.
+Critical section: All code that accesses a shared variable.
+Simple implementation of mutual exclusion from last class: Disabling interrupts during the critical
+section.
+Three key downsides to disabling interrupts:
+ 1. Only works for one core.
+ 2. Ignoring the timer has side effects, such as losing track of time.
+ 3. It's very indescriminate - no context-switching can happen for everyone, even threads that don't
+    touch the critical section.
+
+How would we implement mutual exclusion in the real world?
+Imagine you are trying to get inside the only bathroom stall in a bathroom.
+When you walk into the bathroom, you check to see if someone is in the stall (it is locked).
+If it's occupied, you wait (or "spin") until you see the door become unlocked before enterring.
+Then you enter the stall (the critical section) and lock the door.
+
+In pseudocode:
+    while(lock==1){
+        lock=1;
+        ...
+        lock=0;
+    }
+
+Problem: the lock variable is shared, so the same problem arrises.
+Solution: Make `while(lock==1){lock=1;}` a single instruction, making it atomic.
+Many instruction sets give us such an instruction, most commonly called TestAndSet.
+
+Pseudocode:
+TestAndSet(addr, value){
+    old = *addr; // get old value of lock at addr
+    *addr = value; // write new value to addr
+    return old;
+}
+
+We can use this atomic instruction to implement locks.
+The "lucky" program that acquires the lock gets a 0 returned, and can enter the critical section.
+All other threads get a 1 returned, which says "the lock is still active".
+
+In x86, we have the xchg instruction:
+xchg src, dest
+Where src is a register and dest is an address.
+
+Alternatives to TestAndSet:
+CompareAndSwap(addr,expected,value){
+    old = *addr;
+    if (old == expected) *addr = value;
+    return old;
+}
+If used simply to build a spinlock, it's just as powerful as TestAndSet.
+However, it is more powerful when solving synchronization problems without a lock.
+For example:
+
+void add(){ // works without locks implemented!
+    int i;
+    int expected = total;
+    for(i=0; i<N; i++){
+        while(1){
+            int prev=expected;
+            expected = CompareAndSwap(&total, expected, expected+1);
+            if (expected==prev){
+                break;
+            }
+        }
+    }
+}
+"The above example isn't that important, it's jsut a glimpse at lock-free data structures."
+"Take CS 343."
+
+MIPS uses load-linked and store-conditional
+Load-linked: returns the current value of a memory location, and a subsequent store-conditional
+to the same memory location will store a new value only if no updates have occured since the
+load-linked.
+
+Starvation: When one thread of many fighting for a lock loses every time. In practice, it isn't
+something to worry about, but it could theoretically happen when implementing spin locks.
+
+A Spin Lock Using TestAndSet:
+boolean volatile lock; // one lock variable for each critical section
+while(TestAndSet(&lock, true)) {} // busy-wait until the thread enters critical section
+lock = false; // when thread leaves the critical path
+
+Spinlocks in OS/161
+struct spinlock {...}
+spinlock_init // 
+spinlock_cleanup // make sure the lock value is 0 (nobody inside critical section) when you cleanup a spinlock
+spinlock_data_set
+spinlock_acquire(struct spinlock *lk){ // lots of code:
+    splraise(IPL_NONE, IPL_HIGH);
+    // disable interrupts
+    //  - optimizes so that this function always acquires lock
+    //  - interrupts firing inside acquire_spinlock causes problems because future calls to acquire_spinlock
+    //    will fail, and since you're in the same thread trying to acquire the same lock we will get stuck
+    while(1){
+        // do Test-and-TestAndSet to reduce bus contention
+        if(spinlock_data_get(&lk->lk_lock) != 0) {
+            continue; // loop again now and avoid the expensive TestAndSet operation from saturating the memory bus
+        }
+        if(spinlock_data_testandset(&lk->lk_lock) != 0){
+            continue;
+        }
+        break;
+    }
+}
+
+TestAndSet saturates the memory bus:
+Picture two CPUs accessing main memory to get a value.
+They each store the value in their own CPU cache.
+If one CPU modifies the value, it writes back the value to memory,
+and invalidates the caches of the other CPU (via the memory bus again).
+So when the other CPU wants the value again, it must use the memory bus to get the value again.
+In our case, "accessing a variable" is calling TestAndSet on a shared value.
+CPU0 calls TestAndSet and recieves a new value into its local cache.
+CPU1 calls TestAndSet, which is a read and a write, invalidating CPU0's local cache.
+They take turns invalidating each other.
+The memory bus becomes the bottle neck, because CPU caches become useless.
+
+test-and-TestAndSet avoids the above problem, because the initial test only uses a read operation,
+in this case spinlock_data_get.
+The only time the memory bus is used is after there is some type of state transition of the lock (0 to 1 or 1 to 0).
+
+Implementing TestAndSet using only load_linked and store_conditional:
+
+spinlock_data_testandset(volatile spinlock_data_t *sd){...} // see Synchronization slide 23, 24
+"%0 represents the first local variable - load the value of the lock into the first local variable, x=*sd;"
+ll %0, 0(%2) // x = *sd
+sc %1, 0(%2) // *sd = y; y = success?
+// if y=0, ll and sc failed, and some other thread modified the shared variable, unsafe to proceed => return 1
+// returning 1 means that you were unable to acquire the lock (even if it's available, we cant ensure that)
+// return 1; => try again
+"You aren't absolutely sure if someone's in the washroom, so don't go in - check the lock again!"
+"Someone fiddled with the lock."
+
+spinlock_release // set value of the lock back to 0 and re-enable interrupts
+
+Pros and Cons of a Spinlock:
++ fairly efficient
++ works with multiple CPUs
+- CPU is busy while waiting for a lock (large critical sections will spin the CPU needlessly for a long time
+  as it is only checking the lock)
+- starvation is possible
+
+Thread Blocking
+If a thread needs to access a critical section that is busy, it must wait for the critical section to become free.
+Let's say you want to go to bed at 11pm and want to wake up at 6pm. We would ideally use an alarm clock.
+Spinlocks, though, would be like you are looking at the clock every second - very inefficient! No rest happens!
+To handle this, the thread scheduler blocks threads - the thread stops running until signaled to wake up.
+
+CS 350 Jan 21
+
+Recap: Motivations for TestAndSet atomic function, and related MIPS instructions.
+TestAndSet(addr,value){
+    old=*addr;
+    *addr=value;
+    return old;
+}
+Naively translated to lw, sw, and return in MIPS.
+This won't work, because two calls to the same function will result in a missed
+update. To do this correctly, we need to use LoadLink (ll) and StoreConditional (sc):
+R2=1;
+ll R1 0(addr); // R1=0 (not lw)
+sc R2 0(addr); // not sw
+if(R2==0) return 1; // "somebody could be inside the lock in this iteration, please try again"
+return R1;
+
+LoadLink sets a "watch" on R1, and StoreConditional tells us if the variable hasn't
+been touched.
+
+Recall: Thread Blocking
+Thread sleeps while waiting for a resource, a lock, etc.
+For OS/161, we use wait channels to implement thread blocking.
+We will use wait channels in assignment 1!
+waitchannel_lock: modify the wc structure safely by acquiring a wchan_lock
+wchan_unlock: unlocks the spinlock; later we never really need to call this
+wchan_sleep: puts calling thread to sleep, saves context similarly to thread_yield
+ - instead of being added to a thread queue, the thread gets added to the wait channel's
+   block queue
+ - like sleeping beauty, she can't be woken up on her own, a condition must be met (prince charming!)
+wchan_wakeone: wake one sleeping thread "usually the one that's waiting the longest" "if there's a line of sleeping beauties"
+wchan_wakeall: wakes up everyone "like a fire alarm"
+wchan_sleep: calling thread is voluntarily giving up the CPU
+
+Important diagram: thread states
+1. Running
+ - becomes ready when quantum expires (involuntary context switch) or thread_yeild (voluntary)
+ - becomes blocked when waiting for resource or event (echan_sleep())
+2. Blocked
+ - becomes running when a resource is free or event happens (wchan_wakeone/all())
+3. Ready
+ - runs when dispatched by the thread scheduler
+"The scheduler should be the only one deciding which thread runs next. One point of reference."
+Clarification: Scheduler is the only thing that determines which ready thread runs next, but different
+parts of the thread library could be dispatching.
+
+Semaphores (Also used in A1!)
+A higher-level synchronization construct.
+A spinlock and wait channel are all we need to solve synchronization problems, but they are low-level
+and tricky to use.
+A semaphore is a counter with two functions to manipulate it:
+ - semaphore.P(): if counter > 0, semaphore--
+ - semaphore.V(): semaphore++
+"Just a way of managing a counter."
+"Why is it P and V?" Djikstra implemented this, so the variables are Dutch. (?)
+Counting semaphors: any non-negative value
+Binary semaphore: 1 or 0
+
+Mutual Exclusion Using a Semaphore
+struct semaphore *s;
+s = sem.create("MySem1", 1); // initial value is 1
+P(s); // before critical section, decrement (if it can't, block this thread and wait)
+// critical section (e.g. remove_front())
+V(s); // after critical section, increment to free up the critical section and wake up 1 blocked thread
+"V wakes up blocked threads and activates a ready one."
+
+In add() and subtract() from before:
+...
+P(sem);
+total++ or total--; // critical section
+V(sem_;
+...
+
+OS/161 Semaphores
+kern/include/synch.h and kern/thread/synch.h
+
+struct semaphore {
+    char *name;
+    struct wchan *sem_chan;
+    struct spinlock sem_lock; // protects variables in the semaphore structure
+    struct spinlock sem_lock; // provides mutual exclusion to semaphore vars
+    volatile int sem_count;
+}
+
+semaphore:P()
+"Two assert statements: check the pointer exists, and check you aren't inside the interrupt handler."
+"Never use semaphores inside our interrupt handlers so that we don't deadlock."
+"Don't sleep with the lock and key!"
+1. acquire spinlock
+2. check the count value (greater than 0 => decrement, release lock, return)
+3. if count == 0, block (wchan_sleep)
+   particular order:
+    - acquire wchan_lock
+    - release spinlock
+    "If we release the spinlock first, an interrupt could mess up our semaphore."
+    "Always hold onto at least one lock (wchan or semaphore)."
+    - wchan_sleep automatically releases the wchan_lock "so someone can come wake you up"
+    - get woken up after sem.V(): re-acquire the spinlock so you can check and decrement the counter
+    - very important to have a while loop here, NOT an if statement
+    - check sem->sem_count==0 again, and sleep if it is 0 again
+semaphore:V()
+ - acquire spinlock
+ - increment the count
+ - wake one person (if there are no other threads, this does nothing)
+ "Note that wakeone and wakeall automatically acquires and releases the wchan lock."
+ "Only wchan_sleep doesn't know how to acquire the wchan lock."
+ "We have to release the spinlock explicitly after acquiring the wchan lock in sem.P(), so we do it manually."
+ - release the spinlock
+
+Example: while loop is critical, can't be an if statement
+Thread1 calls P(), context switches, Thread2 calls P(), fails and blocks.
+Context switch to Thread3 for a while, then back to T1.
+T1 calls V() and wakes up T2, adding it to the ready queue.
+Context switch to T3, calls P() and enters the critical section before T2!
+
+Example: spinlock is released before wchan_lock acquired
+T1 calls P(), 0, blocks, eventually calls spinlock_release(), context switches to T2.
+T2 calls V(), increments to 1, calls wchan_wakeone, eventually context switches to T1.
+T1 calls wchan_lock and wchan_sleep - it missed the wakeone and will sleep forever.
+"Before sleeping beauty sleeps, she leaves the room for a second, prince charming comes, doesn't see her, leaves,
+ then she comes back and sleeps forever."
+
+Example: (real implementation) wchan lock acquired before releasing spinlock
+T1 calls P(), wchan_lock, spinlock_release(), context switch to T2.
+T2 calls V(), calls wakeone, spins while trying to acquire wchan lock.
+Eventual context switch to T1, T1 calls wchan_sleep.
+T2 can now call wchan_wakeone, then spinlock_release.
+T1 can now call spinlock_acquire.
+
+Real-world example: Producer-Consumer model.
+A number of threads are producing data (producers) and threads consuming the data.
+The producers write data to a queue, and producers take it from the queue.
+We want to avoid consumers going faster than producers and asking, "is something there?" continually
+on an empty queue, wasting resources.
+We want consumers to sleep until there is data to consume.
+1. Initialize semaphore to 0 (the number of items currently in queue, a linked list or whatever).
+2. When the producer creates an item, it calls semaphore.V() (and loops).
+3. The consumer calls P() and then removes an item (and loops).
+However, this implementation isn't currently safe, we need a guard lock for the list.
+Add a binary semaphore: P() before adding/removing from the list, and V() after. (A critical section).
+Note: this was an unbounded buffer.
+
+Bounded buffer example: imagine producer is much faster than consumers, so the queue quickly fills up.
+If the buffer is full, the producer(?) needs to sleep.
+Two semaphores: occupied, set to 0, and unoccupied, set to N (# memory slots).
+Producer loop:
+1. P(unoccupied)
+2. add item to list (list_append())
+3. V(occupied)
+Consumer's loop:
+1. P(occupied) // initially 0, so it blocks until a producer creates data
+2. remove item from list (list_remove_front())
+3. V(unoccupied) // increments number of free spots available in the queue
+
+OS/161 Locks (Implementing on A1!)
+Similar to bin semaphore, except it also enforces that the same thread must call P() and V().
+If some other thread tries to release the lock, it crashes the system or something severe.
+That's the main difference between a blocking lock and a binary semaphore.
+
+Condition variables (Implementing on A1!)
+Like a light wrapper for a wait channel.
+Works with a blocking lock.
+wait: inside critical section, check condition, leave critical section, release blocking lock
+another thread can enter the critical section, change your condition, wake you up
+two variables: lock required to protect the critical section, and your condition variable
+signal/broadcast: wake up one or more threads that are waiting for a condition, releases blocking lock
+"only use condition variables inside the critical section"
+
+CS 350 Jan 26
+
+Recall: Two different types of semaphores, condition variables, solving the producer/consumer problem.
+Blocking lock and binary semaphore are different because:
+- Blocking locks can only be released by the thread that acquired the lock.
+- This is because we just want to provide mutual exclusion, so we use this lock to surround our
+  critical section.
+
+Condition variable usage:
+1. Acquire a lock before enterring critical section.
+   The condition is probably a shared variable.
+2. If the condition is false, block inside the critical section.
+   Blocking is to momentarily step out of the critical section while releasing the lock.
+   This avoids deadlock because the interrupt needs access to the lock to function correctly. (?)
+
+Example: Stock Trading App
+Tbuy (<$500)
+Tsell (>$1000)
+Tupdate
+condition variables: cv_sell true if stock >1000, cv_buy true if <500.
+
+
+Critical section visualization:
+
+----|  |----------.
+   lock_acquire   |
+                  | cv_sell queue
+                  '---------.
+                   Tsell    |
+                  -'''''''''
+ int StockPrice   |
+                  | cv_buy queue
+                  '---------.
+                   Tbuy     |
+   lock_release   -'''''''''
+-----|   |--------'
+   
+Tbuy has a critical section.
+Entering the critical section: lock_acquire
+Check the stock price (a shared variable - this is why we are in a critical section)
+Tbuy checks the price and sees $700. It wants <$500, so we sleep.
+Instead of exiting and trying over and over again (inefficient), we sleep until cv_buy
+becomes true. So we call cv_wait(cv_buy) and "line up" in wait for that variable's signal.
+By going to sleep, we temporarily step out of the critical section, so we must release the lock.
+Problem: releasing the lock before going to sleep could lead to another thread changing the proce
+and triggering cv_buy's signal before you go to sleep.
+So we implement this the same way we implemented semaphores (see previous example).
+i.e. We release the lock after exiting the critical section and entering the queue.
+
+Important idea for A1: one critical section can have multiple blocking condition variables.
+
+Now Tsell comes into the critical section.
+ - it acquires the lock
+ - it checks cv_sell condition, sees that it's still false
+ - sleeps on cv_sell, stepping out of critical section and releasing the lock
+
+Now Tupdate comes into the critical section and updates the stock from $700 to $1010.
+Tupdate must now signal or broadcast cv_sell's blocked threads (should NOT broadcast to *all*
+condition variables, that would be inefficient).
+Tsell thread now becomes "ready", it can't run right away because:
+ - it needs to be scheduled first
+ - Tupdate thread still has lock on critical section
+
+Note: The condition variables we are covering here are technically "Mesa-style". Other
+styles of condition variables exist and behave slightly differently, but we won't be
+covering them.
+
+Code example: Synchronization slides 45-46.
+Notice that Produce() and Consume() both call cv_wait() inside a while loop.
+This is to confirm that the condition is true before breaking and leaving the while loop.
+Note that the call to cv_wait is inside a while loop *after* we acquire a lock.
+cv_wait automagically releases the lock, and regains it for you before returning.
+
+Deadlocks
+Suppose two locks, lockA and lockB, both initially unlocked.
+Suppose these events occur:
+1. Thread 1 does lock_acquire(lockA)
+2. Thread 2 does lock_acquire(lockB)
+3. Thread 1 does lock_acquire(lockB) and blocks, because thread 1 already has it.
+4. Thread 2 does lock_acquire(lockA) and blocks, because thread 2 already has it.
+Steps 3 and 4 will repeat themselves, so we are stuck.
+Another thread can't step in to release one of the locks, because they must be released
+by the thread that acquired it.
+
+Another example of deadlocking:
+64MB of memory.
+1. ThreadA requests 30MB of memory.
+2. ThreadB starts and requests 30MB of memory.
+3. ThreadA requests an additional 8MB of memory, but the kernel blocks because only 4MB are left.
+4. ThreadB requests an additional 8MB of memory, but the kernel blocks because only 4MB are left.
+
+A real world example: Picture of intersection where cars from all four sides tried entering the
+intersection but got stuck halfway when they hit against the other cars.
+||
+\/<---
+--->/\
+    ||
+We can think about the intersection as a collection of 4 resources.
+  |  |
+-- AB --
+-- CD --
+  |  |
+In order for a car to drive from the south to the north in the right lane, it needs resources B
+and D. Note that naively acquiring resource D without resource B leads to the deadlock above.
+Even though we don't necessarily need resource D AND B until we are halfway through the intersection,
+we are at risk for getting stuck.
+Note: this scenario is NOT related to A1, we should solve it in a much simpler way without using
+"resources" in the intersection like this.
+
+Ways to prevent deadlocks:
+1. Prevent "hold and wait" scenarios, where a car (a thread) is holding onto a resource (D)
+while waiting for another (B). Acquire the needed resources all at once, or drop your held resouce
+and try again later if B can't be acquired.
+This solution isn't complete, because we could end up with traffic from all sides simultaneously
+pulling into the intersection, backing up, pulling back in, etc. This is a "live lock" situation.
+
+Another "live lock" situation is a Canadian four-way stop where everyone tries to let the car on
+there right go first - it goes around the circle, and nobody progresses!
+
+2. Preemption. One thread says "I'm more important, give me that resource".
+Analogously, this is like introducing a Firetruck to the intersection, and everyone knows to
+give the firetruck the right of way.
+
+Problem: Some threads may not know how to act around a firetruck. We need to enforce the rules.
+Firetrucks also have large bumpers desiged to push cars out of the way. Involuntary preemption!
+"This thread just kills the other thread and takes the resource by force."
+
+3. Resource ordering. Order (i.e. number, alphabetize) the resource types and require that each
+thread acquires resources in an increasing order. All threads must acquire resources in the same
+order.
+
+This  doesn't fit our analogy, because it's like having a car throw pilons around the intersection
+and saying, "I call this spot!" but it makes sense when we consider threads and locks.
+e.g. Car from the north acquires A, then C.
+     Car from the East then tries to acquire A and B, but blocks on A.
+     Car from the West tries to acquire C then D, and blocks on C.
+     Car from the south acquires B then D.
+Note: We won't deadlock if South goes first, acquires B and D, and East/West acquire A and C
+respectively, and block waiting for South to release B or D. South has all the resources it
+needs and will eventually release them - it isn't deadlocked. This is expensive, but it works.
+
+Alternatively: Deadlock detection and recovery. This approach is commonly used in databases.
+Since deadlocks are relatively rare, and since database transactions are atomic (can be safely
+aborted and restarted later), this works.
+We can detect a deadlock and, say, terminate the "least useful" thread.
+
+Now let's talk about the traffic problem in A1.
+Conditions for entering the intersection:
+ - Imagine the road has infinite lanes from each side. If all cars are going from South to north or
+   North to South, all of them can go.
+ - If the destination is different, and one or both of the cars are making a right turn, that's okay.
+We must implement an enter function and an exit function.
+When entering, check: "Three hints."
+ - If no other cars are in the intersection, we can go.
+ - If there are cars in the intersection:
+   - If the other cars are going the same direction as your, you can go.
+   "Keep track of the source and destinations of cars in the intersection."
+ - When you leave the intersection, you might want to wake up cars that were waiting for you to exit.
+ "Selectively wake up cars that were specifically waiting on you."
+ "Keep track of how many cars are waiting in any particular direction, to satisfy the fairness
+  requirement of the question. We need to keep them cycling through."
+
+CS 350 Jan 28
+
+Remember for A1: Condition variable implementation is very similar to the existing binary semaphore implementation.
+Warning: This lecture is kinda dry because it has lots of assembly, but it's important for A2a!
+Recall: Three things we can do to avoid deadlocks.
+ 1. No hold and wait (instead, release resources, back out, and try again later).
+    But then we can get a "synchonized balet" of programs attempting to grab resources,
+    backing out, trying again, etc. This is a live lock.
+ 2. Preemption. Kill lower-priority threads. "The most common way to take something away from someone is
+    to kill them! :P" "Like a firetruck."
+ 3. Resource ordering. This avoids cycles in our resource allocation.
+    Easy way to illustrate: resource allocation graph...
+
+Box with a dot: resource type, dot = instance.
+Circle: thread
+
+A    B
+[.]  [.]
+
+O    O
+T1   T2
+
+Arrow from A to T1 (T1 acquires lock for T1).
+Arrow from T1 to B (T1 is waiting on resource B).
+Arrow from B to T2 (T2 acquired lock for B).
+Arrow from T2 to A (T1 waiting on lock for A).
+A cycle!
+
+With resource ordering:
+Arrow from A's dot to T1 (T1 acquires lock for A).
+Arrow from T2 to A's box (T2 waiting on A).
+Arrow from B's dot to T1 (T1 acquires B).
+When T1 finishes, it releases A and B (erase those two arrows).
+T2 now acquires A (extend arrow to A's dot).
+Arrow from B to T2 (B now acquires T2, too).
+
+Q: Does the order of releasing locks matter?
+A: No. T1 can release A and B in any order.
+
+New section: Processes and the Kernel
+
+What's a process?
+A process is different from a thread.
+A process is an abstraction of a program in execution.
+We can think of a program (word processor, etc.) as a process.
+A thread is an abstraction of sequential execution, where a process is an abstraction of a *program*.
+A process is like a container that can hold one or more threads. It always has at least 1.
+In OS/161, we only support one thread per process, but "real" operating systems can have more.
+A process is also a continer for other resources, e.g. address space (an allocation of shared memory for this
+process)
+Every process has its own address space, at least one thread for execution, meta-data for files/sockets opened
+by the program. When a process dies, it cleans up those resources.
+
+Multiprogramming "a formal term, similar to multithreading"
+Multiple processes existing or running at the same time.
+Key idea: multiple processes must share resources. One resource is memory, which we share by assigning
+address spaces - we access these via system calls from our process.
+Key feature of precesses: isolation. A thread inside process 1 can never go and modify memory that is in process 2.
+"It's like each thread in a process is in a different universe and can't read the memory of other address spaces."
+
+The OS Kernel
+The kernel is a program, and a core part of the operating system.
+It has code and data just like normal programs, but runs in privileged mode.
+Other programs don't do this - they run in "user mode".
+We don't want our user programs talking to our hardware!
+ - isn't isolated
+ - lets untrusted programs modify the resources of other programs
+ - we want user programs to have only certain permissions (e.g. network access should be blocked with a firewall)
+ - if we let a user program write to the network card, it can talk to anyone!
+ - the kernel address space must be isolated from other programs (this would give privileged execution to other
+   programs!)
+Privileged mode also has system-wide instructions like halt (to shut down), manipulate processor state (like
+the execution mode), and access to otherwise restricted memory.
+User programs can only have limited interaction with hardware via system calls.
+"Don't think of the kernel as a process - we will exaplin this more later."
+
+System Calls
+The only way to voluntarily ask the kernel to do something for us is through a system call.
+e.g. fork, waitpid, getpid, exit (must be implemented in A2a!) (one more (execv?) in a2b)
+"Assignment 2a has the largest learning curve, imo."
+e.g. sbreak - segment break, changes size of memory segment
+How does a system call work?
+System calls look like functions. In our program, we call a function in our assembled code by jumping and linking
+to a specific location (after setting up registers to pass parameters).
+However, these system calls are stored in the kernel address space (in order to prevent other programs from
+modifying them).
+But it's impossible to jump into kernel memory - we don't have the required privileges!
+MIPS (and others) provides a syscall instruction, which:
+ 1. Switches the processor into system (privileged) mode (but we must keep it contained to system calls).
+    It transfers control flow to a special location in memory, where we continue execution
+    This is kinda like an interrupt handler! In fact, this is called the system call handler.
+    Interrupts, exceptions, and system calls are all handles by the common exception handler - they are all
+    similar!
+    RFE (Return From Exception) is later run when the system call handler returns, which removes the thread's
+    privileges as we return the value to user mode.
+ 2. Key parts of the current thread context, like the PC, are saved (trap thread) by the common exception
+    handler. CEH calls MIPS trap.
+    MIPS trap determines whether it was triggered by an exception, sys call, etc.
+    If sys call: system call handler services the system call
+ 3. ...
+
+Q: Why not jsut protect the kernel address space by making it read-only?
+A: System call code most likely have to modify kernel resources; temporary local variables are stored on the
+   kernel's stack (rather than the user program's stack).
+Q: Why not have a different level of privilege where a certain privileged mode only has read access?
+A: That is possible, but not in OS/161. We will keep it simple with privileged or unprivileged.
+
+Common exception handler callls MIPS trap function.
+MIPS trap determines whether it was an interrupt, exception or system call.
+
+Graphically:
+
+Process          Kernel
+   |
+   | sys call
+   '----------------|
+                    |
+    sys call return |
+   -----------------|
+   |
+   |
+   \/
+
+If you implement this as-is, we would have to write assembly whenever we make system calls, which is a pain in the
+butt. So systems provide user-space system call library - a very thin layer that will translate your system call
+procedure for you. This is a system call software stack:
+
+Application
+----------------
+Syscall Library      Unprivileged mode
+--------------------------------------
+Kernel                 Privileged mode
+
+OS/161 'close' System Call Description
+#include <unistd.h>
+#include <errno.h>
+int main() {
+  int x;
+  x = close(999);
+  if (x < 0) {
+    return errno;
+  }
+  return x;
+}
+
+In assembly:
+00400050 <main>:
+addiu sp,sp-24
+sw ra, 16(sp) // store registers
+jal ... <close> // jump to close function "does its magic in the kernel then returns to bgez"
+                // the close instruction is in user space, and takes one parameter (in a0)
+li a0, 999 // parameter passed into a0, in delay slot of jump instruction
+bgez v0, 400070 // branch if v0 greater-than-or-equal-to zero
+nop
+lui v0, 0x1000 // load upper - address of errno into v0
+lw v0, 0(v0) // load value of errno into v0
+
+Note: search for "MIPS assembly" for references.
+
+OS/161 System Call Conventions
+Integer system call code should be in R2 (v0)
+Args should be in R4, R5, R6, R7 (a0, a1, a2, and a3)
+When the system call returns, R7 (a3) will be 1 if the call failed, else 0 (success).
+R2 (v0) will store the return value of the system call return value if it succeeded, else it will store
+the error code for our system call if the call failed.
+List of numbers: kern/include/kern/syscall.h
+Note: kern/include/kern/ has defninitions for lots of things that must be know by the user space AND the kernel.
+
+What does the user space library look like?
+Note: this is all automatically generated, not handwritten
+004001dc <close>:
+j 4000c0 <__syscall> // jump to syscall label
+
+<__syscall>:
+syscall
+beqz a3, 400dc <__syscall+0x1c> // jump to return if call succeeded (a3==0)
+// else, fetch the error code and store it to v0, and then store -1 to a3
+Note: this is all user code, it just makes things easier for us
+
+OS/161 MIPS Exception Handler
+
+common_exception:
+First three instructions: check whether we are coming from user space or from the kernel
+(an interrupt can be raised from inside the kernel)
+Last block of lines: Just trying to find the kernel stack for this particular thread.
+"Every single thread actually has two stacks - one in user space, and one in kernel space."
+Then, we save the thread context onto the kernel-space stack for this thread.
+"It's okay, we never have to touch assembly in this class!"
+"Functions like TestAndSet are provided!"
+The moment the program jumps from user-land to the kernel, all of its context is stored in the kernel
+stack until we leave. This is because:
+ 1) User stack is not guarunteed to have space
+ 2) Sensitive data from inside the kernel shouldn't be leaked out
+The common exception code then:
+ - allocates a trap frame (on the kernel stack!)
+ - calls MIPStrap to process the exception
+ - when mips_trap returns, we restore the application processor state from the trap frame to the registers
+
+System Call Handler code (called by mips_trap):
+ - parameter is a pointer to the trap frame for this particular thread (bottom of the kernel stack)
+ - the system call handler has access to the values within the trap frame, so that it can determine which
+   system call has been called (it needs to check v0 from within that trap frame - the value is still 49)
+    - v0 has probably changed since we called the common exception handler, mips_trap, etc.
+ - we then do a switch statement on the call number, and make the appropriate system call
+ e.g. case sys__reboot:
+  err = tf->tf_a0 // look inside trap frame's saved a0 for the parameter
+ - outside of the switch statement, we handle errors (set v0 to err, and set a3 to 1)
+ - if no errors happened, set v0 to return value and a3 to 0
+ - increment tf->PC by 4 (one instruction) so that we execute the isntruction AFTER the syscall
+   after returning (otherwise we would loop on the syscall)
+
+Spend time looking at the syscall implementation for A2a! We add stuff here!
+
+CS 350 March 1
+Midterm was yesterday
+"Marking party is scheduled for Thursday, expect a CrowdMark email Thurs-Sat."
+First question - misc short answers.
+Second question - fork question, "similar to uw-testbin/widefork" "total-1 red harring"
+ - "21 processes were generated"
+Third question - barrier synchronization
+ - "tests your ability to read code and comprehend synchronization problems"
+ - "probably the trickiest problem on the midterm"
+Fourth question - multilevel page table, page size given, figure out page table levels
+ - I remember: 31 bits for page #, 8KB = 2^13 bits page size, I split 31 bits into 10/10/11 since 2^11*2^2 <= 2^13
+Fifth question - simplified version of traffic intersection problem from A1
+ - "should have been one of the easier problems"
+
+Note: All assignments are available, get started on A2b soon!
+ - A2a tests are the first part of A2b's marks
+ - "A2a marks turnaround is usually 2 weeks"
+ - "finish A2a if you didn't already, and you will get marks for it"
+ - A2b hints lecture probably next Tuesday
+
+Segmentation
+ - helps solve sparse address space problem
+ - splits process into three segments
+ - problem: still possible to have external fragmentation (segment sizes are all different)
+ - improvement: use paging along with segmentation so that segments are stored in pages/frames
+ - address looks like [segment|page|offset]
+   - Q: would it make sense to have pages on the first level and segments on the second level?
+   - A: NO! It's the worst of both worlds. Internal and external fragmentation.
+
+Segmentation + paging translation
+ - check segment bits >= length register (addresss exception)
+ - take segment bits as index into segment table
+   - segment table entries point to a second-level page table
+   - page table length in seg table entry tells us how many pages/frames make up this segment
+   - valid/protection/rwx bits moved up to segment table, since segments are assumed to have
+     contents with all of the same properties
+     - we can't do this with multilevel paging since pages arbitrarily break up memory with no
+       real meaning, whereas segments have specific names and purposes
+     - property bits are typically on the lowest level in a multilevel page table
+ - segment table key is page table base addr
+ - page offset is index into page (add offset to base addr to get physical address)
+
+Example [Virtual memory slide 51]
+Base register 0x0020 0000 <- address of segment table
+0x01002004
+  ^^ segment table index 1
+  segments[1] = 0x1 0000
+    ^^page table at 0x1 0000 index is 0 -> 0x4001
+Answer: 0x40012004
+
+0x203*****
+Answer: exception (segments[2].length = 3 >= 03)
+
+0x0002 A049
+Answer: 0x6ADDA049
+
+0x0102 C104
+Answer: 0x7A00C104
+
+0x0304 -> Exception
+? -> Exception
+
+Exploiting Secondary Storage
+Q: How many tabs do you each have open in your web browser at any given time?
+A: Most people 1-10, not many only 1, some up to fifty, not many up to 100
+Imagine creating a new tab is like calling fork().
+If we fork so many times that we don't have enough memory, our implementation would say
+"nope, you can't create a new tab, we're out of memory". But we never see that message.
+When we require more memory than our system has available, the system takes advantage of
+the fact that tabs might be acting like bookmarks, and so not all the memory is needed.
+We write the state to the disk so that we can free up memory but still reopen the tab later.
+This is exploiting secondary storage.
+This allows us to do more multiprogramming (i.e. open more tabs).
+This should be transparent to the process - it's not its fault.
+
+Q: Access time of memory?
+A: 50-80 nanoseconds
+Q: Access time of spinning platter hard disk?
+   "It must seek to the right track and wait for the right sectors to swing around."
+A: Seek latency is usually around 10ms, rotational latency is usually 5ms.
+
+Paging Policies
+When should we page something to disk?
+Demand paging - do things really lazily, just when we want the data.
+"Lazy loading in CS is usually preferrable."
+Prefetching - try to predict pages that will be used soon and prefetch them.
+"This is good for disks, where we can grab whole sectors,
+ and avoid repeating the slow seek latency."
+
+What should we replace?
+What should we page to the disk?
+Popular pages of memory constantly being read would be a poor choice for paging to a disk.
+Replacement policy is very important for the efficiency.
+
+Page Faults
+Page table already has valid bits - whether or not that page is mapped to a physical frame.
+Add one more bit, the present bit - whether or not the page is in memory (1) or on disk (0).
+V=1, P=1 -> page is valid and in memory (no exception)
+V=1, P=0 -> page is valid but not in memory (exception!)
+V=0, P=0 -> invalid page (exception!)
+If V=1 and P=0, the MMU will generate an exception if a process tries to access the page.
+This is called a page fault.
+
+To handle a page fault, the kernel must:
+ - issue a request to the disk to copy the missing page into memory
+ - block the faulting process "like, on a confdition variable"
+ - once the copy has completed, P=1 in the page table entry and unblock the process
+   - assumption being made: error checking should happen (okay)
+   - bad assumption: memory layout is still the same, and the same physical frame is being
+     used when the data is stored
+     - we may want to modify the PTE's frame number as well (point it to the new frame)
+
+e.g.:
+ PTE: V=1, P=0, frame X
+ Page fault! Load frame from disk into memory, say at frame Y.
+ PTE.P = 1; if (X != Y) PTE.frame = Y;
+ "There is a chain of things to do - the old chunk of memory should be marked as not present
+  if it was being pointed to by another PTE, etc."(?)
+
+With a software-managed TLB (as in OS/161), it can either translate or throw an exception, and
+it's the kernel's job to manage entries in the TLB. (MMU?)
+In OS161 and other OSs, the TLB doesn't have a present bit.
+The kernel must then invalidate pre-existing entries that have been overwritten.
+Every single TLB must be present AND in memory.
+
+A simple replacement policy: FIFO (replace the page that has been in memory the longest)
+[Virtual memory slide 56]
+
+input: abcdabeabcde
+
+3-frames   | page fault?
+-------------------------
+a          | yes
+ab         | yes
+abc        | yes
+dbc        | yes
+dac        | yes
+dab        | yes
+eab        | yes
+eab        | yes
+eab        | no
+eab        | no
+ecb        | yes
+ecd        | yes
+ecd        | no
+
+Q: Is FIFO a good solution?
+A (almost always): NO! We can probably do better.
+
+
+Optimal Page Replacement Strategy
+"We can't do better than optimal!"
+Replace page that will not be referenced for the longest time.
+
+input: abcdabeabcde
+
+3-frames   | page fault?
+-------------------------
+a          | yes
+ab         | yes
+abc        | yes
+abd        | yes
+abd        | no
+abd        | no
+abe        | yes
+...
+
+However, we can't predict the future, so we can't really do this.
+"If you have a crystal ball, use it for something else!"
+
+Other policies:
+Frequency of use - how popular is it?
+Recency of use - when was it last used?
+Cleanliness - has the page been changed while it's in memory?
+Principle of locality suggests usage should be considered when making replacement decisions.
+Cleanliness may be worth considering for performance reasons.
+
+Dirty bit in MIPS is confusing. Dirty bit = 0 means writing to it causes an exception.
+It determines readonly (0) vs writeable (1).
+This is because readonly implies constant cleanliness.
+e.g. Mark code section read-only, and throw exceptions that mean "kill the process for
+     accessing memory it shouldn't"
+
+CS 350 March 8
+
+Midterm review, A2b hints.
+Disappointed in midterm scores - final is worth much more though!
+If we do much better on the final than on the midterm, weight will be shifted
+to the final. Don't be sad!
+
+Solutions will be posted online soon.
+
+[midterm reviewed - I took some private notes on what I did wrong]
+
+
+Now, A2b Hints
+"Traditionally one of the easier assignments, but don't underestimate it."
+System calls to implement:
+
+int execv(const char *program, char **args)
+ "The problem with fork is that we could only run the same program."
+ In the user program, argv[argc] == NULL.
+ First param = new program, second param = array of strings (array is null-terminated).
+ "This is a very C way of telling you the length of an array."
+ It turns out that in order to have you do any useful work i A2a, we had to give you a mechanism to run
+ programs. See kern/syscall/runprogram.c. It is used to load and execute the first program from menu.
+  - it opens the program file using vfs_open(programname, ...)
+  - creates a new address space (as_create), switches the process to the address space (curproc_setas),
+    and then activates it (as_activate) which flushes/invalidates your TLB. We never had to do this in A2a
+    because it's done automatically in thread startup in thread_fork, but we need to call it manually now.
+  - Load opened program file image using load_elf, which returns an entry point to its main function.
+  - It creates the stack for you using as_define_stack (noop for us for now, may need modification while
+    implementing execv)
+  - Call enter_new_process with no parameters, the stack pointer determined by as_define stack, and the
+    entry point.
+ We must modify runprogram to take parameters.
+ 
+ Count the number of args and copy them into the kernel. They are given to us in user space.
+  - trickier than at first glance
+  - pointers into user space cannot be trusted
+  - not a problem accessing vaddrs of processes
+  - BUT, these could be pointing inside the kernel, into other process' data, etc.
+  - pointers that point to places where the user process can't go need to be looked for
+  - don't use the pointers directly!
+  - access these user pointers through copyin/copyout
+  - use copyinstr and copyoutstr when copying NULL-terminated strings
+ Also, copy the program path into the kernel.
+ We can copy greyed-out functionality of execv from runprogram.
+ Copy args into new address space. Consider copying the arguments (both the array and the strings) onto
+ the user stack as part of as_define_stack (one possibility - don't have to modify as_define_stack).
+ Delete old address space.
+ Why can't I directly copy from the old address space to the new address space? Why must we go through the kernel? (open question)
+ CAll enter_new_process with address to the arguments on the stack, the stack pointer from as_define_stack, and entry point from vfs_open.
+
+CS 350 March 10
+
+Implementing execv
+ - count # of args and copy them into the kernel
+ - copy program path into kernel
+ - copy-paste from [?]:
+   - open program using vfs_open
+   - create, attach, and activate new addr space
+   - using the opened program file, load using load_elf
+ - need to copy args into new addr space (both array and strings). Consider copying the args onto user space
+ - ?
+ - ?
+
+Note: You still need a trapframe before returning to userspace.
+Use copyin/out for fixed-size variables (ints, arrays).
+USe copyinstr/outstr when copying NULL-terminated strings.
+
+Useful macros:
+ - USERSTACK: base addr of stack (0x00000000)
+ - ROUNDUP: useful for memory alignment "next biggest number divisible by 8, 16, etc."
+   - Use this on A2b when computing addresses, doing memory-alignment things.
+
+Common mistakes:
+ - remember strlen does not count null terminator; include space for it!
+ - user pointers should be of type userptr_t
+   - e.g. interface for sys_execv should by (userptr_t progname, userptr_t args)
+ - Make sure to pass a pointer to the top of the stack to enter_new_process.
+   - You will likely manipulate the stack when doing arg passing, so it won't be set
+     to USERSTACK when calling enter_new_process
+
+Alignment
+When storing items on the stack, pad each item such that they are 8-byte aligned.
+Strings don't have to be 4 or 8-byte aligned, but pointers to strings must be 4-byte-aligned.
+
+HELLO = 6 bytes
+WORLD! = 7 bytes (incl null term)
+argument array placed below: 3 pointer entries, including one null pointer
+Allocate the memory before you write! It makes it easier to align memory and harder to accidentally
+write your args backwards (world hello).
+We want every entry (string or array) on the userstack to be 8-byte aligned. Individual entries don't have to be.
+So we allocate the following:
+[w][o][r][l][d][!][NULL][NULL]     // 7+1 padding
+[h][e][l][l][o][NULL][NULL][NULL]  // 6+2 padding
+// pad the following array to 8 bytes
+[][][][][]                         // +5 padding
+[NULL]                             // 1
+[&world]                           // 1
+[&hello]                           // 1
+
+args_size = ROUNDUP(args_size, 8)
+Note: MIPS has a strict 8-byte alignment; other architectures
+
+Address Translation: OS/161 dumbvm example [Virtual memory slide 23]
+Answers: (homework: try to get these answers)
+0x0020 0004 | 0x0050 0004
+0x0080 91A4 | Exception
+0x0010 01A4 | 0x00B0 01A4
+Exception   | Exception
+
+Initializing an Address Space
+Executable files are in Executable and Linking Format (ELF) Format
+ELF format:
+[ELF header    ] // platform details, 32-bit vs 64, etc.
+[program header] // tells us where the text segment is, and where the data segment is
+[text          ] // text
+[readonly data ] // text
+[data          ] // data
+[section header] // data
+
+Problem with preloading the whole ELF file at once: programs can be huge.
+If we have an unused Foobar function at the bottom of our text segment, we are wasting memory and time.
+
+Alternative: OS loads pages on-demand.
+i.e. only load the main function, and not Foobar, if Foobar isn't used.
+Disadvantage: on-demand requires disk to spin upwhen loading new pages; preloading is only benefits us
+when we know ahead of time that we will touch every aprt of the program.
+
+Note: When Foobar is on a page that's VALID but not PRESENT, which causes a page fault that loads the page into
+memory whenever a function is called for the first time.
+Note: OS161 uses preloading because it's easier. It used to be on-demand when we allowed group work.
+
+ELF Files "Not that important, but still kinda useful for A2b and A3"
+Segments make it easier for the ELF loader.
+ELF file contains a header describing segments, and segment images.
+ELF segments describe a contiguous region of the vaddr space.
+ELF header talks about entire executable, system arch, etc.
+Program eader includes an entry for each segment describing:
+ - vaddr os start of segment
+ - length of segment in vaddrspace
+ - location of the start of the segment image in the ELF file (if present)
+ - length of the segment image in the ELF file (if present)
+The image is an exact copy of the binary data that should be loaded into the specified
+portion of the vaddrspace.
+The image may be smaller than the address space segment, in which case the rest of the address space
+segment is expected to be zero-filled (0xdeadbeef ?)
+
+OS/161's ELF Files
+ - always two segments, text and data
+ - stack always starts empty, so we don't include it
+ - dumbvm creates a stack segment for each process, 12 pages long, ending at 0xffff ffff.
+
+ELF Sections and Segments
+.text: program code
+.rodata: readonly global data
+.data: initialized global variables
+.bss: block started by symbol (uninitialized global data)
+.sbss: small uninitialized global data (~1 word)
+Note: .text and .rodata typically grouped into text segment.
+The .data, .bss, and .sbss sections make up the data segment.
+Note: Space for local program variables is allocated on the stack at runtime.
+
+Takeaway: Don't be confused about Elves in your kernel when we later call "load_elf".
+
+[Skipping: More ELF slides, up to Virtual Memory slide 37]
+
+
+An Address Space for the Kernel
+Each process has its own addrspace, but what about the kernel?
+Three options:
+ - Kernel in physical space: disable address translation in privileged system execution mode,
+   enable it in unprivileged mode.
+    - This is difficult to write, since we need to avoid conflicts with physical memory already being
+       used for virtual address spaces.
+    - Note: Virtualized OSs aren't a problem, because we abstract memory at the hypervisor layer (?).
+    - The kernel will have trouble translating user addresses via the page table (must be done manually,
+      without hardware TLB speeding things up).
+ - Have kernel in a separate virtual address space.
+   - Advantage: promotes isolation
+   - Disadvantage: How does the kernel access user addresses in other address spaces? This would require
+     augmenting the kernel addrspace so that it maps user frames as well. This is very inefficient.
+   - Disadvantage: When switching address spaces, we flush the TLB, since the entries point to the old addrspace.
+     This means flushing the TLB on every system call!
+ - Kernel mapped into portion of address space of every process.
+   - This is what linux does.
+   - Less of a problem with 64-bit machines and 46-bit addr spaces than with 32-bit machines.
+   - Top half of each process' address space is mapped to a single kernel (one kernel in one place in physical
+     memory, not copied, but mapped to every one of our processes).
+   - Kernel starts above 0x8000 0000; user space starts at 0x0000 0000 (bottom half).
+   - Kernel address space above 0x8000 0000 is the same for every process!
+   - So When we jump to the kernel, we don't have to change address spaces or flush our TLB.
+   - This also lets the kernel access user data, since it's in the same address space, and the TLB/MMU can
+     still help us out.
+
+[Virtual memory slide 39]
+[cross-section of 4GB 32-bit address space on the MIPS R3000]
+[kuseg][kseg0][kseg1][kseg2]
+       ^0x80000000
+              ^0xa0000000
+Common exception handler is in kseg0 (most of the kernel is there).
+Translation for addresses between 0x8 and 0xa is just a matter of subtracting 0x8.
+Translation for kseg1 is just a matter of subtracting 0xa. (kseg0 and kseg1 are mapped to the same section of memory (?))
+kseg0 is unmapped, but cached (in L1/L2/L3 in CPU).
+kseg1 is unmapped, but uncached (it's where we read/write data to and from hardware) (IO stream buffer?)
+kseg2 - unused in OS161, won't talk about it.
+
+CS 350 March 15
+
+Last slide of last class got confusing, so I'll spend 10 minutes going over
+some new slides (will be uploaded) clarifying the cross-section of the virtual
+address space.
+
+Virtual address space:
+0x0            0x8000 0000            0xFFFF FFFF
+    User program     |      Kernel
+    "kuseg"          | "kseg0" | "kseg1" | "kseg2"
+
+Physical address space (MIPS machine, could be up to 4 GB):
+0x0       0x4000 0000                 0xFFFF FFFF
+   1 GB allocated     |         unavailable (we only have 1GB)
+| | | | | | | | | | | |
+ ^frames
+
+kmalloc in the kernel, calls malloc-n-pages (?) which calls steal-memory-frames (?).
+The kernel manages the physical memory/frames using a coremap.
+
+TLB is used to translate virtual addresses (pages) in kuseg to physical addresses (frames).
+This uses a page table, etc.
+
+Each process has a different mapping - same pages in the virtual address space, but
+different frames are being used.
+
+When the MMU sees something in user address space (0x0 to 0x8), it will use the TLB
+to translate. The kernel can also use the TLB when accessing user memory.
+
+kseg0 is mapped directly to the first 512MB of physical memory - a direct offset.
+Physical address = Kseg0Vaddr - 0x8000 0000
+The kernel code and data structures go here.
+After booting, the kernel should ideally free up the unused portion of the first 512MB
+of memory that it has access to (mark the frames its using as unavailable).
+It's the kernel's job to mark its own frames as unavailable - a big part of assignment 3!
+The kernel should never give away a frame that's already in use by itself!
+
+Q: How much of A3 depends on our implementation of assignment 2a/2b?
+A: We can implement all of A3 without A2 working, but some tests require fork. We can
+   get ~80% (I think) without A2.
+
+Note: OS161 does not use single-level paging. It starts of with segmentation.
+A page table would be allocated inside the kernel - part of the "512MB" of the kernel's
+available memory (i.e. we allocate memory for a page table via kmalloc).
+
+Q: What if the kernel needs more memory in the future?
+A: We can manage and reallocate the frames as we wish, but really don't need to worry
+   about this for OS161.
+
+Note: The blocks just don't need to overlap; kernel's memory doesn't necessarily have to be
+contiguous.
+
+In summary, kseg0 lets us map the first 512MB of memory to the kernel, which makes it easier
+to bootstrap our system (no page table exists on boot).
+
+kseg1 is also mapped to the first 512MB of physical memory.
+The segment is uncached, though.
+This is because it is used for "memory-mapped I/O" to communicate with devices.
+There is a special block of virtual memory that is not mapped to RAM, but rather mapped
+to the caches on our hardware (e.g. network card's buffer).
+We don't want those addresses to be accessed normally.
+
+Don't worry about kseg2.
+
+Note: Every time we perform a context switch, the mapping from kuseg to memory changes,
+but kseg0 always maps to the same chunk of physical memory "always the top half of user address
+space".
+
+Notice: we can directly dereference a user address space instead of using copyin! It works! BUT
+we need to use copyin in order to validate the user address instead of using it directly.
+Dereferencing NULL inside the kernel causes a kernel panic.
+Mechanisms setjump and longjump are used by copyin/out to try and figure out if the memory is "safe"
+(kinda hacky) before accessing it.
+"History says that some of you won't care about safety during A2b, though :("
+
+Clarification: we don't cache special hardware addresses in kseg1 so that we don't accidentally
+grab a cached network packet instead of fetching a fresh packet from the network card. These
+special addresses are "scratch" and shouldn't stick around.
+
+Clarification: We aren't "mapping" memory for kseg0 into memory, it's just memory allocated for
+the kernel code and data structures, *accessed through* kseg0. Kseg1 is like an alias for
+hardware memory, though kseg1 is mapped to the first 512MB of memory.
+Anything you can access in kseg0 can be accessed through kseg1, but more slowly because caching
+is disabled. The main reason for accessing memory with the cache disabled is when we are talking to
+hardware. A small slice of physical memory addresses in the first 512MB of memory is mapped to
+hardware buffers instead.
+"This concept is very important for A3!"
+"We are now done with virtual memory."
+
+"Skip I/O for now, we'll cover it after scheduling."
+
+Job Scheduling
+Doing this intelligently makes better use of the resources that we have.
+Job scheduling will segue into process and thread scheduling.
+
+When a job arrives in the system, we give it a job arrival time a_i.
+It may have to wait for some time before starting at starting time S_i.
+At some point the job will finish, at finish time f_i.
+The time it takes for a job to run is its running time, somewhere up to (possibly equal to)
+f_i - S_i. Context switching can slow us down, etc.
+The turnaround time is the difference between the finish time and the arrival time.
+The response time is the difference between the arrival time and the start time.
+
+Let's think about our approach to job scheduling.
+When a user, say, tries to copy a file from your disk to a network drive, we want to see something
+happening, like a progress bar. We know the job won't finish right away, but we want to see the progress
+bar appear very quickly to assure us that the work is being done.
+A low response time is important for usability - a slow response time leaves the user in the dark.
+Interactive systems, like ssh, should be very responsive. i.e. characters typed should show up right away.
+
+"When I was in school, I would always do grocery shopping late at night. One time a guy in front of me
+ was doing a whole month's worth of shopping, when I just had to buy a pack of gum. If he's gonna take an hour
+ to check out, and I take some small epsillon to check out, the best thing to do would be to ask him if I can go
+ first. (Or steal the gum!) But what if thousands of graduate students buying gum come after me, just after I
+ finish checking out? The guy would literally starve!"
+
+Basic Non-Preemptive Schedules: FCFS and SJF
+First come first serve
+- simple, avoid starvation
+- pre-emptive variant: round-robin (time quantums)
+Shortest job first
+- minimizes average turnaround time
+- long jobs may starve
+- pre-emptive variant: shortest remaining time first (SRTF)
+
+Note: We assume the running time of a "job" is known in advance - we will have to estimate this
+for processes and threads.
+
+FCFS Gantt Chart example
+
+Job            J1 J2 J3 J4
+arrival (ai)    0  0  0  5
+runtime (ri)    5  8  3  2
+
+Turnaround time:
+      FCFS  SJF    RR (quantum=2)  SRTF
+J1       5    8               14     10
+J2      13    18              18     18
+J3      16    3               13      3
+J4      13    5                7      2
+avg  11.75   8.5              13   8.25
+
+Note: In RR, job 4 arrives at time 5, when job 3 is running, and is put on top of the ready
+queue that already contains job 1 and job 2. When job 3 is preempted, we go to job 1, 2, 4, and
+then 3 again.
+Note: In SRTF, J3 gets run first, then J1 starts, and at time 5 is has remaining running time of 3, so we
+preempt it when J4 arrives (running time 2) and run J4 before completing J1 and finally doing J2.
+
+
+CPU Scheduling "closely related to job scheduling"
+A thread "arrives" when it becomes ready.
+It starts to run when it first gets scheduled, and goes from ready to running.
+A thread is "finished" when it blocks or finishes. i.e. When it no longer wants the CPU.
+
+Notice: An interactive thread/job that must block on, say, keyboard input, then we should say it has short running time
+in order to improve response times.
+Non-interactive jobs can be made much much longer, since it requires no user interaction.
+
+Typical scheduler objectives:
+- responsiveness (low response time for some or all threads)
+- "fair" sharing of the CPU - biased towards high-priority processes, but not starving low-priority processes
+- efficiency (context switching has a cost, so we shouldn't do it constantly)
+  - i.e. A system that context switches every millisecond will spend all of its time doing
+    context switches, and no meaningful work (this is "inefficient")
+
+CS 350 March 17
+
+Prioritization
+- CPU schedulers are often expected to consider process or thread priorities
+- Priorities may be:
+  - specified by the application (e.g. linux setpriority/sched_setschedule)
+  - chosen by the schedule
+  - some combination of these
+  - strict (e.g. a real-time OS for trains)
+- two approaches to scheduling the priorities:
+  1. schedule the highest priority thread (strict priority)
+  2. weighted fair sharing
+   - let Pi be the priority of the ith thread
+   - try to give each thread a "share" of the CPU in proportion to its priority,
+     Pi/(sum of all priorities)
+     - e.g. linux's fair sharing
+
+Multiplevel Feedback Queues (scheduling scheme)
+Used to determine the "interactiveness" of each process.
+Multiple levels of queuing, with a different priority, and we always pick a process
+with higher priority first.
+Blocking processes are put in one queue, because they are probably interactive.
+Preempted processes are put in a lower priority queue (assumed to be non-interactive).
+[3 level feedback queue state diagram]
+ready queues 0, 1, and 2.
+When blocking, we put it in the "blocked" state.
+When unblocked, we put it in ready(0) "interactive mode".
+If it gets preempted, we bump it down to ready(1) or ready(2).
+Note: doesn't solve the starvation problem, since lower-priority processes are still
+important. It just lets us divide up the processes.
+
+Linux Completely Fair Scheduler (CFS)
+Key ideas:
+ - approach: weighted fair sharing (higher priority threads run longer)
+e.g. A snapshot of two processes.
+P0 has been running for 100 virtual-time-1 units (VT1), with priority 9.
+P1 has 2000 VT2 with priority 1.
+So we schedule process 1 until it runs for 2000VT0. Then context switch to P2.
+Assuming a quantum of 100VT, we context switch P2 to P1 at time 2100VT.
+Note: We have not introduced priority yet, this is just a fair round robin.
+
+We need to convert virtual time to real time.
+Real time RT = ((priority = X)/(sum of all priorites))*VTX
+e.g. (9/(9+1))*2000 = 1800RT (say, 1.8 seconds)
+and (1/9+1)*2000 = 200RT (200 milliseconds)
+
+Processes don't starve because we are still doing round-robin, and each process
+gets a computed constant amount of time.
+
+Q: What if we sleep our computer while a background process is running? Do we "bank"
+a huge amount of time for the other processes?
+A: We can limit the time we can "bank". Banking a little time is useful, but too much isn't.
+
+
+Scheduling on Multi-Core Processors
+Two extreme options:
+ - per-core ready queues
+   + no synchronization issues with queues
+   + same thread runs on the same queue over and over again (more efficient caching)
+     increased "cache affinity"
+ - shared ready queues
+   - access to the shared queue must use locks or something to enforce mutual exclusion
+     (not a huge deal for smaller amounts of cores, but we are moving towards lots of cores
+      on systems nowadays)
+     (Intel makes research CPUs with 80 "wimpy" cores that typically perform better than 4
+      "brawny" cores.)
+
+Load Balancing
+ - multiple queues will have different lengths (loads)
+
+
+I/O
+
+Bus Architecture Example
+- CPU communicates over a shared memory bus
+- multiple busses can be bridged (e.g. Northbridge and Southbridge on motherboards)
+Simplified (MIPS) Bus Architecture
+- everything on the same bus (typically a bad idea design-wise, but simpler for us)
+- named LAMEbus
+
+Device Register Example (Sys 161 timer/clock) (device registers, not CPU registers)
+- status register (readonly)
+- command register
+- status-and-command
+
+Device Register Example: Sys/161 disk controller
+- status: # of sectors (4 bytes)
+- status and command: status (4)
+- command: sector number (4)
+- status: rotational speed (RPM) (4)
+- data: transfer buffer (512 bytes = 1 sector)
+
+Device Drivers
+- the part of the kernel that interacts with a device
+e.g. Writing a character to a serial output device:
+1. write char to device data register
+2. write output command to device command reg
+3. repeat (read device status register) until "completed"
+4. clear the device status register
+
+Problem with above approach: it's spinning inefficiently, like a spinlock.
+
+Another Polling Example: Writing to a disk
+1. write target sector number
+2. write output data (512 bytes) to transfer buffer
+3. write "write" command into status register
+4. repeat (read status register) until "completed" or "error"
+5. clear the status register
+Note: Kernel will have some logic for handling an error case, often simply retrying the operation.
+Aside: There is a SMART protocol for hard disks to tell the system if a disk is unhealthy/dying.
+
+Using interrupts to avoid polling
+- instead of spinning/looping, block until device generates a completion interrupt
+"interrupts are generally better than polling, but there are some exceptions, like graphics
+ cards that are very fast"
+
+Device Data Transfer
+- registers transfer 4 bytes (1 word), which is very slow and takes a lot of CPU time
+- this is called program-controlled I/O
+- better: direct memory access (DMA) (CPU isn't busy during data transfer)
+  - DMA controller: a stripped-down CPU on the device itself that can perform the data transfer
+  - one CPU is the "bus master" and can communicate over the bus
+  - DMA request made from CPU to controller prompts the DMA controller to request bus master status,
+    allowing it to take over the bus for the data transfer, and freeing the CPU to do other things.
+  - The bus master can issue memory read/write operations to the device's memory.
+  - the controller later interrupts the CPU
+Note: Device interrupts happen on different "interrupt lines". This is just a data bus.
+
+Example: Device Driver for Disk Write with DMA
+1. write target disk sector number into sector number register (we assume only 1 sector is read/written at a tiem)
+2. write source memory address into address register
+3. write "write" command into status register
+4. block (sleep) until device generates completion interrupt
+5. read status register to check for errors
+6. clear status register
+
+Q: Does it make sense to mix DMA with polling?
+A: No, the whole point of DMA is to free up the CPU, and polling would just waste the CPU in the meantime.
+
+Accessing Devices
+How can a device driver access device registers?
+Option 1: special I/O instructions
+- e.g. IN and OUT instructions on x86
+- device registers assigned port numbers
+- instructions transfer data between a specified port and a CPU register
+Option 2: memory-mapped I/O
+- each device has a physical memory address
+- (?)
+
+MIPS/OS161 Physical Address Space
+- Each device is assigned one of 32 64-KB device "slots".
+- A device's registers and data buffers are memory-mapped into its assigned slot.
+- i.e. when we read/write those special addresses, the MMU will know these addresses aren't meant for memory,
+  and acquires the bus in order to send data over the bus (still uses the memory bus, but with devices as destinations
+  instead of memory).
+
+CS 350 March 22
+
+Assignment 3 Hints Lecture
+
+Fix TLB such that a full TLB doesn't cause a kernel panic, but rather handles reallocation of memory.
+Improve the fixed segmentation by adding page tables.
+Reuse physical memory so that we don't have to restart the OS after each test.
+
+Note the wallpaper: a Mars lander.
+Why wouldn't you put Windows on a Mars lander?
+- Too much code. We don't need a GUI! Also drivers, accessibility, etc.
+- More code means less reliability.
+- OS161 is very bare-bones, not unlike what would be placed on a Mars rover!
+
+1. Implementing TLB Replacement
+VM-related exceptions handled by vm_fault
+- vm_fault performs address translation
+- vm_fault also iterates through the TLB to find unused/invalid entry
+- we need to create a simple (random) TLB-replacement scheme, using tlb_random
+- i.e. If the TLB is full, call tlb_random to write the entry into a random TLB slot
+"This should take 1-3 lines of code inside vm_fault."
+
+2. Make text-segment (1 of 3 segments) read-only
+Currently, TLB entries are loaded with TLBLO_DIRTY, making pages rw.
+Text segment should have TLBLO_DIRTY turned off.
+Text segment `elo &= ~TLBO_DIRTY` marks it as read-only.
+Determine the segment of the fault address by looking at the vbase and vtop addresses.
+"There is a section in the slides where we did Math to calculate which segment an address belongs in."
+
+Q: How do you load data into the text segment (after calling load_elf)?
+A: Writing to a read-only segment would generate an exception, so we must load TLB entries with TLBLO_DIRTY on until
+   load_elf has completed.
+   Consider adding a load_elf_completed flag to struct addrspace to indicate whether or not load_elf has completed.
+   When load_elf finishes, flush the TLB, and make sure all future text segment TLB entries for the text segment has
+   TLBLO_DIRTY off. (Not in vm_fault, but somewhere where we know load_elf has completed.)
+
+Currently, whenever a proc tries to write to ro memory, we get a kernel panic.
+Modify kill_curthread to kill the current process instead after VM_FAULT_READONLY exception.
+kill_curthread is what  does the kernel panic atm.
+This code will look similar to sys__exit, but the exit code/status will be different.
+You can't have kill_curthread call sys__exit directly - it will give the wrong exit code.
+The particular exit code we need is up to us to find.
+We used a macro to encode exit codes. Look at the top of kill_curthread for a hint on what we should be returning.
+
+"These modifications are relatively straightforward up until now."
+
+Managing Memory
+Physical memory looks like this:
+
+memory for bootstrap
+0x0
+
+During bootstrap, kernel allocates memory by calling getppages (get physical pages), which calls ram_stealmem(pages).
+ram_stealmem just allocates pages without providing any mechanisms to release pages (see free_kpages).
+We want to keep ram_stealmem in the system after bootstrap, but only use it during bootstrap.
+In vm_bootstrap, call ram_getsize to get the remaining physical memory in the system. This forces us to stop using ram_stealmem
+and use our own memory management system (no going back). Don't call ram_stealmem again!
+Logically partition the memory into fixed size frames. Each frame is PAGE_SIZE bytes.
+Note: Bootstrap memory kfrees can be ignored - we can leak those pages, kfrees can be noops.
+Core-map data structure should track which frames are used and available.
+Recommended: Store core-map at the beginning of the available memory returned from ram_getsize.
+Allocate one or more frames for our coremap, starting after the bootstrap memory.
+By subtracting by 0x80000000 we can write to these kernel addresses.
+Mark the core-map frames as "unavailable", i.e. something we will never free.
+Mark other frames as available.
+Only in this case can we write to an address without calling kmalloc - we are building the memory manager, so we can do it.
+Think of ram_getsize as "malloc all", to give us all the memory we need to work with.
+Note: We never directly use physical addresses. Always write with virtual addresses.
+The MMU is always expecting a virtual address.
+Use a kernel virtual address when writing into the core-map.
+
+One extra complexity: Whenever we call kmalloc, we specify how many pages we want.
+But when we call kfree, we don't specify how much space we are freeing.
+One solution: keep a counter inside your coremap to track how many contiguous frames have been kmalloced.
+
+alloc_kpages(int npages)
+- allocate frames for both kmalloc and address spaces
+- frames need to be contiguous
+free_kpages(vaddr_t addr)
+- ?
+Hint: inside coremap data struct, store an int for each coremap entry.
+e.g. 4 => kfree frees 4 pages.
+
+Open Q: Is the coremap a shared variable? What do we use with a shared variable?
+Implied A: Yes, it is a shared variable.
+Note: Spinlock should be used here, not a blocking lock, in order to prevent deadlocking inside our exception handler.
+Note: Don't dig into the kmalloc code for inspiration for alloc_kpages.
+
+In order to pass all of the tests for assignment 3, this is all we need to do!
+As long as you do all of this correctly and efficiently, you should pass all the tests.
+Notice: We will get -5 on our assignment if we don't implement a page table, or never call our page table code.
+"It should be a part of your solution."
+
+Page Tables
+Replace pbase1, pbase2, and stackpbase with page table locations.
+npages tells us how big the page number should be.
+Page table contains frame number and other bits.
+We actually store ro bits, valid bits, etc. inside our segment.
+So our page table just stores frame numbers.
+Segment properties need to be written somewhere, and referenced when caching into TLB.
+May want to store this info in our addrspace struct, or just hardcode certain flags for all three segments.
+
+Anything that creates or modifies an addrspace must be modified to work with our pagetable, since they rely on pbase:
+"These changes are relatively simple, but there are quite a few."
+as_create
+as_define_region
+- initialize page table within addrspace
+as_prepare_load
+- used inside load_elf
+- instead of pre-allocating contiguous memory for the segment, make it so that each frame is allocated one at a time
+as_define_stack
+- always allocate NUM_STACK_PAGES for the stack
+- must now create a page table for the stack
+- need to allocate frames for the stack
+  - as_prepare_load only allocates frames for segments that were defined by load_elf
+  - ?
+  - you may prefer to make these changes to as_prepare_load instead of as_define_stack
+as_copy
+as_destroy
+- should go into each page in our page table and call free_kpages for each individual frame in the segment
+- kfree the page tables
+
+"Hopefully after A3, you will see how everything in the OS fits together. It's beautiful!"
+
+[User addresses, kernel virtual address, physical address summary slide]
+
+[Now back to I/O slides.]
+[Open hard disk passed around the class.]
+
+Logical View of a Disk Drive
+Remember tape drives? Like cassettes or VHS? We had to rewind the tape after accessing data.
+"I was laughing at the textbook page talking about optimizing tape drive access. But who knows,
+ hard drives are becoming less common."
+
+Disks are an array of numbered blocks (sectors).
+Each sector is the same size (e.g. 512 bytes).
+We can think of a hdd as sector-addressable.
+
+[Diagram: a disk platter's surface]
+A hdd can have multiple platters, each broken up into sectors.
+A disk head moves along tracks of the platter, like a record player, to read a sector from the outside track inwards.
+So we seek to the track we want (the outermost one).
+Note: We can read more data on an outer track in one rotation than in inner track, due to the larger circumference.
+
+A stack of platters gives us a "cylinder", or the sectors read by each platter at the same time (the platters rotate simultaneously).
+
+Cost Model
+Seek time: move the r/w heads to the appropriate cylinder
+Rotational latency: wait until the desired sectors spin to the r/w heads
+Transfer time: wait while the desired sectors spin past the r/w heads
+A request's service time is the sum of seek time, rotational latency, and transfer time.
+
+Calculating latencies
+Max rotational latency = 1/omega where omega = rotations per second (converted from rotations per minute).
+Expected (average) rot latency: 1/2omega (half of the above)
+Transfer time = k/(T*omega) where k is # of sectors, and ?
+Seek time = (k/C)*MAXSEEKTIME where C is total number of cylinders, k is required seek distance, and T_maxseektime is time
+to move from the innermost disk to the outermost disk.
+
+Performance Implications of HDD Characteristics
+- Larger transfers are more efficient than smaller ones. Only one seek, rotation, and read.
+  - Multiple smaller reads would mean multiple seek times and repeated rotational latencies.
+- Sequential I/O is faster thatn non-sequential I/O
+  - sequential io operations eliminate need for (most) seeks
+  - disks use other techniques, such as track buffering, to reduce cost of sequential io even more
+
+CS 350 March 24
+
+Recap: Performance implications of disk characteristics.
+Note: Sequential I/O is improved by disk defragmentation (moving scattered blocks of data into contiguous regions).
+
+Disk Head Scheduling
+Order disk requests such that we minimize the seeking we have to do.
+Naive approach: First Come First Serve (FCFS). Jumps back and forth across tracks very inefficiently.
+Greedy approach: Shortest Seek Time First (SSTF). Reduces the seek times, but may starve some requests.
+Q: What if we think of the disk head here as an elevator? Wouldn't it be upsetting if a new passenger could
+reverse the direction of an elevator?
+Elevator Algorithms (AKA SCAN).
+    e.g. Start going up until we hit 183, the highest track we care about, then go back down to the bottom.
+    - No starvation.
+    - More efficient than FCFS (but not faster than SSTF).
+Q: Why not build multiple "elevators" (disk heads) on the disk?
+A: It gets expensive. It's more economical to just use more disks, e.g. in RAID.
+
+"Maybe in five years, disk head scheduling will be irrelavent."
+Solid State Drives
+Traditional DRAM:
+- Transistor with a capacitor
+- Capacitor holds charge for a few microseconds, must be refreshed to retain value.
+Problem: turning off the power loses the data, since it can no longer refresh.
+Flash memory:
+- Uses a floating-gate transistor.
+- Traps electrons in a quantum "cage" until they are removed by an applied voltage.
+  - Charge is held so tightly that even without power, it stays around.
+Problem: Much larger voltage needed to remove charge from "cage".
+
+Properties of flash memory.
+Initially, flash pages have values of all 1s.
+We can transition from 1-0 at the page level.
+High voltage required to go from 0 to 1.
+- Must be applied to the entire block.
+- A block is made up of as much as 256 pages.
+So, overwriting data is tricky.
+Naive solution:
+- Write entire block into memory.
+- Reinitialize block (set to all 1s).
+- Update the block in memory, and write back to SSD.
+- This is very slow to the "write amplification" (small updates require block-level operations).
+"A better solution would be a lazy write-back."
+
+Flash Transition Layer
+SSD controller will often translate write requests.
+Instead of overwriting a page, the FTL will:
+- Mark the pages as invalid.
+- Write data to an unused page somewhere else.
+- Update the transition table.
+This is very similar to the virtual->physical address translation layer we use in memory.
+Problem: What do we do if the disk fills up with invalid pages?
+Solution: Garbage collection. Occasionally go through and re-validate invalid pages by flashing them to all 1s.
+Note: OS doesn't have to do any more work for garbage-collection. It happens in the hardware, and is handles by the
+SSD's controller.
+Note: The hardware-based flash translation layer is rigid, similar to hardware-based TLBs. Researchers are looking into
+software-based SSD translation layers for additional flexibility and optimizations.
+Note: No moving parts!
+Downside: Flash memory can only be cycled/refreshed only a certain number of times.
+"Large voltage applied leads to wear and tear."
+Q: Are SSDs memory efficient?
+A: It's more power-efficient than constantly-refreshing DRAM. They may also be more efficient than spinning disks.
+
+Performance improvements of SSDs:
+- No seek latency! (No heads)
+- No rotational latency! (No disks!)
+- No more need for disk head scheduling, obviously.
+
+"We are ignoring the last section in the notes - Inter-process communication."
+
+
+File Systems
+
+First, terminology:
+- Files: persistent, named data objects.
+  - Data consists of a sequence of numbered bytes.
+  - Size may change over time.
+  - Comes with associated meta-data (permissions, creation/access timestamps)
+  - Often tracked in a directory tree.
+- Filesystem: Keeps track of our files.
+
+File Interface
+- open, close
+  - open returns a file identifier (for the "session" with the file)
+  - we do this because:
+    - opening a file generates meta-data, like our read position in the file
+    - in unix, if a file is deleted in the filesystem while it is still open in a program, we can still work with our copy,
+      but when the file is closed we lose it
+    - in windows, files are locked while they are in use, and can't be accessed/updated by other programs
+      - this is why windows update must reboot - to install new system libraries before they are in use
+- read, write, seek
+  - read copies data into vaddrspace
+  - write copies data from vaddrspace into a file
+  - seek enables non-sequential reading/writing, a "jump"
+- get/set meta-data
+  - e.g. Unix fstat, chmod
+
+[Sequential File REading Example (Unix)]
+for-loop through all 512 bytes of a file
+[File reading example using seek (Unix)]
+for-loop lseek file[100] down to file[0] "inefficiently reading a file backwards"
+[File reading using positioned read (pread)]
+"reads chunks of memory at a time, incrementing seek index in multiples of 512"
+
+Directories and File Names
+A directory maps file names (strings) to i-numbers
+- i-number is a unique (within a filesystem) identifier for a file or directory
+- given an i-number, the file system can find the data and meta-data for the file
+
+e.g.
+Foo Directory
+NAME           I-NUMBER
+.              4
+..             3
+exam_w16.pdf   7
+
+Directories group related files.
+Directories can be nested.
+A directory structure is thus like a tree (directory tree).
+Files are specified using filepaths of ancestor directories down to the file.
+
+It's possible for other directories to have references to the same file (same i-number).
+e.g.
+Directory Bar
+NAME            I-NUMBER
+.               5
+..              3        "same parent as Foo"
+exam_F15.pdf    7        "same exam as w16"
+
+i-number 7 thus has two "hard links" - two references to the same i-number
+Modifying file i-number 7 will have changes reflected in both exam_f15.pdf and exam_w16.pdf.
+
+CS 350 March 29
+
+Recall: Directories.
+Directories are essentially special files - their contents are restricted to a mapping of filenames
+iside the directory to their i-numbers. Since directories are files, they also have i-numbers.
+
+Hardlinks are references to i-numbers. I-number 6 has a hardlink count of 2 if exam1 and exam2 both
+reference i-number 6.
+
+When a file is created:
+    open(/a/b/c,O_CREATE|O_TRUNC) // creates a new file called /a/b/c if it doesn't exist already.
+    // it also creates a hardlink to the file in the directory /a/b
+
+Once a file is created, additional hard links can be made to it.
+    e.g. link(/x/b, /y/k/h) creates a new hard link (file) h in directory /y/k refering to the i-number of /x/b
+
+Note: We can't have hard links to directories, even though they have i-numbers.
+Q: Why do we not want this?
+A: Our directory is a tree, so we want it to be acyclic. Hard links to a directory could point up the tree and
+   create a cycle, so we don't allow them.
+
+Hard links can be removed:
+    unlink(/x/b) // hard link count goes down by one, but file still exists
+    // removes, say, exam2 entry from your directory
+    rm is implemented by calling unlink on the file(s) you want to remove.
+    It jsut removes the links in that directory.
+
+Referential integrity: Hard links all refer to an existing file. No hard links => no file.
+
+Note: There is no system call to delete a file. A file is deleted when its last hard link disappears.
+Note: File permissions are tied to the i-node (i-nodes are indexed by i-numbers).
+
+
+Symbolic links "soft links".
+Actually a special type of file, like a directory.
+It associates a name (string) to a pathname.
+It contains a pathname, say "/z/a". That's all it is.
+symlink(/z/a,/y/k/m) creates a symbolic link m in directory /y/k.
+m is a file.
+m has its own (new) i-number, since it's a file.
+The symbolic link refers to the pathname /z/a.
+
+Note: Cycles are technically allowed in symlinks. When we traverse the directory tree, we simply don't
+follow symbolic links.
+
+Symbolic links also don't provide referential integrity.
+Symlinks don't increase the hardlink count of a file.
+You can create a symlink to a file that doesn't exist.
+Deleting a file that was previously symlinked doesn't effect the symlink.
+Trying to open the symlink later would say "this file doesn't exist".
+
+cat > file1
+This is file1.
+
+ls -li
+685844 -rw------- 1 user group 15 2008-08-20 file1
+[inumber permissions hardlink-count filesize modified-date filename]
+
+ln file1 link1
+ln -s file1 sym1
+ln -s not-here sym2
+
+ls -li
+685844 ... file1
+685844 ... link1
+685845 ... 5 ... sym1 -> file1
+685846 ... 8 ... sym2 -> not-here
+
+Multiple File Systems
+When you plug a USB into a windows computer, assuming you have the drivers, it opens it with a new
+drive letter, like "F:\". Our main disk is C:\.
+
+Joey thinks: "One Directory sounds like One Direction lol."
+
+Unix has a hierarchal namespace and mounts additional drives to a leaf node in the directory tree.
+There is only one namespace in a unix filesystem.
+
+Automount service usually mounts external drives to the /mount directory (must create an empty directory within).
+We can override that behaviour and mount a drive to any leaf in our directory tree.
+
+Note: i-numbers are only unique within filesystems.
+So hardlinks can't span different filesystems.
+"You can't have it so that the only hardlink to a file on your disk is on your usb drive."
+You CAN have symlinks across filesystems, but the path may or may not stay correct.
+
+
+File System Implementation
+What needs to be persistently?
+ - file data and meta-data
+ - directories and links
+ - filesystem metadata
+What doesn't?
+ - open files per process (processes die, so we don't care)
+ - file position for each open file (ditto)
+ - cached copies of persistent data (disposable)
+ 
+File System Example:
+ - secto-raddressable, 512KB disk
+ - 64 blocks of data, grouped into sectors of 8 blocks
+
+[Diagram: VSFS (Very Simple File System)]
+Create an array of 80 i-nodes, each containing metadata for a file.
+This limits us to 80 files, which is reasonable given the small disk size.
+Index into the array is the file's index number.
+
+Most filesystems  also keep track of a data node bitmap, in addition to the inode bitmap.
+We keep these small bitmap data structures in memory so that we can scan through them when we need something.
+Scanning through the disk sectors themselves would be too slow.
+
+The first block is a spuerblock, containing a supernode specifying metadata for the entire filesystem.
+The second block is the inode-bitmap, and the second one is the datanode-bitmap.
+Remaining 5 blocks are our inode table, each iblock contains 16 inodes.
+Inodes are empty (null) until they are associated with a data block.
+
+Inodes
+Fixed-size index structure with a specified set of fields.
+[list of fields]
+
+VFSF i-nodes
+4-byte addresses => 16 terabyte max disk size (theoretical max file size limit)
+2^32 blocks, 4KB blocks
+in VSFS an i-node is 256 bytes
+ - assume there is room for 12 direct pointers to data blocks
+ - each pointer points to a different block for storing user data
+ - 12 data blocks * 4kb block size => 48kb max file size (great for small files)
+ - if we need larger files, we need an "indirect pointer to an indirect block"
+Instead of a direct pointer, we can use an indirect pointer, pointing to an indirect block (a data block storing
+pointers instead of data). 4kb of pointers, each pointing to data blocks. We now have 1024 extra pointers to work with.
+Maximum file size is now (12 + 1024)*4kb = 4144kb (~4mb).
+We can go even bigger by using double and triple indirect pointers (more examples next class).
+
+We will add indirect pointer(s) on top of the existing 12 direct pointers available.
+
+CS 350 March 31
+(The last lecture.)
+
+Last class we started talking about VFSF.
+A block is 8 consecutive sectors, 4kb.
+We carved the filesystem into 5 different types of blocks:
+ - superblock (metadata about entire filesystem)
+ - data block (56 of them, used to store our data)
+ - inode blocks (used to store metadata for your files - every file has an inode)
+ - inode bitmap (tells us which inodes are in use or available)
+ - datanode bitmap (tells us which blocks are available, for allocation purposes)
+
+An inode has metadata, along with indirect blocks:
+ - 12 direct pointers + 1 indirect pointer
+ - Indirect pointer points to 4kb block of pointers = 1024 additional pointers (12+1024)*4kb = 4144kb max size
+ - Double indirect pointer points to block of indirect pointers (12 + 1024 + 1024*1024)*4kb = just over 4GB max size
+
+Note: a 32-bit bus size can also restrict file size to 4GB
+
+File System Design
+"We used a lot of magic numbers so far, like 80 inodes."
+Is 80 blocks a reasonable number?
+Since we have 56 data blocks, no, because more inodes than data blocks isn't very practical (unless we have empty
+files that don't need data blocks).
+
+Generally, we design it to be efficient for the most common case.
+e.g. 2K is the most common filesize -> can be handled by 12 direct pointers (?)
+e.g. Files are constantly growing in size -> add indirect/double/tripleindirect pointers to inode to add flexibility
+e.g. most bytes are stored in large files -> large block sizes? (or smaller blocks if most of our files are still small)
+     also: if fs has 1000 blocks, 1000 inodes is probably too much, we can compute a more appropriate upper bound
+e.g. fs is usually only half full -> willing to sacrifice space efficiency for performance
+     also, since full disks tend to get very fragmented, and handling that is challenging -> we don't have to worry about it
+     also, since outer track on disk reads at a higher velocity -> fill the disk from the outside in to make sure we get to use
+     the "fast part" of the disk
+e.g. if directories are typically small -> we could be using b-trees, hashmaps, etc. but a simple array would work with
+     small inodes
+
+* "I love putting these types of questions on exams!"
+
+Implementing Directories
+Recall: Directories are a special type of file.
+They have an inode, and data blocks.
+They map filenames to i-numbers.
+It's possible for the kernel to write to directories, but user programs cannot modify directories (e.g. change filenames),
+since a lot of damage could be done to the directory structure and i-node mappings. Allowing for modification of which inode
+we map to is a security issue!
+
+Implementing Hard Links
+Hard links are simply directory entries.
+Creating one means modifying the data blocks of the directory we are in, and associating it with the proper inumber identifier.
+We also need to modify the inode to increase the hardlink count.
+"We are just modifying the directory's data blocks and the inode's hardlink count."
+
+Implementing Soft Links
+New file containing a string! (?)
+
+Free Space Management
+Use the bitmaps to find free inodes and data blocks.
+i.e. Scan bitmap for zeroes and toggle them to ones when we start using them.
+There are usually many free blocks to choose from.
+We prefer free blocks followed by more free blocks. "Find a contiguous set of free blocks."
+In reality, there are a lot of heuristics/algorithms to improve the efficiency of free space management (we won't go into
+detail here).
+
+Reading from a file
+[correction on slide 35 of File Systems - data[0] data[1] data[2]]
+1. Open root inode (tells us data blocks used to store root directory entries)
+2. Look for "foo" root directory data blocks (tells us inodes of files inside, including bar!)
+3. Read bar inumber by looking up "bar" key entry in root directory
+4. Lookup bar inode
+5. Perform read operations on data blocks of bar inode (hopefully we cache the bar inode for repeated reference)
+6. After performing a read operation, we write an update to the inode's last_accessed_time
+7. Write new entry and possibly a larger filesize to bar's data blocks and inode
+8. Repeat 5 and 6 and 7.
+
+* "Definitely need to know these steps for the exam."
+
+[diagram of operations for creating a file]
+Note: 16 inodes in a data block. We read and write one block at a time. We need to read the other 15 files for consistency
+to make sure the write update writing all 16 to the disk is correct.
+Note: Write to foo inode to note increased filesize
+
+* Practice this before the review session a few days before the final exam!
+
+In-Memory (Non-Persistent) Structures
+per-process:
+ - descriptor table
+ - ?
+system-wide:
+ - global open file table
+ - i-node cache
+ - block cache
+
+VSFS is an index-based file system, pointers to pointers etc.
+Another type is the chaining-based file system.
+Blocks are chained together in a linked list.
+Alternative, but similar: external chaining.
+
+[diagram example of chaining-based approach]
+advantage: less metadata
+disadvantage: reading the last block of a file would take forever, because we have to read every block preceding it in the
+file.
+
+[diagram example of external chaining]
+A special file access table that specifies all of the file chains.
+Lets us scan through this array of pointers (small, can be done in memory) instead of reading every block from the disk.
+The FAT filesystem (File Allocation Table) uses this.
+
+Log-Structured File System
+LFS operates on these assumptions:
+ - Memory sizes are growing
+   - Most reads will be served from memory
+   - ?
+ - Large gap between random I/O and sequential I/O performance
+Goal: replace the ened for seeking with only sequential reads.
+Idea: Always write a new contiguous block of x data blocks followed by an inode to memory, making older versions farther back "stale".
+We seek from right to left (fresh to stale).
+Write buffering improves the efficiency of this.
+Hopefully this is always cached in memory - otherwise seeking for an inode is gonna suck.
+When our machine starts initially, the cache needs to fill up "warm up" to achieve good performance.
+Occasionally we write an imap that references a few of the freshest inodes, to make seeking go faster.
+A checkpoint block references all the imaps.
+We only flush the data in this buffer when the machine is shutting down, by writing the checkpoint block to a special disk.
+Garbage cleanup is also required - "vacuum", not defragmentation.
+
+Problems Caused by Failures
+Something like a delete operation is not atomic.
+We need to touch an inode, two bitmaps, etc.
+What if power cuts halfway through?
+This could make some blocks of the filesystem unusable.
+Constantly doing hard-resets may fill up the fs with unusable blocks.
+
+Solution: Crash-consistency.
+On bootup, we do fsck to check the fs for consistency.
+
+More common solution: Journaling
+Maintain a "write-ahead log" of operations we want to perform.
+e.g. BEGIN, write x, write y, END/COMMIT (then perform all those commands).
+On bootup, scan through the log, any BEGIN-END entry pairs must be repeated.
+If the END operation can't be found, we know the operations weren't even started, so we assume
+this entire set of operations didn't start, and delete them from the log.
+"This gives us a sort of atomicity."
+
+

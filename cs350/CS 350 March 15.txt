@@ -1,0 +1,166 @@
+CS 350 March 15
+
+Last slide of last class got confusing, so I'll spend 10 minutes going over
+some new slides (will be uploaded) clarifying the cross-section of the virtual
+address space.
+
+Virtual address space:
+0x0            0x8000 0000            0xFFFF FFFF
+    User program     |      Kernel
+    "kuseg"          | "kseg0" | "kseg1" | "kseg2"
+
+Physical address space (MIPS machine, could be up to 4 GB):
+0x0       0x4000 0000                 0xFFFF FFFF
+   1 GB allocated     |         unavailable (we only have 1GB)
+| | | | | | | | | | | |
+ ^frames
+
+kmalloc in the kernel, calls malloc-n-pages (?) which calls steal-memory-frames (?).
+The kernel manages the physical memory/frames using a coremap.
+
+TLB is used to translate virtual addresses (pages) in kuseg to physical addresses (frames).
+This uses a page table, etc.
+
+Each process has a different mapping - same pages in the virtual address space, but
+different frames are being used.
+
+When the MMU sees something in user address space (0x0 to 0x8), it will use the TLB
+to translate. The kernel can also use the TLB when accessing user memory.
+
+kseg0 is mapped directly to the first 512MB of physical memory - a direct offset.
+Physical address = Kseg0Vaddr - 0x8000 0000
+The kernel code and data structures go here.
+After booting, the kernel should ideally free up the unused portion of the first 512MB
+of memory that it has access to (mark the frames its using as unavailable).
+It's the kernel's job to mark its own frames as unavailable - a big part of assignment 3!
+The kernel should never give away a frame that's already in use by itself!
+
+Q: How much of A3 depends on our implementation of assignment 2a/2b?
+A: We can implement all of A3 without A2 working, but some tests require fork. We can
+   get ~80% (I think) without A2.
+
+Note: OS161 does not use single-level paging. It starts of with segmentation.
+A page table would be allocated inside the kernel - part of the "512MB" of the kernel's
+available memory (i.e. we allocate memory for a page table via kmalloc).
+
+Q: What if the kernel needs more memory in the future?
+A: We can manage and reallocate the frames as we wish, but really don't need to worry
+   about this for OS161.
+
+Note: The blocks just don't need to overlap; kernel's memory doesn't necessarily have to be
+contiguous.
+
+In summary, kseg0 lets us map the first 512MB of memory to the kernel, which makes it easier
+to bootstrap our system (no page table exists on boot).
+
+kseg1 is also mapped to the first 512MB of physical memory.
+The segment is uncached, though.
+This is because it is used for "memory-mapped I/O" to communicate with devices.
+There is a special block of virtual memory that is not mapped to RAM, but rather mapped
+to the caches on our hardware (e.g. network card's buffer).
+We don't want those addresses to be accessed normally.
+
+Don't worry about kseg2.
+
+Note: Every time we perform a context switch, the mapping from kuseg to memory changes,
+but kseg0 always maps to the same chunk of physical memory "always the top half of user address
+space".
+
+Notice: we can directly dereference a user address space instead of using copyin! It works! BUT
+we need to use copyin in order to validate the user address instead of using it directly.
+Dereferencing NULL inside the kernel causes a kernel panic.
+Mechanisms setjump and longjump are used by copyin/out to try and figure out if the memory is "safe"
+(kinda hacky) before accessing it.
+"History says that some of you won't care about safety during A2b, though :("
+
+Clarification: we don't cache special hardware addresses in kseg1 so that we don't accidentally
+grab a cached network packet instead of fetching a fresh packet from the network card. These
+special addresses are "scratch" and shouldn't stick around.
+
+Clarification: We aren't "mapping" memory for kseg0 into memory, it's just memory allocated for
+the kernel code and data structures, *accessed through* kseg0. Kseg1 is like an alias for
+hardware memory, though kseg1 is mapped to the first 512MB of memory.
+Anything you can access in kseg0 can be accessed through kseg1, but more slowly because caching
+is disabled. The main reason for accessing memory with the cache disabled is when we are talking to
+hardware. A small slice of physical memory addresses in the first 512MB of memory is mapped to
+hardware buffers instead.
+"This concept is very important for A3!"
+"We are now done with virtual memory."
+
+"Skip I/O for now, we'll cover it after scheduling."
+
+Job Scheduling
+Doing this intelligently makes better use of the resources that we have.
+Job scheduling will segue into process and thread scheduling.
+
+When a job arrives in the system, we give it a job arrival time a_i.
+It may have to wait for some time before starting at starting time S_i.
+At some point the job will finish, at finish time f_i.
+The time it takes for a job to run is its running time, somewhere up to (possibly equal to)
+f_i - S_i. Context switching can slow us down, etc.
+The turnaround time is the difference between the finish time and the arrival time.
+The response time is the difference between the arrival time and the start time.
+
+Let's think about our approach to job scheduling.
+When a user, say, tries to copy a file from your disk to a network drive, we want to see something
+happening, like a progress bar. We know the job won't finish right away, but we want to see the progress
+bar appear very quickly to assure us that the work is being done.
+A low response time is important for usability - a slow response time leaves the user in the dark.
+Interactive systems, like ssh, should be very responsive. i.e. characters typed should show up right away.
+
+"When I was in school, I would always do grocery shopping late at night. One time a guy in front of me
+ was doing a whole month's worth of shopping, when I just had to buy a pack of gum. If he's gonna take an hour
+ to check out, and I take some small epsillon to check out, the best thing to do would be to ask him if I can go
+ first. (Or steal the gum!) But what if thousands of graduate students buying gum come after me, just after I
+ finish checking out? The guy would literally starve!"
+
+Basic Non-Preemptive Schedules: FCFS and SJF
+First come first serve
+- simple, avoid starvation
+- pre-emptive variant: round-robin (time quantums)
+Shortest job first
+- minimizes average turnaround time
+- long jobs may starve
+- pre-emptive variant: shortest remaining time first (SRTF)
+
+Note: We assume the running time of a "job" is known in advance - we will have to estimate this
+for processes and threads.
+
+FCFS Gantt Chart example
+
+Job            J1 J2 J3 J4
+arrival (ai)    0  0  0  5
+runtime (ri)    5  8  3  2
+
+Turnaround time:
+      FCFS  SJF    RR (quantum=2)  SRTF
+J1       5    8               14     10
+J2      13    18              18     18
+J3      16    3               13      3
+J4      13    5                7      2
+avg  11.75   8.5              13   8.25
+
+Note: In RR, job 4 arrives at time 5, when job 3 is running, and is put on top of the ready
+queue that already contains job 1 and job 2. When job 3 is preempted, we go to job 1, 2, 4, and
+then 3 again.
+Note: In SRTF, J3 gets run first, then J1 starts, and at time 5 is has remaining running time of 3, so we
+preempt it when J4 arrives (running time 2) and run J4 before completing J1 and finally doing J2.
+
+
+CPU Scheduling "closely related to job scheduling"
+A thread "arrives" when it becomes ready.
+It starts to run when it first gets scheduled, and goes from ready to running.
+A thread is "finished" when it blocks or finishes. i.e. When it no longer wants the CPU.
+
+Notice: An interactive thread/job that must block on, say, keyboard input, then we should say it has short running time
+in order to improve response times.
+Non-interactive jobs can be made much much longer, since it requires no user interaction.
+
+Typical scheduler objectives:
+- responsiveness (low response time for some or all threads)
+- "fair" sharing of the CPU - biased towards high-priority processes, but not starving low-priority processes
+- efficiency (context switching has a cost, so we shouldn't do it constantly)
+  - i.e. A system that context switches every millisecond will spend all of its time doing
+    context switches, and no meaningful work (this is "inefficient")
+
+

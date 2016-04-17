@@ -1,0 +1,155 @@
+CS 350 Feb 23
+
+If we use 3 slip days, A2a is due Saturday at noon.
+Midterm is on Feb 23. Don't miss it! It covers up to THIS lecture.
+Eugene's office hours are cancelled for today.
+
+We are covering one problem today: the sparse address space problem.
+
+What is a virtual address space?
+Bottom half (0x0 to half) is for the user application.
+OS/161 has three segments in here:
+ - Text/code segment (compiled code and read-only data) [bottom]
+ - Data segment (global variables)
+ - [Other OSs have a heap segment here usually] [grows up towards stack]
+ - Stack segment [grows down from the halfway mark]
+   - We want the stack to grow downwards from the top of user space to leave room for extra
+     data segment pages. We will exhaust our address space sooner.
+   - We could, in OS/161, grow the stack from next to the data segment up to the halfway
+     mark, but other OSs need to include a heap.
+
+Note: Even if the virtual address space is mostly empty at first (lots of space for the stack
+to grow), which looks like internal fragmentation, it's okay for now because we haven't mapped
+it to physical memory.
+The size of the page table is dependant on the size of the address space.
+The page table limit register is set to the halfway point (bottom of the stack).
+This is a big page table.
+Recall: paging helps reduce *external* fragmentation (between blocks of memory) but not
+internal fragmentation (empty space inside a block of memory).
+
+User Addr
+Space      Page Table
+[ Stack ]->[-------]
+[       ]  [-------]  // these unused/unmapped page table entries have valid bit switched off
+[       ]  [-------]
+[       ]  [-------]
+[  Data ]->[-------]
+[       ]  [-------]
+[  Text ]->[-------]
+[       ]\>[-------]
+
+The top half (halfway to 0xffffffff) is for the kernel space.
+
+***DEFINITELY a similar question on midterm!***
+Q: Given a virtual address (consisting of page number and offset), with a 4Kbyte page. What
+does that tell us?
+A: 2^12 = 4k => 12 bits for offset, leaving 20 bits. 1 bit is used by the kernel. So we have
+19 bits for the page number. So we need 2^19 page table entries.
+
+Note: Each page table entry is probably 4 bytes = 32 bits, assuming a 32-bit address space.
+So our page table is (2^19)(2^2) = 2^21 bits.
+
+Recall: Dynamic relocation moves the virtual address space as a whole to physical memory.
+This means that all the unmapped PTEs get mapped (bad!), since the memory allocated must be
+continuous.
+"Dynamic relocation really does not work well with sparse address spaces."
+
+One possible solution: segmentation.
+i.e. Break the address space into different segments, mapped individually, with their own
+set of relocation registers (not always actual registers, but still).
+OS/161's DumbVM hard-codes 3 segments.
+
+Another approach: multi-level paging.
+i.e. A hierarchy of page tables rather than one large, linear page table.
+
+Segmentation
+Virtual address is made up of a segment ID and an address within the segment.
+Each segment also has a length. Lengths of segments can differ.
+[Diagram: Segmented Address Space Diagram]
+Note: Empty spans of addresses in the virtual address space are not included in segments.
+If we need to use that memory later, we can modify our segment table.
+[Diagram: Mechanism for Translation Segmented Addresses]
+Previously: Frame # and additional bits.
+Now: segment id, size, and start address.
+Note: We check that the offset is smaller than the size, because the offset tells us how
+far we need to "reach" into the segment. We can't go beyond the size of the segment.
+
+Segmented Address Translation Example
+Context: 32-bit physical address space, 32-bit virtual address space, 28-bit offset,
+4 bits for segment id.
+[segment table]
+                      Process 1     Process 2
+Seg table base reg: 0x0010 0000
+Seg table Len:      0x0000 0004     0x0000 0003
+Virtual addr:       0x0000 2004
+Physical addr:    1.___________   3.___________
+Virtual addr:       0x2000 31A4
+Physical addr:    2.___________   4.___________
+
+Note: 0x12345678
+        ^seg id (1 byte)
+         ^^^^^^^offset (7 bytes = 28 bits)
+
+1. 0x72004
+2. 0x53184
+3. seg id = 1, 1 < length 3 okay, B000 > B481 (?) => 0xAFB481
+4. Exception
+
+
+Problem: Single-level page tables are very large.
+Solution: Two-level paging
+Top-level page table has "bigger pages" (not actually a page). This page table is much much smaller.
+[Drawing on board: page table split into only 4 "pages"]
+Each section of this page table stores a pointer to a smaller page table. These secondary page tables
+are also much smaller, maybe 4 pages.
+Unused "big pages" are just NULL pointers.
+If we grow this system to fill all of our memory, we are back to roughly a single-level page table
+like we had before.
+The NULL (unused) entries in the top page table benefit us by not forcing us to not allocate everything
+at once, just what's needed.
+Multi-level page tables also require that only smaller spans of continuous memory need to be allocated
+for each smaller page table, rather than one massive block of continuous memory for a continuous single-
+level page table.
+Note: Protection bits are typically not found in level 1 page tables, only in level 2.
+
+Two-level paging example
+Note: length register is usually omitted in the real world.
+vaddr = 32bits, physaddr = 32bits, level1 = 4bits, level2 = 12bits => offset is 16bits
+vaddr: 0x1000 2004
+1. find offset (16 bits)
+2. check segid 1 < length 3 (yup)
+3. lookup segment 1 in level1 table => key 0x5 0000 => first level2 table
+4. index 000 in level2 page table => key 0x8001
+5. concatenate offset 2004 => 0x80012004
+
+vaddr: 0x0002 A049
+1. segid 0 < 3 (yup)
+2. lookup 0 in level1 => 0x70000 (third level2 table)
+3. lookup 002 in level2 => 0x200C
+4. append offset A049 => 0x200C A049
+
+vaddr: 0x200331A4
+1. 2 < 3
+2. 003 < 4 yup
+3. lookup 2 => 0x40000 => second level2 table
+4. lookup 003 => 0x1023
+5. concat 0x102331A4
+
+vaddr: 0x3004020F
+1. Exception! 3 not less than 3
+
+vaddr: ...
+1. yup
+2. exception (?)
+
+^^^^ Midterm material
+Midterm covers up to Virtual Memory slide 48.
+
+Problem: You can still have external fragmentation with segmentation.
+The size of each segment varies, so we can have trouble fitting them in.
+Solution: Combine segmentation with paging.
+Imagine a two-level page table where the first level is a segmentation table, and
+the second level is a page table. We get fewer segments, and segments can have different
+sizes, but in the backend we break up memory into pages and frames. No external fragmentation!
+
+

@@ -1,0 +1,167 @@
+CS 350 March 22
+
+Assignment 3 Hints Lecture
+
+Fix TLB such that a full TLB doesn't cause a kernel panic, but rather handles reallocation of memory.
+Improve the fixed segmentation by adding page tables.
+Reuse physical memory so that we don't have to restart the OS after each test.
+
+Note the wallpaper: a Mars lander.
+Why wouldn't you put Windows on a Mars lander?
+- Too much code. We don't need a GUI! Also drivers, accessibility, etc.
+- More code means less reliability.
+- OS161 is very bare-bones, not unlike what would be placed on a Mars rover!
+
+1. Implementing TLB Replacement
+VM-related exceptions handled by vm_fault
+- vm_fault performs address translation
+- vm_fault also iterates through the TLB to find unused/invalid entry
+- we need to create a simple (random) TLB-replacement scheme, using tlb_random
+- i.e. If the TLB is full, call tlb_random to write the entry into a random TLB slot
+"This should take 1-3 lines of code inside vm_fault."
+
+2. Make text-segment (1 of 3 segments) read-only
+Currently, TLB entries are loaded with TLBLO_DIRTY, making pages rw.
+Text segment should have TLBLO_DIRTY turned off.
+Text segment `elo &= ~TLBO_DIRTY` marks it as read-only.
+Determine the segment of the fault address by looking at the vbase and vtop addresses.
+"There is a section in the slides where we did Math to calculate which segment an address belongs in."
+
+Q: How do you load data into the text segment (after calling load_elf)?
+A: Writing to a read-only segment would generate an exception, so we must load TLB entries with TLBLO_DIRTY on until
+   load_elf has completed.
+   Consider adding a load_elf_completed flag to struct addrspace to indicate whether or not load_elf has completed.
+   When load_elf finishes, flush the TLB, and make sure all future text segment TLB entries for the text segment has
+   TLBLO_DIRTY off. (Not in vm_fault, but somewhere where we know load_elf has completed.)
+
+Currently, whenever a proc tries to write to ro memory, we get a kernel panic.
+Modify kill_curthread to kill the current process instead after VM_FAULT_READONLY exception.
+kill_curthread is what  does the kernel panic atm.
+This code will look similar to sys__exit, but the exit code/status will be different.
+You can't have kill_curthread call sys__exit directly - it will give the wrong exit code.
+The particular exit code we need is up to us to find.
+We used a macro to encode exit codes. Look at the top of kill_curthread for a hint on what we should be returning.
+
+"These modifications are relatively straightforward up until now."
+
+Managing Memory
+Physical memory looks like this:
+
+memory for bootstrap
+0x0
+
+During bootstrap, kernel allocates memory by calling getppages (get physical pages), which calls ram_stealmem(pages).
+ram_stealmem just allocates pages without providing any mechanisms to release pages (see free_kpages).
+We want to keep ram_stealmem in the system after bootstrap, but only use it during bootstrap.
+In vm_bootstrap, call ram_getsize to get the remaining physical memory in the system. This forces us to stop using ram_stealmem
+and use our own memory management system (no going back). Don't call ram_stealmem again!
+Logically partition the memory into fixed size frames. Each frame is PAGE_SIZE bytes.
+Note: Bootstrap memory kfrees can be ignored - we can leak those pages, kfrees can be noops.
+Core-map data structure should track which frames are used and available.
+Recommended: Store core-map at the beginning of the available memory returned from ram_getsize.
+Allocate one or more frames for our coremap, starting after the bootstrap memory.
+By subtracting by 0x80000000 we can write to these kernel addresses.
+Mark the core-map frames as "unavailable", i.e. something we will never free.
+Mark other frames as available.
+Only in this case can we write to an address without calling kmalloc - we are building the memory manager, so we can do it.
+Think of ram_getsize as "malloc all", to give us all the memory we need to work with.
+Note: We never directly use physical addresses. Always write with virtual addresses.
+The MMU is always expecting a virtual address.
+Use a kernel virtual address when writing into the core-map.
+
+One extra complexity: Whenever we call kmalloc, we specify how many pages we want.
+But when we call kfree, we don't specify how much space we are freeing.
+One solution: keep a counter inside your coremap to track how many contiguous frames have been kmalloced.
+
+alloc_kpages(int npages)
+- allocate frames for both kmalloc and address spaces
+- frames need to be contiguous
+free_kpages(vaddr_t addr)
+- ?
+Hint: inside coremap data struct, store an int for each coremap entry.
+e.g. 4 => kfree frees 4 pages.
+
+Open Q: Is the coremap a shared variable? What do we use with a shared variable?
+Implied A: Yes, it is a shared variable.
+Note: Spinlock should be used here, not a blocking lock, in order to prevent deadlocking inside our exception handler.
+Note: Don't dig into the kmalloc code for inspiration for alloc_kpages.
+
+In order to pass all of the tests for assignment 3, this is all we need to do!
+As long as you do all of this correctly and efficiently, you should pass all the tests.
+Notice: We will get -5 on our assignment if we don't implement a page table, or never call our page table code.
+"It should be a part of your solution."
+
+Page Tables
+Replace pbase1, pbase2, and stackpbase with page table locations.
+npages tells us how big the page number should be.
+Page table contains frame number and other bits.
+We actually store ro bits, valid bits, etc. inside our segment.
+So our page table just stores frame numbers.
+Segment properties need to be written somewhere, and referenced when caching into TLB.
+May want to store this info in our addrspace struct, or just hardcode certain flags for all three segments.
+
+Anything that creates or modifies an addrspace must be modified to work with our pagetable, since they rely on pbase:
+"These changes are relatively simple, but there are quite a few."
+as_create
+as_define_region
+- initialize page table within addrspace
+as_prepare_load
+- used inside load_elf
+- instead of pre-allocating contiguous memory for the segment, make it so that each frame is allocated one at a time
+as_define_stack
+- always allocate NUM_STACK_PAGES for the stack
+- must now create a page table for the stack
+- need to allocate frames for the stack
+  - as_prepare_load only allocates frames for segments that were defined by load_elf
+  - ?
+  - you may prefer to make these changes to as_prepare_load instead of as_define_stack
+as_copy
+as_destroy
+- should go into each page in our page table and call free_kpages for each individual frame in the segment
+- kfree the page tables
+
+"Hopefully after A3, you will see how everything in the OS fits together. It's beautiful!"
+
+[User addresses, kernel virtual address, physical address summary slide]
+
+[Now back to I/O slides.]
+[Open hard disk passed around the class.]
+
+Logical View of a Disk Drive
+Remember tape drives? Like cassettes or VHS? We had to rewind the tape after accessing data.
+"I was laughing at the textbook page talking about optimizing tape drive access. But who knows,
+ hard drives are becoming less common."
+
+Disks are an array of numbered blocks (sectors).
+Each sector is the same size (e.g. 512 bytes).
+We can think of a hdd as sector-addressable.
+
+[Diagram: a disk platter's surface]
+A hdd can have multiple platters, each broken up into sectors.
+A disk head moves along tracks of the platter, like a record player, to read a sector from the outside track inwards.
+So we seek to the track we want (the outermost one).
+Note: We can read more data on an outer track in one rotation than in inner track, due to the larger circumference.
+
+A stack of platters gives us a "cylinder", or the sectors read by each platter at the same time (the platters rotate simultaneously).
+
+Cost Model
+Seek time: move the r/w heads to the appropriate cylinder
+Rotational latency: wait until the desired sectors spin to the r/w heads
+Transfer time: wait while the desired sectors spin past the r/w heads
+A request's service time is the sum of seek time, rotational latency, and transfer time.
+
+Calculating latencies
+Max rotational latency = 1/omega where omega = rotations per second (converted from rotations per minute).
+Expected (average) rot latency: 1/2omega (half of the above)
+Transfer time = k/(T*omega) where k is # of sectors, and ?
+Seek time = (k/C)*MAXSEEKTIME where C is total number of cylinders, k is required seek distance, and T_maxseektime is time
+to move from the innermost disk to the outermost disk.
+
+Performance Implications of HDD Characteristics
+- Larger transfers are more efficient than smaller ones. Only one seek, rotation, and read.
+  - Multiple smaller reads would mean multiple seek times and repeated rotational latencies.
+- Sequential I/O is faster thatn non-sequential I/O
+  - sequential io operations eliminate need for (most) seeks
+  - disks use other techniques, such as track buffering, to reduce cost of sequential io even more
+
+

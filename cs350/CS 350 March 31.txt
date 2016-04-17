@@ -1,0 +1,144 @@
+CS 350 March 31
+(The last lecture.)
+
+Last class we started talking about VFSF.
+A block is 8 consecutive sectors, 4kb.
+We carved the filesystem into 5 different types of blocks:
+ - superblock (metadata about entire filesystem)
+ - data block (56 of them, used to store our data)
+ - inode blocks (used to store metadata for your files - every file has an inode)
+ - inode bitmap (tells us which inodes are in use or available)
+ - datanode bitmap (tells us which blocks are available, for allocation purposes)
+
+An inode has metadata, along with indirect blocks:
+ - 12 direct pointers + 1 indirect pointer
+ - Indirect pointer points to 4kb block of pointers = 1024 additional pointers (12+1024)*4kb = 4144kb max size
+ - Double indirect pointer points to block of indirect pointers (12 + 1024 + 1024*1024)*4kb = just over 4GB max size
+
+Note: a 32-bit bus size can also restrict file size to 4GB
+
+File System Design
+"We used a lot of magic numbers so far, like 80 inodes."
+Is 80 blocks a reasonable number?
+Since we have 56 data blocks, no, because more inodes than data blocks isn't very practical (unless we have empty
+files that don't need data blocks).
+
+Generally, we design it to be efficient for the most common case.
+e.g. 2K is the most common filesize -> can be handled by 12 direct pointers (?)
+e.g. Files are constantly growing in size -> add indirect/double/tripleindirect pointers to inode to add flexibility
+e.g. most bytes are stored in large files -> large block sizes? (or smaller blocks if most of our files are still small)
+     also: if fs has 1000 blocks, 1000 inodes is probably too much, we can compute a more appropriate upper bound
+e.g. fs is usually only half full -> willing to sacrifice space efficiency for performance
+     also, since full disks tend to get very fragmented, and handling that is challenging -> we don't have to worry about it
+     also, since outer track on disk reads at a higher velocity -> fill the disk from the outside in to make sure we get to use
+     the "fast part" of the disk
+e.g. if directories are typically small -> we could be using b-trees, hashmaps, etc. but a simple array would work with
+     small inodes
+
+* "I love putting these types of questions on exams!"
+
+Implementing Directories
+Recall: Directories are a special type of file.
+They have an inode, and data blocks.
+They map filenames to i-numbers.
+It's possible for the kernel to write to directories, but user programs cannot modify directories (e.g. change filenames),
+since a lot of damage could be done to the directory structure and i-node mappings. Allowing for modification of which inode
+we map to is a security issue!
+
+Implementing Hard Links
+Hard links are simply directory entries.
+Creating one means modifying the data blocks of the directory we are in, and associating it with the proper inumber identifier.
+We also need to modify the inode to increase the hardlink count.
+"We are just modifying the directory's data blocks and the inode's hardlink count."
+
+Implementing Soft Links
+New file containing a string! (?)
+
+Free Space Management
+Use the bitmaps to find free inodes and data blocks.
+i.e. Scan bitmap for zeroes and toggle them to ones when we start using them.
+There are usually many free blocks to choose from.
+We prefer free blocks followed by more free blocks. "Find a contiguous set of free blocks."
+In reality, there are a lot of heuristics/algorithms to improve the efficiency of free space management (we won't go into
+detail here).
+
+Reading from a file
+[correction on slide 35 of File Systems - data[0] data[1] data[2]]
+1. Open root inode (tells us data blocks used to store root directory entries)
+2. Look for "foo" root directory data blocks (tells us inodes of files inside, including bar!)
+3. Read bar inumber by looking up "bar" key entry in root directory
+4. Lookup bar inode
+5. Perform read operations on data blocks of bar inode (hopefully we cache the bar inode for repeated reference)
+6. After performing a read operation, we write an update to the inode's last_accessed_time
+7. Write new entry and possibly a larger filesize to bar's data blocks and inode
+8. Repeat 5 and 6 and 7.
+
+* "Definitely need to know these steps for the exam."
+
+[diagram of operations for creating a file]
+Note: 16 inodes in a data block. We read and write one block at a time. We need to read the other 15 files for consistency
+to make sure the write update writing all 16 to the disk is correct.
+Note: Write to foo inode to note increased filesize
+
+* Practice this before the review session a few days before the final exam!
+
+In-Memory (Non-Persistent) Structures
+per-process:
+ - descriptor table
+ - ?
+system-wide:
+ - global open file table
+ - i-node cache
+ - block cache
+
+VSFS is an index-based file system, pointers to pointers etc.
+Another type is the chaining-based file system.
+Blocks are chained together in a linked list.
+Alternative, but similar: external chaining.
+
+[diagram example of chaining-based approach]
+advantage: less metadata
+disadvantage: reading the last block of a file would take forever, because we have to read every block preceding it in the
+file.
+
+[diagram example of external chaining]
+A special file access table that specifies all of the file chains.
+Lets us scan through this array of pointers (small, can be done in memory) instead of reading every block from the disk.
+The FAT filesystem (File Allocation Table) uses this.
+
+Log-Structured File System
+LFS operates on these assumptions:
+ - Memory sizes are growing
+   - Most reads will be served from memory
+   - ?
+ - Large gap between random I/O and sequential I/O performance
+Goal: replace the ened for seeking with only sequential reads.
+Idea: Always write a new contiguous block of x data blocks followed by an inode to memory, making older versions farther back "stale".
+We seek from right to left (fresh to stale).
+Write buffering improves the efficiency of this.
+Hopefully this is always cached in memory - otherwise seeking for an inode is gonna suck.
+When our machine starts initially, the cache needs to fill up "warm up" to achieve good performance.
+Occasionally we write an imap that references a few of the freshest inodes, to make seeking go faster.
+A checkpoint block references all the imaps.
+We only flush the data in this buffer when the machine is shutting down, by writing the checkpoint block to a special disk.
+Garbage cleanup is also required - "vacuum", not defragmentation.
+
+Problems Caused by Failures
+Something like a delete operation is not atomic.
+We need to touch an inode, two bitmaps, etc.
+What if power cuts halfway through?
+This could make some blocks of the filesystem unusable.
+Constantly doing hard-resets may fill up the fs with unusable blocks.
+
+Solution: Crash-consistency.
+On bootup, we do fsck to check the fs for consistency.
+
+More common solution: Journaling
+Maintain a "write-ahead log" of operations we want to perform.
+e.g. BEGIN, write x, write y, END/COMMIT (then perform all those commands).
+On bootup, scan through the log, any BEGIN-END entry pairs must be repeated.
+If the END operation can't be found, we know the operations weren't even started, so we assume
+this entire set of operations didn't start, and delete them from the log.
+"This gives us a sort of atomicity."
+
+

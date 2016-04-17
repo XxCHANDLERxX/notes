@@ -1,0 +1,133 @@
+CS 350 March 24
+
+Recap: Performance implications of disk characteristics.
+Note: Sequential I/O is improved by disk defragmentation (moving scattered blocks of data into contiguous regions).
+
+Disk Head Scheduling
+Order disk requests such that we minimize the seeking we have to do.
+Naive approach: First Come First Serve (FCFS). Jumps back and forth across tracks very inefficiently.
+Greedy approach: Shortest Seek Time First (SSTF). Reduces the seek times, but may starve some requests.
+Q: What if we think of the disk head here as an elevator? Wouldn't it be upsetting if a new passenger could
+reverse the direction of an elevator?
+Elevator Algorithms (AKA SCAN).
+    e.g. Start going up until we hit 183, the highest track we care about, then go back down to the bottom.
+    - No starvation.
+    - More efficient than FCFS (but not faster than SSTF).
+Q: Why not build multiple "elevators" (disk heads) on the disk?
+A: It gets expensive. It's more economical to just use more disks, e.g. in RAID.
+
+"Maybe in five years, disk head scheduling will be irrelavent."
+Solid State Drives
+Traditional DRAM:
+- Transistor with a capacitor
+- Capacitor holds charge for a few microseconds, must be refreshed to retain value.
+Problem: turning off the power loses the data, since it can no longer refresh.
+Flash memory:
+- Uses a floating-gate transistor.
+- Traps electrons in a quantum "cage" until they are removed by an applied voltage.
+  - Charge is held so tightly that even without power, it stays around.
+Problem: Much larger voltage needed to remove charge from "cage".
+
+Properties of flash memory.
+Initially, flash pages have values of all 1s.
+We can transition from 1-0 at the page level.
+High voltage required to go from 0 to 1.
+- Must be applied to the entire block.
+- A block is made up of as much as 256 pages.
+So, overwriting data is tricky.
+Naive solution:
+- Write entire block into memory.
+- Reinitialize block (set to all 1s).
+- Update the block in memory, and write back to SSD.
+- This is very slow to the "write amplification" (small updates require block-level operations).
+"A better solution would be a lazy write-back."
+
+Flash Transition Layer
+SSD controller will often translate write requests.
+Instead of overwriting a page, the FTL will:
+- Mark the pages as invalid.
+- Write data to an unused page somewhere else.
+- Update the transition table.
+This is very similar to the virtual->physical address translation layer we use in memory.
+Problem: What do we do if the disk fills up with invalid pages?
+Solution: Garbage collection. Occasionally go through and re-validate invalid pages by flashing them to all 1s.
+Note: OS doesn't have to do any more work for garbage-collection. It happens in the hardware, and is handles by the
+SSD's controller.
+Note: The hardware-based flash translation layer is rigid, similar to hardware-based TLBs. Researchers are looking into
+software-based SSD translation layers for additional flexibility and optimizations.
+Note: No moving parts!
+Downside: Flash memory can only be cycled/refreshed only a certain number of times.
+"Large voltage applied leads to wear and tear."
+Q: Are SSDs memory efficient?
+A: It's more power-efficient than constantly-refreshing DRAM. They may also be more efficient than spinning disks.
+
+Performance improvements of SSDs:
+- No seek latency! (No heads)
+- No rotational latency! (No disks!)
+- No more need for disk head scheduling, obviously.
+
+"We are ignoring the last section in the notes - Inter-process communication."
+
+
+File Systems
+
+First, terminology:
+- Files: persistent, named data objects.
+  - Data consists of a sequence of numbered bytes.
+  - Size may change over time.
+  - Comes with associated meta-data (permissions, creation/access timestamps)
+  - Often tracked in a directory tree.
+- Filesystem: Keeps track of our files.
+
+File Interface
+- open, close
+  - open returns a file identifier (for the "session" with the file)
+  - we do this because:
+    - opening a file generates meta-data, like our read position in the file
+    - in unix, if a file is deleted in the filesystem while it is still open in a program, we can still work with our copy,
+      but when the file is closed we lose it
+    - in windows, files are locked while they are in use, and can't be accessed/updated by other programs
+      - this is why windows update must reboot - to install new system libraries before they are in use
+- read, write, seek
+  - read copies data into vaddrspace
+  - write copies data from vaddrspace into a file
+  - seek enables non-sequential reading/writing, a "jump"
+- get/set meta-data
+  - e.g. Unix fstat, chmod
+
+[Sequential File REading Example (Unix)]
+for-loop through all 512 bytes of a file
+[File reading example using seek (Unix)]
+for-loop lseek file[100] down to file[0] "inefficiently reading a file backwards"
+[File reading using positioned read (pread)]
+"reads chunks of memory at a time, incrementing seek index in multiples of 512"
+
+Directories and File Names
+A directory maps file names (strings) to i-numbers
+- i-number is a unique (within a filesystem) identifier for a file or directory
+- given an i-number, the file system can find the data and meta-data for the file
+
+e.g.
+Foo Directory
+NAME           I-NUMBER
+.              4
+..             3
+exam_w16.pdf   7
+
+Directories group related files.
+Directories can be nested.
+A directory structure is thus like a tree (directory tree).
+Files are specified using filepaths of ancestor directories down to the file.
+
+It's possible for other directories to have references to the same file (same i-number).
+e.g.
+Directory Bar
+NAME            I-NUMBER
+.               5
+..              3        "same parent as Foo"
+exam_F15.pdf    7        "same exam as w16"
+
+i-number 7 thus has two "hard links" - two references to the same i-number
+Modifying file i-number 7 will have changes reflected in both exam_f15.pdf and exam_w16.pdf.
+
+

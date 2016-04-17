@@ -97,3 +97,5 @@ Dispatching on the MIPS "saving the context and restoring the context"
 Not all registers are saved during a context switch (not all the temporary registers).
 In a trap frame, essentially all registers need to be saved (with the exception of r0 and kernel registers).
 "Involuntary context switches thus take longer than voluntary context switches."
+
+

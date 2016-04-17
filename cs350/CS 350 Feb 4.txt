@@ -139,3 +139,5 @@ How the MMU translates virtual addresses
 
 [Diagram: paging mechanism (virtual address translation process)]
 12 byte offset => 2^12 = 4KB page size
+
+

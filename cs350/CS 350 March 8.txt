@@ -1,0 +1,52 @@
+CS 350 March 8
+
+Midterm review, A2b hints.
+Disappointed in midterm scores - final is worth much more though!
+If we do much better on the final than on the midterm, weight will be shifted
+to the final. Don't be sad!
+
+Solutions will be posted online soon.
+
+[midterm reviewed - I took some private notes on what I did wrong]
+
+
+Now, A2b Hints
+"Traditionally one of the easier assignments, but don't underestimate it."
+System calls to implement:
+
+int execv(const char *program, char **args)
+ "The problem with fork is that we could only run the same program."
+ In the user program, argv[argc] == NULL.
+ First param = new program, second param = array of strings (array is null-terminated).
+ "This is a very C way of telling you the length of an array."
+ It turns out that in order to have you do any useful work i A2a, we had to give you a mechanism to run
+ programs. See kern/syscall/runprogram.c. It is used to load and execute the first program from menu.
+  - it opens the program file using vfs_open(programname, ...)
+  - creates a new address space (as_create), switches the process to the address space (curproc_setas),
+    and then activates it (as_activate) which flushes/invalidates your TLB. We never had to do this in A2a
+    because it's done automatically in thread startup in thread_fork, but we need to call it manually now.
+  - Load opened program file image using load_elf, which returns an entry point to its main function.
+  - It creates the stack for you using as_define_stack (noop for us for now, may need modification while
+    implementing execv)
+  - Call enter_new_process with no parameters, the stack pointer determined by as_define stack, and the
+    entry point.
+ We must modify runprogram to take parameters.
+ 
+ Count the number of args and copy them into the kernel. They are given to us in user space.
+  - trickier than at first glance
+  - pointers into user space cannot be trusted
+  - not a problem accessing vaddrs of processes
+  - BUT, these could be pointing inside the kernel, into other process' data, etc.
+  - pointers that point to places where the user process can't go need to be looked for
+  - don't use the pointers directly!
+  - access these user pointers through copyin/copyout
+  - use copyinstr and copyoutstr when copying NULL-terminated strings
+ Also, copy the program path into the kernel.
+ We can copy greyed-out functionality of execv from runprogram.
+ Copy args into new address space. Consider copying the arguments (both the array and the strings) onto
+ the user stack as part of as_define_stack (one possibility - don't have to modify as_define_stack).
+ Delete old address space.
+ Why can't I directly copy from the old address space to the new address space? Why must we go through the kernel? (open question)
+ CAll enter_new_process with address to the arguments on the stack, the stack pointer from as_define_stack, and entry point from vfs_open.
+
+

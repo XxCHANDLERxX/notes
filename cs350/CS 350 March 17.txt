@@ -1,0 +1,157 @@
+CS 350 March 17
+
+Prioritization
+- CPU schedulers are often expected to consider process or thread priorities
+- Priorities may be:
+  - specified by the application (e.g. linux setpriority/sched_setschedule)
+  - chosen by the schedule
+  - some combination of these
+  - strict (e.g. a real-time OS for trains)
+- two approaches to scheduling the priorities:
+  1. schedule the highest priority thread (strict priority)
+  2. weighted fair sharing
+   - let Pi be the priority of the ith thread
+   - try to give each thread a "share" of the CPU in proportion to its priority,
+     Pi/(sum of all priorities)
+     - e.g. linux's fair sharing
+
+Multiplevel Feedback Queues (scheduling scheme)
+Used to determine the "interactiveness" of each process.
+Multiple levels of queuing, with a different priority, and we always pick a process
+with higher priority first.
+Blocking processes are put in one queue, because they are probably interactive.
+Preempted processes are put in a lower priority queue (assumed to be non-interactive).
+[3 level feedback queue state diagram]
+ready queues 0, 1, and 2.
+When blocking, we put it in the "blocked" state.
+When unblocked, we put it in ready(0) "interactive mode".
+If it gets preempted, we bump it down to ready(1) or ready(2).
+Note: doesn't solve the starvation problem, since lower-priority processes are still
+important. It just lets us divide up the processes.
+
+Linux Completely Fair Scheduler (CFS)
+Key ideas:
+ - approach: weighted fair sharing (higher priority threads run longer)
+e.g. A snapshot of two processes.
+P0 has been running for 100 virtual-time-1 units (VT1), with priority 9.
+P1 has 2000 VT2 with priority 1.
+So we schedule process 1 until it runs for 2000VT0. Then context switch to P2.
+Assuming a quantum of 100VT, we context switch P2 to P1 at time 2100VT.
+Note: We have not introduced priority yet, this is just a fair round robin.
+
+We need to convert virtual time to real time.
+Real time RT = ((priority = X)/(sum of all priorites))*VTX
+e.g. (9/(9+1))*2000 = 1800RT (say, 1.8 seconds)
+and (1/9+1)*2000 = 200RT (200 milliseconds)
+
+Processes don't starve because we are still doing round-robin, and each process
+gets a computed constant amount of time.
+
+Q: What if we sleep our computer while a background process is running? Do we "bank"
+a huge amount of time for the other processes?
+A: We can limit the time we can "bank". Banking a little time is useful, but too much isn't.
+
+
+Scheduling on Multi-Core Processors
+Two extreme options:
+ - per-core ready queues
+   + no synchronization issues with queues
+   + same thread runs on the same queue over and over again (more efficient caching)
+     increased "cache affinity"
+ - shared ready queues
+   - access to the shared queue must use locks or something to enforce mutual exclusion
+     (not a huge deal for smaller amounts of cores, but we are moving towards lots of cores
+      on systems nowadays)
+     (Intel makes research CPUs with 80 "wimpy" cores that typically perform better than 4
+      "brawny" cores.)
+
+Load Balancing
+ - multiple queues will have different lengths (loads)
+
+
+I/O
+
+Bus Architecture Example
+- CPU communicates over a shared memory bus
+- multiple busses can be bridged (e.g. Northbridge and Southbridge on motherboards)
+Simplified (MIPS) Bus Architecture
+- everything on the same bus (typically a bad idea design-wise, but simpler for us)
+- named LAMEbus
+
+Device Register Example (Sys 161 timer/clock) (device registers, not CPU registers)
+- status register (readonly)
+- command register
+- status-and-command
+
+Device Register Example: Sys/161 disk controller
+- status: # of sectors (4 bytes)
+- status and command: status (4)
+- command: sector number (4)
+- status: rotational speed (RPM) (4)
+- data: transfer buffer (512 bytes = 1 sector)
+
+Device Drivers
+- the part of the kernel that interacts with a device
+e.g. Writing a character to a serial output device:
+1. write char to device data register
+2. write output command to device command reg
+3. repeat (read device status register) until "completed"
+4. clear the device status register
+
+Problem with above approach: it's spinning inefficiently, like a spinlock.
+
+Another Polling Example: Writing to a disk
+1. write target sector number
+2. write output data (512 bytes) to transfer buffer
+3. write "write" command into status register
+4. repeat (read status register) until "completed" or "error"
+5. clear the status register
+Note: Kernel will have some logic for handling an error case, often simply retrying the operation.
+Aside: There is a SMART protocol for hard disks to tell the system if a disk is unhealthy/dying.
+
+Using interrupts to avoid polling
+- instead of spinning/looping, block until device generates a completion interrupt
+"interrupts are generally better than polling, but there are some exceptions, like graphics
+ cards that are very fast"
+
+Device Data Transfer
+- registers transfer 4 bytes (1 word), which is very slow and takes a lot of CPU time
+- this is called program-controlled I/O
+- better: direct memory access (DMA) (CPU isn't busy during data transfer)
+  - DMA controller: a stripped-down CPU on the device itself that can perform the data transfer
+  - one CPU is the "bus master" and can communicate over the bus
+  - DMA request made from CPU to controller prompts the DMA controller to request bus master status,
+    allowing it to take over the bus for the data transfer, and freeing the CPU to do other things.
+  - The bus master can issue memory read/write operations to the device's memory.
+  - the controller later interrupts the CPU
+Note: Device interrupts happen on different "interrupt lines". This is just a data bus.
+
+Example: Device Driver for Disk Write with DMA
+1. write target disk sector number into sector number register (we assume only 1 sector is read/written at a tiem)
+2. write source memory address into address register
+3. write "write" command into status register
+4. block (sleep) until device generates completion interrupt
+5. read status register to check for errors
+6. clear status register
+
+Q: Does it make sense to mix DMA with polling?
+A: No, the whole point of DMA is to free up the CPU, and polling would just waste the CPU in the meantime.
+
+Accessing Devices
+How can a device driver access device registers?
+Option 1: special I/O instructions
+- e.g. IN and OUT instructions on x86
+- device registers assigned port numbers
+- instructions transfer data between a specified port and a CPU register
+Option 2: memory-mapped I/O
+- each device has a physical memory address
+- (?)
+
+MIPS/OS161 Physical Address Space
+- Each device is assigned one of 32 64-KB device "slots".
+- A device's registers and data buffers are memory-mapped into its assigned slot.
+- i.e. when we read/write those special addresses, the MMU will know these addresses aren't meant for memory,
+  and acquires the bus in order to send data over the bus (still uses the memory bus, but with devices as destinations
+  instead of memory).
+
+

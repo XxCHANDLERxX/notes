@@ -1,0 +1,184 @@
+CS 350 March 1
+Midterm was yesterday
+"Marking party is scheduled for Thursday, expect a CrowdMark email Thurs-Sat."
+First question - misc short answers.
+Second question - fork question, "similar to uw-testbin/widefork" "total-1 red harring"
+ - "21 processes were generated"
+Third question - barrier synchronization
+ - "tests your ability to read code and comprehend synchronization problems"
+ - "probably the trickiest problem on the midterm"
+Fourth question - multilevel page table, page size given, figure out page table levels
+ - I remember: 31 bits for page #, 8KB = 2^13 bits page size, I split 31 bits into 10/10/11 since 2^11*2^2 <= 2^13
+Fifth question - simplified version of traffic intersection problem from A1
+ - "should have been one of the easier problems"
+
+Note: All assignments are available, get started on A2b soon!
+ - A2a tests are the first part of A2b's marks
+ - "A2a marks turnaround is usually 2 weeks"
+ - "finish A2a if you didn't already, and you will get marks for it"
+ - A2b hints lecture probably next Tuesday
+
+Segmentation
+ - helps solve sparse address space problem
+ - splits process into three segments
+ - problem: still possible to have external fragmentation (segment sizes are all different)
+ - improvement: use paging along with segmentation so that segments are stored in pages/frames
+ - address looks like [segment|page|offset]
+   - Q: would it make sense to have pages on the first level and segments on the second level?
+   - A: NO! It's the worst of both worlds. Internal and external fragmentation.
+
+Segmentation + paging translation
+ - check segment bits >= length register (addresss exception)
+ - take segment bits as index into segment table
+   - segment table entries point to a second-level page table
+   - page table length in seg table entry tells us how many pages/frames make up this segment
+   - valid/protection/rwx bits moved up to segment table, since segments are assumed to have
+     contents with all of the same properties
+     - we can't do this with multilevel paging since pages arbitrarily break up memory with no
+       real meaning, whereas segments have specific names and purposes
+     - property bits are typically on the lowest level in a multilevel page table
+ - segment table key is page table base addr
+ - page offset is index into page (add offset to base addr to get physical address)
+
+Example [Virtual memory slide 51]
+Base register 0x0020 0000 <- address of segment table
+0x01002004
+  ^^ segment table index 1
+  segments[1] = 0x1 0000
+    ^^page table at 0x1 0000 index is 0 -> 0x4001
+Answer: 0x40012004
+
+0x203*****
+Answer: exception (segments[2].length = 3 >= 03)
+
+0x0002 A049
+Answer: 0x6ADDA049
+
+0x0102 C104
+Answer: 0x7A00C104
+
+0x0304 -> Exception
+? -> Exception
+
+Exploiting Secondary Storage
+Q: How many tabs do you each have open in your web browser at any given time?
+A: Most people 1-10, not many only 1, some up to fifty, not many up to 100
+Imagine creating a new tab is like calling fork().
+If we fork so many times that we don't have enough memory, our implementation would say
+"nope, you can't create a new tab, we're out of memory". But we never see that message.
+When we require more memory than our system has available, the system takes advantage of
+the fact that tabs might be acting like bookmarks, and so not all the memory is needed.
+We write the state to the disk so that we can free up memory but still reopen the tab later.
+This is exploiting secondary storage.
+This allows us to do more multiprogramming (i.e. open more tabs).
+This should be transparent to the process - it's not its fault.
+
+Q: Access time of memory?
+A: 50-80 nanoseconds
+Q: Access time of spinning platter hard disk?
+   "It must seek to the right track and wait for the right sectors to swing around."
+A: Seek latency is usually around 10ms, rotational latency is usually 5ms.
+
+Paging Policies
+When should we page something to disk?
+Demand paging - do things really lazily, just when we want the data.
+"Lazy loading in CS is usually preferrable."
+Prefetching - try to predict pages that will be used soon and prefetch them.
+"This is good for disks, where we can grab whole sectors,
+ and avoid repeating the slow seek latency."
+
+What should we replace?
+What should we page to the disk?
+Popular pages of memory constantly being read would be a poor choice for paging to a disk.
+Replacement policy is very important for the efficiency.
+
+Page Faults
+Page table already has valid bits - whether or not that page is mapped to a physical frame.
+Add one more bit, the present bit - whether or not the page is in memory (1) or on disk (0).
+V=1, P=1 -> page is valid and in memory (no exception)
+V=1, P=0 -> page is valid but not in memory (exception!)
+V=0, P=0 -> invalid page (exception!)
+If V=1 and P=0, the MMU will generate an exception if a process tries to access the page.
+This is called a page fault.
+
+To handle a page fault, the kernel must:
+ - issue a request to the disk to copy the missing page into memory
+ - block the faulting process "like, on a confdition variable"
+ - once the copy has completed, P=1 in the page table entry and unblock the process
+   - assumption being made: error checking should happen (okay)
+   - bad assumption: memory layout is still the same, and the same physical frame is being
+     used when the data is stored
+     - we may want to modify the PTE's frame number as well (point it to the new frame)
+
+e.g.:
+ PTE: V=1, P=0, frame X
+ Page fault! Load frame from disk into memory, say at frame Y.
+ PTE.P = 1; if (X != Y) PTE.frame = Y;
+ "There is a chain of things to do - the old chunk of memory should be marked as not present
+  if it was being pointed to by another PTE, etc."(?)
+
+With a software-managed TLB (as in OS/161), it can either translate or throw an exception, and
+it's the kernel's job to manage entries in the TLB. (MMU?)
+In OS161 and other OSs, the TLB doesn't have a present bit.
+The kernel must then invalidate pre-existing entries that have been overwritten.
+Every single TLB must be present AND in memory.
+
+A simple replacement policy: FIFO (replace the page that has been in memory the longest)
+[Virtual memory slide 56]
+
+input: abcdabeabcde
+
+3-frames   | page fault?
+-------------------------
+a          | yes
+ab         | yes
+abc        | yes
+dbc        | yes
+dac        | yes
+dab        | yes
+eab        | yes
+eab        | yes
+eab        | no
+eab        | no
+ecb        | yes
+ecd        | yes
+ecd        | no
+
+Q: Is FIFO a good solution?
+A (almost always): NO! We can probably do better.
+
+
+Optimal Page Replacement Strategy
+"We can't do better than optimal!"
+Replace page that will not be referenced for the longest time.
+
+input: abcdabeabcde
+
+3-frames   | page fault?
+-------------------------
+a          | yes
+ab         | yes
+abc        | yes
+abd        | yes
+abd        | no
+abd        | no
+abe        | yes
+...
+
+However, we can't predict the future, so we can't really do this.
+"If you have a crystal ball, use it for something else!"
+
+Other policies:
+Frequency of use - how popular is it?
+Recency of use - when was it last used?
+Cleanliness - has the page been changed while it's in memory?
+Principle of locality suggests usage should be considered when making replacement decisions.
+Cleanliness may be worth considering for performance reasons.
+
+Dirty bit in MIPS is confusing. Dirty bit = 0 means writing to it causes an exception.
+It determines readonly (0) vs writeable (1).
+This is because readonly implies constant cleanliness.
+e.g. Mark code section read-only, and throw exceptions that mean "kill the process for
+     accessing memory it shouldn't"
+
+

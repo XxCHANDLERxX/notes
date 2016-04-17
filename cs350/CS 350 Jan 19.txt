@@ -152,3 +152,5 @@ If a thread needs to access a critical section that is busy, it must wait for th
 Let's say you want to go to bed at 11pm and want to wake up at 6pm. We would ideally use an alarm clock.
 Spinlocks, though, would be like you are looking at the clock every second - very inefficient! No rest happens!
 To handle this, the thread scheduler blocks threads - the thread stops running until signaled to wake up.
+
+
