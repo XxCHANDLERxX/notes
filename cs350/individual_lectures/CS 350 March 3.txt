@@ -1,4 +1,4 @@
-CS350 March 3
+CS 350 March 3
 "In grad school I got the advice: when giving talks, never apologize, because
  once the audience smells blood, you've lost them! But I'm very tired today,
  so I apologize."
@@ -166,3 +166,5 @@ vaddr 0x7FFF 41A4
   (smallest address) for the stack, which is 0x7FFF 4000. So stack is 0x7FFF4000 to 0x80000000.
 - subtract 0x7FFF4000 from 0x7FFF41A4 and add that to pbase=0x0010 0000
 -> 0x0010 01A4
+
+

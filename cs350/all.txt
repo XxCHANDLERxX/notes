@@ -1378,6 +1378,177 @@ This is because readonly implies constant cleanliness.
 e.g. Mark code section read-only, and throw exceptions that mean "kill the process for
      accessing memory it shouldn't"
 
+CS 350 March 3
+"In grad school I got the advice: when giving talks, never apologize, because
+ once the audience smells blood, you've lost them! But I'm very tired today,
+ so I apologize."
+
+"We have started grading your midterms, and all I can say is that you should
+ always put somethign down! Never leave an answer blank."
+
+Recall: paging to disk based on a replacement policy.
+We must consider frequency of use, recency of use, cleanliness.
+Locality is also important for performance.
+Exploiting secondary storage, e.g. storing old browser tabs on disk, allows
+more tabs to be open and increases our multiprogramming abilities.
+Two extremes for moving things from disk back to memory: prefetching and on-demand.
+Two methods covered so far for moving things from memory to disk: FIFO and Optimal.
+FIFO is almost always not the most scheduling strategy. Here it causes a lot of page
+faults.
+Optimal only works "offline" if we can predict behaviour in advance. However, most
+OSs are online, and data behaviour cannot be predicted.
+
+Locality
+A property of the page reference, i.e. a property of programs themselves.
+Temporal locality says recently used pages are likely to be used again.
+Spacial locality says nearby pages are likely to be used soon.
+Page reference strings tend to exhibit strong locality. Why?
+ - Data tends to be stored contiguously in memory (spacial locality)
+ - Programs tend to repeatedly access data at a point in time, as in for loops
+   (temporal locality)
+
+Aside: Zipf distribution - patterns of movie rentals exhibit temporal locality.
+
+Least Recently Used (LRU) Page Replacement
+Based on the principle of temporal locality.
+Replaces the page that is the most "stale", or hasn't been used in the longest time.
+
+e.g.
+input: abcdabeabcde
+construct a list to keep track of access time:
+a
+ab
+abc
+ bcd
+  cda
+   dab
+    abe
+    bea
+    eab
+     abc
+      bcd
+       cde
+"Not the best example, because it looks like FIFO, but you get the idea."
+"The key difference is that cache hits shift the character to the front of our LRU list."
+LRU tends to do much better than FIFO.
+Q: Linked list or array?
+A: This could be implemented more easily with a linked list.
+However, this is often not used very often in practice. Why?
+If our cache is large, reads become expensive, because we must scan through the entire list
+and move elements.
+
+Manufacturers help us out here by adding the "use" bit to page table entries.
+Each time the page is used, the MMU sets use bit to 1.
+Every so often, it sweeps through and sets use bit to 0 for all PTEs.
+This bit can be used by the OS in a page replacement strategy.
+
+The Clock Replacement Algorithm, AKA Second Chance Algorithm
+Imagine this is our page table:
+
+use bit      |     page
+1->0         |
+0 (replace!) |
+1->0         |
+1->0         |
+0 (replace!) |
+1            |
+0            |
+
+When it comes time to replace a page, we scan through and give use=1 pages a second chance,
+and set use=0 instead of kicking it out, then move on. When we encounter use=0, replace that page.
+Next time we want to make a replacement, we continue from where we left off, like a clock!
+When we hit the end of the page table, we wrap around to the beginning again.
+Note: in implementation, increment a counter; victim = counter % num_frames
+(this acts like our clock).
+
+How much physical memory does a process need?
+We don't want to waste all of our system's time juggling memory, so good estimates are needed.
+Plot page numbers (y-axis) accessed over time t (x-axis).
+We compute the working set W(t, Tau) with a timespan Tau starting from time t.
+Note: 7 accesses across 4 page #s -> working set is 4.
+The resident set of a process is the set of pages that are located in memory.
+If every page in the resident set is within the working set, we will spend very little time
+exhanging memory.
+Note: Different processes have their own working sets.
+Note: OS doesn't keep track of working sets, it's just an analytical/diagnostic tool at
+      our disposal.
+Q: How do we pick Tau? (This is important, because it causes our working set to vary wildly.)
+A: We find a good Tau analytically, usually after running the process for a while to gather data.
+Conceptually, if a system is running slow, we could tell an engineer, "the working set of your
+process is probably too large for the amount of memory we have".
+
+In top, on a unix system:
+VSZ = virtual address size
+RSS = resident size
+
+PID     VSZ     RSS    COMMAND
+805   13940    5956    /usr/bin/gnome-session
+
+Thrashing
+Spending most of our time moving memory to disk and back.
+Simplest solution: kill processes (will lose work)
+e.g. in unix, killing init.d or x-window would be very bad!
+In unix, we have an "oomkiller" that kills processes when we run Out Of Memory.
+This is known as load shedding.
+We can do this my killing processes in a certain way, or suspending and swapping out processes.
+
+Swapping out Processes
+- Remove all of its pages from memory, and mark them so that they won't be removed by normal
+  page replacement.
+- Block the process to make it un-runnable until we un-suspend it.
+Which processes do we suspend?
+- low-priority processes
+- blocked processes
+- large processes (lots of space freed) or small processes (easy to reload)
+We must also have a policy for making suspended processes ready when system load has decreased.
+- We can set up "watermarks", or threshholds, that tell us when we should start/stops suspending
+  processes based on system load, etc.
+
+"Now we jump back to virtual memory slide 21."
+Address Translation in OS/161: dumbvm
+It always splits processes into three segments.
+struct addrspace {
+    // text segment
+    as_vbase1 // where segment 1 starts in virtual address sapce
+    as_pbase1 // where segment 1 starts in physical address space
+    as_npages1 // number of pages for segment 1
+    // data segment
+    as_vbase2
+    as_pbase2
+    as_npages2
+    // stack segment
+    as_stackpbase // always starts at the same place, at the end of user space
+    // so we only need one value
+    // note that we don't need npages for stack because it's always 12 pages in OS161
+    // in A3 we add to this to use a page table to avoid external fragmentation
+}
+The MIPS MMU tries to translate each vaddr using entries in the TLB.
+For A3, we also need to "randomly" pick a TLB entry to replace, etc.
+If there is no valid entry for the page the MMU is trying to translate, the MMU generates a
+TLB fault (address exception).
+The vm_fault function handles this. (?)
+
+Address Translation DumbVM example
+vaddr 0x0040 0004
+- belongs to segment 1 (0x0040 0000)
+- 0004 is within as_npages1 (0x0000 0008)*0x1000 = 0x0000 8000 (4KB page size = 0x1000)
+// first segment is between 0x00400000 and 0x00408000
+- subtract base 0x0040 0000 to get offset = 0x0000 0004
+- add offset to pbase1 = 0x0020 0000 -> 0x0020 0004 (our physical address!)
+
+vaddr 0x1000 91A4
+- belongs to segment 2 (within vbase2=0x1000000 + npages2=0x10 * 0x1000)
+-> 0x008091A4
+
+vaddr 0x7FFF 41A4
+- part of stack
+- take 0x8000 0000 and subtract number of stack pages (12)*0x1000 to get base address
+  (smallest address) for the stack, which is 0x7FFF 4000. So stack is 0x7FFF4000 to 0x80000000.
+- subtract 0x7FFF4000 from 0x7FFF41A4 and add that to pbase=0x0010 0000
+-> 0x0010 01A4
+
+
+
 CS 350 March 8
 
 Midterm review, A2b hints.
