@@ -2651,3 +2651,262 @@ this entire set of operations didn't start, and delete them from the log.
 "This gives us a sort of atomicity."
 
 
+CS 350 April 18 Final Exam Review
+
+I/O
+
+A device driver interacts with a device by reading/writing to the device's command, status, and data registers.
+We could ask you for the sequence of operations to interact with a device.
+e.g. Sending data to an output device
+ - Write data to device's data register
+ - Write "output" command to the device's status register until it is "completed"
+ - Reset the status register so it can send the next piece of data
+The above approach is "polling", as opposed to interrupts.
+
+Interrupts
+Polling is not always desirable - it isn't productive.
+Device can instead raise an interrupt when it is done with a command.
+Device driver can block on a semaphore/condition variable while waiting for the interrupt.
+
+What happens when an interrupt fires?
+1. OS remembers PC (in a kernel register) - done by hardware
+2. PC reset to common exception handler
+3. Switches CPU to kernel mode
+4. Save context in trapframe "trap context" onto kernel stack of this particular thread
+5. CEH calls mips_trap, which determines what type of interrupt it is, then calls interrupt handler
+6. Handler does semaphore.V() or cv_signal() on whatever the thread blocked on.
+"We wake up the responsible thread, and then that thread services the interrupt itself, by reading the status registers, etc."
+
+Accessing Devices
+Special I/O instructions
+Memory-mapped io
+- device registers have a memory address
+- each one gets a "slot"
+
+Program-Controlled Memory Access
+Load data into a register, and store it into the device. This can take time and can hog the CPU.
+Takes a lot of instructions! Just moving small pieces of data, one at a time.
+
+Direct Memory Access
+DMA controller is smart enough to acquire the bus (become the bus master) and can move data from memory to the device all by itself.
+So we modify the earlier polling behaviour to tell the DMA controller, "copy data from this memory location to the transfer buffer".
+
+Does it make sense to combine DMA and polling?
+No. DMA frees up the CPU, but polling just wastes the CPU.
+
+Note: How does the CPU work if the memory bus is in use by DMA?
+There is only 1 bus, so we need a hack for the CPU to short circuit the DMA. "Cycle stealing."
+Recall that there are also two levels of caching in the CPU, so multiple instructions can be precached, and the fetch-execute loop
+doesn't stop for DMA.
+In general, CPU and DMA controller can't write to the same memory address at the same time.
+
+Disk
+Service time is a combination of:
+ - seek time (disk head moving track to track)
+ - rotational latency (sector needs to be under the disk head)
+ - transfer time (time to copy all data desired into memory)
+Know how to calculate these times.
+e.g.
+ - edge-to-edge seek latency: 20ms
+ - number of tracks/cyclinders: 10
+ - 7200rpm = 120rps = 8.3ms per rotation
+ - What is the average service time to read 1 sector that is 2 tracks away?
+
+Disk Head Scheduling
+FCFS - slow, but no starvation
+SSTF - starves, but it's faster
+Elevator - no starvation, fewer seeks than FCFS, but may be a bit slower.
+
+If we give you a schedule of requests, you should know how they get processed
+
+Q: What if you *just* miss the elevator? Won't you starve?
+A: There is a bounded amount of time you have to wait. Have you ever waited for an elevator in an apartment forever? No! Because you are here in class :)
+
+Scheduling
+Know these terms:
+Arrival time - when job becomes ready
+Run time - time to run
+Start time - time it starts running
+Finish time - when it's done or blocks
+
+Schedulers:
+FCFS
+Round robin - FCFS + preemption
+?
+?
+
+CPU Scheduling
+We can estimate a thread's runtime by determining its tendency to block.
+A thread that blocks often is probably interactive.
+A thread that doesn't block is probably computationally intensive with a long runtime.
+More interactive threads should generally be higher priority.
+This makes intuitive sense: a thread that viluntarily blocks is being polite and penalizing itself already, so when it wakes up we should give it CPU time right away!
+
+Multi-Level Feedback Queue
+Run(0) has highest priority.
+Using up a whole quantum and getting preempted shifts you down to run(1), then run(2).
+If you block, we let you block, then when you unblock you go back into run(0) because we assume you are interactive.
+Downside: Lots of interactive threads can starve computational tasks.
+"I imagine the actions per minute of Tetris is very high. Don't play Tetris if your computer is crunching numbers to cure cancer!"
+Note: Linux uses "aging" to occasionally bump up processes to higher-priority queues, so starvation becomes rare.
+
+Multi-core Scheduling
+Single ready queue vs. one per core - know advantages/disadvantages
+ - cache affinity is better with ?
+ - Contention
+
+File Systems
+VSFS is very important! Make sure you understand it.
+Different blocks in our fs:
+ - data blocks (contains our data)
+ - super block (meta data about entire fs: where inode array starts, # of inodes, etc.)
+ - data bitmap blocks (tells you which data blocks are used and which are free)
+ - inode blocks (contains inodes)
+Inodes contain:
+ - Meta data for a file.
+ - Direct and indirect pointers (*understand how these are used)
+Know how to determine which block pointers must be accessed to determine the block location.
+Understand design decisions for a particular fs.
+ - inodes are currently 256 bytes, so 1 block is 16 (?) inodes
+Larger inodes allow us to:
+ - store more direct pointers (quick access to larger small files - may not have to reference an indirect block at all)
+
+*Know how hard links and soft links are implemented, and which one has referential integrity (and explain what that is)
+*know how directories are implemented
+
+Given a file, know how to reproduce some operations.
+
+Assignments
+Study your assignments!
+e.g. Given a panick output, can you determine the cause of the error?
+
+*Working set questions.
+
+Example problem: communicating with devices.
+Disk controller.
+Offset in device local memory | Size or field | Type of device register | Description
+0                               4               status                    # of sectors
+4                               4               status and command        status
+... sector #, rotational speed (rpm), transfer buffer
+
+Q: We want to write one sector of data to the disk controller.
+A: 
+1. Write target sector into sector number
+2. ...
+
+Example: navigating inodes
+Assume an unode has 12 direct pointers, 1 single indirect pointer, and 1 double indirect pointer, 4kb (2^12) block size, pointer is 32bits.
+Which pointer is used to fetch a block from offset 2^23 +10 (8MB + 10)
+ - +10 offset just eliminates confusion
+Recall: single indirect allows reading up to 4MB
+A: (12 * 1024 + x)*2^12 = 2^23
+x = 1012
++10 => x=1013 (the second (1st) pointer in the indirect block, after the first (0th) at 1012).
+How many disk accesses are required?
+ - inode + first level indirect block + ... = ?
+ 
+Q: What is stored inside per-process open file table?
+A: Not very important, but every open file is an entry in the open file table for that process. It contains inumber, offset, etc.
+Global open file table also tracks how many files a certain process has opened (counter tracking file accesses), and caches the inode for subsequent fs operations.
+Note: Open file table is part of the process control block.
+Note: System-wide open file table accounts for two processes having a file open, and helps enforce synchronization/atomicity.
+
+Question from CS354 study notes:
+Running program has two phases. During phase 1, it's doing one thing, and in phase 2 it does something else.
+What does the working set look like when the program goes from phase one to phase 2.
+Recall: Resident set is the set of pages actually in memory for the program.
+Recall: Working set is the set of unique pages referenced over a certain time period.
+If Working set == resident set, no page faults!
+If working set and resident set are disjoint, we must page fault!
+Recall: Page fault is an exception.
+If they have a tiny intersection, we will have lots of page faults.
+High page fault frequency => working set is not covered by residence.
+Low page fault frequency => good, unless our working set is too large (wasteful).
+i.e. If one program had 2 page faults, and another had 1000, we could probably transfer soe frames allocated for the first program to the second.
+We can't forecast program behaviour, so we just take these samples of side effects (page faults).
+A: Within the same phase, we probably have a fairly constant working set. When we switch into phase 2, we expect a spike to the sum of the two phases, then go down to the second working set size.
+The sliding window of the working set sees BOTH sets of unique pages at the same time during the transition.
+With p1 pages, and p2 pages, if number of pages referenced is much higher than p1 or p2, this implies that the same page is getting hit multiple times.
+e.g. An array being read would probably be within one page. p1 = 1 but total references > 1. This is "normal", healthy program behaviour.
+A program that has bizarre behaviour and jumps around a lot will cause a high number of page fault relative to the number of page references our program makes.
+
+Practice questions: Virtual memory
+VPN = virtual page number
+PFN = physical frame number
+V = valid bit
+D = dirty bit
+a) 2^16 = 64 bits, 16 bits of our vaddr will be used to represent the offset
+b) max size of segment? We have 4 bits for segment number, and 16+12 remaining bits, so max segment size is 2^28 bytes.
+c) convert vaddr 0x20043751 to paddr.
+                   ^ segment number
+                       ^^^^ offset
+  - 0x2 => segment 2, so lookup segment table[2] = 0x70500000
+  ... exception!
+
+d) ?
+e) 0x51773721 paddr back to vaddr
+ - find PFN 5177: 3 options... left as excercise
+
+Clock Algorithm example (page replacement)
+refs:   abcdabeacbea
+frame1: aaa
+frame2:  bb
+frame3:   c
+Fault?: xxx
+
+a(1)a(1)a(1)d(1)d(1)d(1)e(1)e(1)e(1)
+    b(1)b(1)b(0)a(1)a(1)a(0)a(1)a(1)
+        c(1)c(0)c(0)b(1)b(0)b(0)c(1)
+
+Scheduling problem
+We have T1, T2, and T3.
+We have a time diagram plotting their activity.
+T1 runs a for loop 4 times, each runs for 1 unit of time then blocks for 4t.
+T2 and T3 have for loops executing 2 times, each takes 3t then calls thread yield.
+
+
+T1.                T1          T1    ...
+   T2.....      T2.
+          T3....     T3....
+                           IDLE  IDLE
+
+b) assume round robin scheduler with a quantum of 2 and running time is reset to 0 every time thread executes.
+
+CFS
+T1 has priority 1 and has been running for 3t.
+T2 has p2 and has been running for 7t.
+T3 has a priority of 3 and has been running for 6t.
+2. Which thread is scheduled to run next by the linux completely fair scheduler?
+Recall: Virtual time and real time "exchange rate". Vt = Vtu * (sum(all priorities)/my_priority)
+V1 = 3*(6/1) = 18
+V2 = 7*(6/2) = 21
+V3 = 6*(6/3) = 12
+
+IO
+Disk drive has C cylinders, T tracks per cylinder, S sectors per track, and B bytes per sector. Ret vel is w rotations per seconds.
+1a)
+Consider s1 and s2, consecutive sectors on the same track of the disk.
+s1 read request, then d seconds pass, then a request for s2 arrives. How long will it take the request to service the request for s2?
+Disk moves, disk head is static.
+(1/2)(1/w) - d
+
+b) suppose s1 and s2 are k sectors apart. For which values of k will the service time for s2 is minimized?
+(K/S)*(1/w) = d
+
+2. Disk has S sectors per track and C cylinders. One single-sided platter. Spins at w rotations per ms. Function for seek distance given.
+Going from track 10 to track 0. Seek latency = 5 + 0.05d = 5+0.05*10 = 5.5ms. Rotational latency = 1/2w. Transfer time = (1/S)(1/w).
+Total latency = sum(seek, rot, transfer).
+
+Note: 10 cylinders on one platter => 10 tracks.
+
+b) d ms after completing request for S, the disk recieves a request for secotr S+1. What is the expected service time for this request?
+Seek time = 5+0.05*1 = 5.05 (distance of 1 between cylinder 1 and 0)
+Amount of time spent waiting between operations: d+5.05
+Rotational latency: ((1/w)-(d+5.05))mod(1/w)
+Seek latency: 5.05
+Corner case: if d = 0, we have a different value (?)
+Transfer time: (1/S)(1/w)
+Total expected service time = sum of the above
+
+Q: Is the final exam mostly post-midterm? No, it covers everything.
+
