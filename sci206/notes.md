@@ -1,9 +1,9 @@
-SCI 206: Physics of How Things Work
-Taught by: Stefan Idziak
-University of Waterloo, Fall 2016
+# SCI 206: Physics of How Things Work
+## Taught by: Stefan Idziak
+### University of Waterloo, Fall 2016
 
 
-Lecture 1
+## Lecture 1
 
 No pre-requisites = no physics knowledge past high school grade 10 needed.
 
@@ -94,7 +94,7 @@ momentum=mass*velocity
 e.g. Bus doesn't get slowed down much when hitting a parked car.
 
 
-Lecture 2 - Sept 14 2016
+## Lecture 2 - Sept 14 2016
 Correction: Can't say energy levels in the universe are the same since when it
 was created. At a universe scale, general relativity must be used, and that
 means energy isn't very well defined.
@@ -179,7 +179,7 @@ Table cloth leaves. Friction of table cloths pulls cup slowly. Friction force
 slows it down to a rest and stops it.
 
 
-Lecture 3
+## Lecture 3
 re: Questions about bucket swinging in a circle.
 On those amusement park rides that spin you around standing upright, at the
 very top, you are falling. But the acceleration of gravity is less than the
@@ -289,7 +289,7 @@ At another frequency, there are only two nodes, at either end. This is the
 first harmonic.
 
 
-Lecture 4
+## Lecture 4
 Recall: Speed of sound wave depends on density of material, metal, etc.
 The restoring force of the material (resistance to squeezing/stretching) also
 affect speed.
@@ -374,7 +374,7 @@ Sample questions posted on LEARN soon.
 
  
 
-Lecture 5
+## Lecture 5
 Gases
 "You can do things with solids, liquids, and gases."
 Demo: puts a nut in a ballon and swings it around to make a noise
@@ -469,7 +469,7 @@ Demo: Stepping on a balloon pops it. But four underneath a board spreads out
 the force, and I can stand on it.
 
 
-Lecture 6
+## Lecture 6
 Bouyancy
 Archimedes' principle: An object partially or wholly immersed in a fluid is
 acted upon by an upward bouyant force equal to the weight of the fluid it
@@ -518,7 +518,7 @@ nitrogen and makes it evaporate.
 
 "Ice cream is just a network of fat crystals encapsulating (flavored) water."
 
-Lecture 7
+## Lecture 7
 Electric charge
 Opposite charges attract, like charges repel
 The closer in proximity the charges are, the stronger the force
@@ -578,7 +578,7 @@ his hair stand up from the electric field.
 Demo: But bent rod on top of pin, and it spins! This is an electrostatic motor.
 Charge flies out either end of the rod.
 
-Lecture 8
+## Lecture 8
 Recall: Electric force depends on charge and distance between them.
 Look: Corona discharge wire from Xerox machine "thinner than a hair".
 "This is my favourite demo. The Kelvin liquid drop generator. We drip water
@@ -635,7 +635,7 @@ detailed image in the charge.
 Old laser writer: Little spinning hexagonal mirror sweeps laser across top of
 drum.
 
-Lecture 9
+## Lecture 9
 
 Midterm is on two Mondays from now.
 Practice midterm is posted; you will get feedback on wrong answers.
@@ -735,9 +735,9 @@ doesn't move (no current flows).
 Demo: Chilled ring flies farther.
 
 
-Lecture 10
+## Lecture 10
 Chris Hadfield!!!!!111one
-Lecture on rockets!
+## Lecture on rockets!
 Will be on the midterm.
 "He won't be sticking around after for selfies."
 
@@ -836,7 +836,7 @@ Russian, I only new three words in Russian. Da, Niet, and Vodka!
 Now time for a demo: I'm gonna fly a rocket in the hallway. Follow me!
 
 
-Lecture 11
+## Lecture 11
 (Before midterm.)
 Electron orbits Neutron that can't be broken down.
 Current: P=IV
@@ -950,7 +950,7 @@ the solenoid.
 "Everything up till now is on the midterm."
 
 
-Lecture 12
+## Lecture 12
 Review of Midterm answers
 
 22 (electrostatically attracted balloons pulled apart)
@@ -1068,7 +1068,7 @@ the magnetic fields in the lines overwhelms the tank circuits.
 Radar jammers send powerfull disrruptive signals like this.
 
 
-Lecture 13
+## Lecture 13
 Halloween! Spooky! The helper dog at the front of the class is wearing a devil
 costume!
 
@@ -1170,7 +1170,7 @@ Demo: Breaking open an old CRT with a hammer
  - Little "getter" inside the tube collects stray gas particles
 
 
-Lecture 14
+## Lecture 14
 Waves and Velocity
 Wave has wavelength LAMBDA and frequency f.
 Time to travel one wavelength in distance is 1/f(?)
@@ -1233,7 +1233,7 @@ Make sure you always have a cup of water in the microwave to absord energy.
 Also don't do it for too long, and prepare for a possible fire.
 
 
-Lecture 15
+## Lecture 15
 Guest lecture: SCI 207: Physics, the Universe, and Everything
 
 Energy
@@ -1392,7 +1392,7 @@ We look at all these questions:
  are we alone? (extraterrestrial life)
 
 
-Lecture 16
+## Lecture 16
 Sparks
  - Electric field can be large near sharp points.
  - Get arcing (or sparks).
@@ -1503,7 +1503,7 @@ need mroe sensitive detectors.
 Blu-Ray discs have blue lasers. Smaller wavelength = more info.
 
 
-Lecture 17
+## Lecture 17
 Alternative Energy
 Generator
   - Coil
@@ -1631,7 +1631,7 @@ lamp is closer to panel; needs a slight push because motor is stuck veritically
 between magnets.
 
 
-Lecture 18
+## Lecture 18
 Project deadline is now 11am on Saturday.
 
 Demo: Oscilloscope
@@ -1753,7 +1753,7 @@ Rainbows?
    goes into your eye, like a screen."
 
 
-Lecture 19
+## Lecture 19
 Demo: Foot-pump "rocket" thing.
 Q: Is this a rocket?
 A: No. Air propels it form the ground, but no mass continues to exit it, so
@@ -1872,7 +1872,7 @@ Fission Bomb
 - Chain reaction
 
 
-Lecture 20
+## Lecture 20
 Guest lecturer: Mike Fich
 Distant Planets and the Search for Life Beyond our Solar System
 A Canadian unofficially discovered the first extrasolar planet outside our solar
