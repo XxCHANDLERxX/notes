@@ -16,7 +16,7 @@ Velocity:
   1) How fast you are going (speed), and
   2) Which way you are going.
 An object's mass determines how much inertia it has.
-Demo: Small plastic ball resting on a card on top of a tube. Card flicked away,
+*Demo:*: Small plastic ball resting on a card on top of a tube. Card flicked away,
 ball drops into tube!
 
 Acceleration: How fast your velocity is changing. (Change in speed, or
@@ -40,27 +40,27 @@ Weight is the force applied by gravity. Mass is constant.
 Massive objects have larger gravitational fields. e.g. Moon pulling on Earth's
 tides, but human bodies don't affect much.
 
-Demo: centre of mass--Triangular "hill" with a double-napped cone that appears
+*Demo:*: centre of mass--Triangular "hill" with a double-napped cone that appears
 to roll up the hill. BUT its centre of mass is actually dropping between the
 grooves as the triangle widens.
 
-Demo: Gravity accelerates two different-weighted balls at the same rate.
+*Demo:*: Gravity accelerates two different-weighted balls at the same rate.
 Paper appears to fall more slowly, but that's just wind resistance.
 
-Demo: Vacuum tube next to air-filled tube. Feather and coin in each. Vacuum
+*Demo:*: Vacuum tube next to air-filled tube. Feather and coin in each. Vacuum
 tube has both objects fall at the same rate.
 
-Demo: Gravity is constant. Tossing a ball up in the air -> gravity acts on it,
+*Demo:*: Gravity is constant. Tossing a ball up in the air -> gravity acts on it,
 accelerating it (downwards) constantly, even at the top of the arc.
 
-Demo: Falling ball: horizontal velocity + gravity = parabolic arc.
+*Demo:*: Falling ball: horizontal velocity + gravity = parabolic arc.
 
-Demo: Gun shooting at a monkey that drops from a tree when the ball is fired.
+*Demo:*: Gun shooting at a monkey that drops from a tree when the ball is fired.
 Aiming straight at the monkey, it still hits the monkey, because gravity acts
 the same on the monkey and the bullet (or, more slowly, a dart).
 "Monkey and hunter demo."
 
-Demo: Two balls being dropped, one with some horizontal motion. Both hit the
+*Demo:*: Two balls being dropped, one with some horizontal motion. Both hit the
 ground at the same time.
 
 Energy
@@ -99,7 +99,7 @@ Correction: Can't say energy levels in the universe are the same since when it
 was created. At a universe scale, general relativity must be used, and that
 means energy isn't very well defined.
 
-Demo: Newton's cradle - metal balls, relatively elastic collisions.
+*Demo:*: Newton's cradle - metal balls, relatively elastic collisions.
 
 Pushing a block of wood with your finger: must account for all forces acting on
 the block. It's not accelerating, despite the constant force from your finger.
@@ -120,7 +120,7 @@ Friction affected by:
 - Downward force
 - Type of material
 
-Demo: 600-page phonebooks are hard to pull apart.
+*Demo:*: 600-page phonebooks are hard to pull apart.
 
 "Newtonian fluids act the way that you want."
 "Paint is a fluid that shear thins. It stays on the brush from the pale because
@@ -143,14 +143,14 @@ Centripital Force
 F=m(v^2)/R
 Bigger radius, smaller force
 Bigger velocity, larger force
-Demo: Swinging a ball tied to a string through a cylinder to a weight.
+*Demo:*: Swinging a ball tied to a string through a cylinder to a weight.
 *Centrifugal* force is a force pushing outwards, not inwards (e.g. a
 centrifuge)
 Q: What makes you slide out of your car when you make a sudden turn while your
 door is open and your bench seat is lubed up?
 A: Inertia. The car disappears from underneath you.
 
-Demo: Leverage on a tight bolt with a wrench by hand vs with a rod handle.
+*Demo:*: Leverage on a tight bolt with a wrench by hand vs with a rod handle.
 Note: Tools aren't designed for this, don't break your tools!
 
 Torque: depends on force pushing down and how far away from the rotational axis
@@ -163,18 +163,18 @@ Rotation also has a direction: one way or another along the rotational axis,
 depending on direction of spin.
 
 Angular momentum: things that spin tend to keep spinning.
-Demo: Brittany spinning on a chair; putting legs and arms out slows you down
+*Demo:*: Brittany spinning on a chair; putting legs and arms out slows you down
 because angular momentum must be conserved. You can see this with figure
 skaters. They start spinning with their legs and arms out then tuck their arms
 in.
 
-Demo: Spinning bucket of water.
+*Demo:*: Spinning bucket of water.
 "There is no centrifugal force, the force keeping you inside the car is going
 inwards, against your inertia. It's centripital force."
 If the gravitational force is greater than that required for circular motion,
 the water will fall out.
 
-Demo: Dishes
+*Demo:*: Dishes
 Table cloth leaves. Friction of table cloths pulls cup slowly. Friction force
 slows it down to a rest and stops it.
 
@@ -186,12 +186,12 @@ very top, you are falling. But the acceleration of gravity is less than the
 force required to be spun around in a circle, so you don't break contact with
 the wall.
 
-Demo: Two people holding a rope.
+*Demo:*: Two people holding a rope.
 One "pulse" goes down the rope slowly if there's slack and quickly if it's held
 tightly. The frequency depends on the restoring force of the rope.
 A double/triple wave thing is what we call "standing waves".
 
-Demo: Spring rope with cowbell.
+*Demo:*: Spring rope with cowbell.
 "Waves are a way to do work without moving."
 
 Two types of waves:
@@ -202,14 +202,14 @@ Two types of waves:
 
 ,.-'`'-.,.-'`'-.,.-'`'-.,.-'`'-.,.-'`'-.,.-'`'-.,.-'`'-.,.-'`'-.,.-'`'-.,.-'`'-.
 
-Demo: Breaking a wine glass.
+*Demo:*: Breaking a wine glass.
 
-Demo: "My physics guitar."
+*Demo:*: "My physics guitar."
  - You can change the pitch my changing the tension of the strings.
 
 2. Longitudinal oscillation
 
-Demo: Slinky scrunched up at one end and released. A disturbance travels
+*Demo:*: Slinky scrunched up at one end and released. A disturbance travels
 length-wise.
 
 Sound is a good example of a longitudinal wave.
@@ -222,7 +222,7 @@ Like how you can't smell a person talking far from you.
 Note: Liquid can also be compressed, like how you can hear people screaming
 underwater. So can solids. e.g. Putting your head on the train tracks.
 
-Demo: Line of 40 people getting pushed on stage.
+*Demo:*: Line of 40 people getting pushed on stage.
 Arms wave = transverse; pushed = longitudinal.
 
 Speed (V) of wave:
@@ -240,9 +240,9 @@ Change in train whistle.
 As the train comes towards you, the sound gets compressed, as the location of
 the train changes by the time the sound reaches you.
 
-Demo: Swinging a sound box over my head.
+*Demo:*: Swinging a sound box over my head.
 
-Demo: Weights on strings as pendulums.
+*Demo:*: Weights on strings as pendulums.
  - The period depends on the length of the string and the acceleration of
    gravity. Different weights on the same string oscillate at the same
    frequency.
@@ -251,7 +251,7 @@ Demo: Weights on strings as pendulums.
 A pendulum is an "energy transfer device". Energy is conserved, so it won't
 come back and hit someone standing next to it.
 
-Demo: Push weight harder. Larger amplitude, but the period is the same!
+*Demo:*: Push weight harder. Larger amplitude, but the period is the same!
 
 Note: This is what's called "harmonic motion".
 
@@ -281,7 +281,7 @@ Q: How do they build bridges now to avoid this?
 A: Try to redistribute the masses, adjust stiffness, etc. But it still happens,
    e.g. the Thames (sp?)
 
-Demo: String on vibration machine.
+*Demo:*: String on vibration machine.
 At a certain frequency, a "node" appears in the middle (plus one on either
 side). Putting my finger in the middle doesn't interfere with the node.
 Between the nodes are antinodes, where the string i sexcited.
@@ -297,7 +297,7 @@ affect speed.
 Wavelength is a string is limited by the length of the string and which
 harmonic you're in.
 
-Demo: Rubbing a wine glass to make a noise. Dip finger in water and drag it
+*Demo:*: Rubbing a wine glass to make a noise. Dip finger in water and drag it
 around. Sound depends on material of wine glass. Crystal works best. Notice how
 a styrofoam cup also makes noise, and the movement of my finger is more
 noticeable. It oscillates the rim, oblong-wise, in two directions. Styrofoam is
@@ -308,35 +308,35 @@ oscillations.
 "Benjamin Franklin had a glass harmonica."
 "Mesmer also used one to 'mesmerize' people."
 
-Demo: Wood pipe with closed ends. Pressure is fixed at either end.
+*Demo:*: Wood pipe with closed ends. Pressure is fixed at either end.
 We can still make a standing wave inside of it, by putting one end on a fire.
 Air moves across one end of a pipe (like blowing on a bottle).  The wavelength
 is long (low sound) because the pipe is long)
 
-Demo: Wooden organ pipe. Whistle gap in the middle, and a removable stopper at
+*Demo:*: Wooden organ pipe. Whistle gap in the middle, and a removable stopper at
 one end. The "boundary condition" is at the end, so we can change the frequency
 by removing the stopper.
 
 Similar: Sliding whistle, dog whistle.
 
-Demo: Sliding tube with a loudspeaker at one end. Sliding it hits a couple of
+*Demo:*: Sliding tube with a loudspeaker at one end. Sliding it hits a couple of
 maximums - that's the wavelength of the speaker!
 
-Demo: Fire tube - you can see standing waves in the high points of the flames.
+*Demo:*: Fire tube - you can see standing waves in the high points of the flames.
 
-Demo: Clarinet straw - cut a slit in one end and it's like a clarinet. I can
+*Demo:*: Clarinet straw - cut a slit in one end and it's like a clarinet. I can
 "tune" it by changing the length of the straw, by cutting it!
 "PBBBBBBBBBBbbbbbFffffffOOOOooooooEEeeeeeeeee" *applause*
 
-Demo: Swinging a plastic tube with ridges - air rushing by the end of the tube
+*Demo:*: Swinging a plastic tube with ridges - air rushing by the end of the tube
 pulls air through, and the air vibrates as it rolls over the ridges.
 
-Demo: "To show you how a wine glass vibrates."
+*Demo:*: "To show you how a wine glass vibrates."
 Rubbing the handles of a metal bowl with some water in it creates a standing
 wave in the water. The bowl's shape oscillates, pushing the water. You can't
 see the bowl moving, but you can see the water.
 
-Demo: Aluminium Rod
+*Demo:*: Aluminium Rod
 Transverse oscillation (bending the rod lengthwise) vibrated it but made no
 sound (or very low frequency sound).
 Longitudinal oscillation happens when you tap the end of the rod on the ground,
@@ -344,7 +344,7 @@ like a staff. It makes a sound!
 I can also make a longitudinal wave by rubbing the rod with rozen on my fingers
 to make them sticky.
 
-Demo: Beer bottle with liquid in it. It's actually not a standing wave in the
+*Demo:*: Beer bottle with liquid in it. It's actually not a standing wave in the
 gap inside the bottle, at least in a tall, thin-neck beer bottle. It's more
 like a mass-spring system, with a "disc" of air at the top where the bottle cap
 goes. Adding liquid decreases the volume of air inside, increasing hte
@@ -356,11 +356,11 @@ Electromagnet acts on a speaker cone with a coil, creating a logitudinal wave
 going away from the speaker.
 "You can make sound with speakers." :O
 
-Demo: White noise on two desktop speakers.
+*Demo:*: White noise on two desktop speakers.
 They are loud when in phase. But if you aim them at each other and make one the
 opposite phase, it catches the sound and mutes the noise.
 
-Demo: Crank-powered record player from a cabinet.
+*Demo:*: Crank-powered record player from a cabinet.
 The record needle wiggles back and forth in the grooves.
 When the needle skips it's hopping between grooves.
 Stereo records have side-to-side AND up-and-down movement.
@@ -377,14 +377,14 @@ Sample questions posted on LEARN soon.
 ## Lecture 5
 Gases
 "You can do things with solids, liquids, and gases."
-Demo: puts a nut in a ballon and swings it around to make a noise
-Demo: puts liquid nitrogen inside a beaker with a ballon attached; ballon
+*Demo:*: puts a nut in a ballon and swings it around to make a noise
+*Demo:*: puts liquid nitrogen inside a beaker with a ballon attached; ballon
        expands
 
 Dipping your hand quickly into liquid nitrogen--a layer of gas from quickly
 boiling nitrogen insulates your hand.
 
-Demo: Steam engine (with a whistle!)
+*Demo:*: Steam engine (with a whistle!)
 
 Pressure: Force applied divided by surface area.
 e.g. Pushing your hand on a wall.
@@ -393,7 +393,7 @@ Temperature: Kinetic energy of gas particles; "thermal motion". Higher kinetic
 energy = faster motion = more force when colliding with things = greater
 pressure
 
-Demo: Pressure meter
+*Demo:*: Pressure meter
 
 "Popcorn explodes like little bombs when heated up."
 "So can potatoes (that's why you prick them), or eggs."
@@ -415,13 +415,13 @@ Chop the air column into m^3 boxes. Ignore the sides, and think of the vertical
 force. On top of one box, we have gravity from all the air above. On the
 bottom, we have pressure from the air below.
 
-Demo: Weights with springs on the bottom stacked up (on a pole). Spring on
+*Demo:*: Weights with springs on the bottom stacked up (on a pole). Spring on
 bottom of stack compresses the most, next one a little less, next one less,
 etc.
 "Pressure increases as you get closer to the earth.
 
 Atmospheric pressure is ~100 000 pascals (Pa) (newtons per square meter).
-Demo: Prof laying on the ground. "There is 10 tonnes on top of me. The wieght
+*Demo:*: Prof laying on the ground. "There is 10 tonnes on top of me. The wieght
 of a bus."
 "When standing, I also have gas on all sides pushing on me equally."
 "I'm an incompressable bag of water in a skin envelope."
@@ -430,20 +430,20 @@ Example: Bed of nails. Nail points are sharp and can pierce skin on their own,
 but when spaced apart the pressure is divided so it's safe."
 "The mistress of pain can handle nails a few inches apart."
 
-Demo: Rod of brass = square inch of atmospheric pressure.
+*Demo:*: Rod of brass = square inch of atmospheric pressure.
 
-Demo: Black rubber square with a handle on top.
+*Demo:*: Black rubber square with a handle on top.
 Lying flat, sealed around the edges, you can't pull it up. You can't pull
 against the atmospheric pressure pushing down on the square. Small amounts push
 on the corners, so I can peel those up easily.
 
-Demo: Gasket halves put together with air pumped out. It's not a "vacuum
+*Demo:*: Gasket halves put together with air pumped out. It's not a "vacuum
 pulling it together", it's the force of atmospheric pressure pushing from the
 outside, with nothing pushing back from the inside. It's an imbalance.
 Like how sucking on a paper bag removes air, and the atmospheric pressure
 crumples it from the outside.
 
-Demo: Model hovercraft.
+*Demo:*: Model hovercraft.
 
 In a drinking straw, pressure is roughly the same on top as it is on the
 bottom. Applying suction at the top removes a bit of air, lowering the
@@ -465,7 +465,7 @@ small-diameter piston, which acts on a larger disk.
 Air on your break lines reduces the movement--you compress air until you reach
 the end of the range of the pedal.
 
-Demo: Stepping on a balloon pops it. But four underneath a board spreads out
+*Demo:*: Stepping on a balloon pops it. But four underneath a board spreads out
 the force, and I can stand on it.
 
 
@@ -475,16 +475,16 @@ Archimedes' principle: An object partially or wholly immersed in a fluid is
 acted upon by an upward bouyant force equal to the weight of the fluid it
 displaces.
 
-Demo: Hollow boat in a bowl. It is low-density and weighs less than the bouyant
+*Demo:*: Hollow boat in a bowl. It is low-density and weighs less than the bouyant
 force of the water acting on it, so it floats (until I put water in it and make
 it denser, and it sinks).
 
-Demo: Fluid thermometer thing that looks like a bong. Heating it up causes some
+*Demo:*: Fluid thermometer thing that looks like a bong. Heating it up causes some
 of the glass bubbles of liquid gathered at the top to sink. Each one is
 calibrated to sink at a certain temperature; they move as the density of the
 water changes.
 
-Demo: Hot air balloon. Heating the air below the balloon lowers the density of
+*Demo:*: Hot air balloon. Heating the air below the balloon lowers the density of
 the air in the balloon, so it rises. As the density of the balloon matched that
 of the air, it hovered in place. After rising away from the torch, it hovers
 again, then sinks.
@@ -497,22 +497,22 @@ of the balloon is also greater.
 Helium Balloon
 Density of balloon+helium is < density of air, so it rises.
 
-Demo: Cartesian diver
+*Demo:*: Cartesian diver
 Squid/Octopus with a bubble inside of a water bottle sinks when the water
 bottle is squeezed.
 The density of the water doesn't change, because it's too hard to compress--but
 the air bubble on the squid gets smaller.
 
 You can pour liquids, solids (like sand), and gases!
-Demo: Pouring dry ice into a cup with a candle into it quenches the candle.
+*Demo:*: Pouring dry ice into a cup with a candle into it quenches the candle.
 
-Demo: Bubbles!
+*Demo:*: Bubbles!
 Air in a bubble is slightly denser than outside because it takes a bit of force
 to expand the envelope. The bubble of soap-water-soap "biolayer" is very light,
 so bubbles tend to float.
 
-Demo: "Chopping" parsley by putting it in liquid nitrogen."
-Demo: "Hammering a nail with a liquid-nitrogen-frozen banana."
+*Demo:*: "Chopping" parsley by putting it in liquid nitrogen."
+*Demo:*: "Hammering a nail with a liquid-nitrogen-frozen banana."
 Note: Liquid nitrogen is boiling because the banana is warmer than the
 nitrogen and makes it evaporate.
 
@@ -527,12 +527,12 @@ Coulomb's Law F=(k*q1*q1)/R^2
 Force is proportional to the product of the charges divided by the distance
 between them squared.
 
-Demo: Rubbing a rod on little octopus things.
+*Demo:*: Rubbing a rod on little octopus things.
 
 Silk tends to attract more electrons than glass does. So electrons jump from
 the rod to the silk, and the rod gets a positive charge.
 
-Demo: Electrometer moves when the positively-charged rod is *near* the device.
+*Demo:*: Electrometer moves when the positively-charged rod is *near* the device.
 When the device is on its own, its charges are spread evenly so that it's net
 neutral. When the rod is near, charges redistribute (electrons move towards the
 positive rod). This creates an induced charge.
@@ -541,18 +541,18 @@ Touching the middle of the Electrometer while the induced charge is active
 neutralizes that part of the device (electrons go towards the positive charge
 near the bottom). A net negative charge remains when the rod is removed.
 
-Demo: Wimshurst Machine (static generator). Wheel spun by hand with two balls
+*Demo:*: Wimshurst Machine (static generator). Wheel spun by hand with two balls
 in the middle that arc. Pulling the charges apart is doing work, which stores
 energy (increased voltage difference). Capacitors store charge, so we get
 rather violent sparks.
 
-Demo: Student "with long hair that doesn't use conditioner" touching
+*Demo:*: Student "with long hair that doesn't use conditioner" touching
 vaandegraaf generator. Conditioner makes your hair conduct slightly, so charge
 distributes and it doesn't stand up.
 
-Demo: Barbie on a Vaan de Graaf generator.
+*Demo:*: Barbie on a Vaan de Graaf generator.
 
-Demo: Metal ball between two parallel plates ticking back and forth when
+*Demo:*: Metal ball between two parallel plates ticking back and forth when
 Wimshurst Machine is charging. 
 
 You can generate voltage in your body by rubbing your feet on the ground,
@@ -573,9 +573,9 @@ the tip. When the charge is big enough, electrons jump off the pin on their
 own. As potential energy is released, light is emitted.
 
 This creates what is called an "electric field".
-Demo: Pin on Vaan de graaf generator reduces the spark discharge. Prof feels
+*Demo:*: Pin on Vaan de graaf generator reduces the spark discharge. Prof feels
 his hair stand up from the electric field.
-Demo: But bent rod on top of pin, and it spins! This is an electrostatic motor.
+*Demo:*: But bent rod on top of pin, and it spins! This is an electrostatic motor.
 Charge flies out either end of the rod.
 
 ## Lecture 8
@@ -598,14 +598,14 @@ Recall: Electrostatic Precipitator
 "It's very hard to clog; all you have to do to clean it is to hit it with a big
 hammer."
 
-Demo: Metal cylinder with an electric charge traps the smoke from incense.
+*Demo:*: Metal cylinder with an electric charge traps the smoke from incense.
 "This is our electronic air cleaners."
 "This can also make industrial smokestacks appear to burn cleanly."
 Aside: Emissions dipped in the states a couple decades ago because a cone was
 invented that deflected smoke from the standardized sensor hung above it, until
 congress amended that law."
 
-Demo: Big phalic vandegraaf generator. "It could kill you if you touch the top."
+*Demo:*: Big phalic vandegraaf generator. "It could kill you if you touch the top."
  - We see corona discharge coming from the three arms at the top.
  - We can also light a nearby fluorescent tube.
 
@@ -669,8 +669,8 @@ Electric circuits
    small current.
  - Summing the voltage changes around the circuit must equal voltage of battery.
 
-Demo: Cooling resistor makes lightbulb brighter.
-Demo: Cooling semiconductor makes lightbulb dimmer.
+*Demo:*: Cooling resistor makes lightbulb brighter.
+*Demo:*: Cooling semiconductor makes lightbulb dimmer.
 
  - Wiring batteries in parallel increases the current (brighter light).
  - Two lightbulbs in circuit draws more current.
@@ -686,7 +686,7 @@ If resistance of wire = 1 Ohm and 10A of current are flowing,
 V = IR = 10*1 = 10A of current available to hair dryer + lightbulb.
 1200W hair dryer could be 120V @ 10A.
 
-Demo: Conducting pickle conducts. "Usually the flower side of the pickle lights
+*Demo:*: Conducting pickle conducts. "Usually the flower side of the pickle lights
 up."
 
 Direct current vs. Alternating current.
@@ -696,7 +696,7 @@ Alternating: Current changes direction, voltage difference varies (sin wave).
 
 Magnets
 
-Demo: Grid of needles rotate and form the shape of the magnetic field.
+*Demo:*: Grid of needles rotate and form the shape of the magnetic field.
 
 COW MAGNETS (small cylindrical magnet with rounded edges, to catch metal cows
 may accidentally graze on.
@@ -713,15 +713,15 @@ demagnetized?)
 A: Strips have lines of magnetic domains, like magnetic barcodes. Putting a
 magnet near it destroys the lines.
 
-Demo: Loose coil of wire connected to current.
+*Demo:*: Loose coil of wire connected to current.
  - Wire clusters together (in two groups).
  - "The volume of the field is larger here."
 
-Demo: Metal wire "trapeze" with current running through it, swings back and
+*Demo:*: Metal wire "trapeze" with current running through it, swings back and
 forth past piece of metal.
 Takeaway: Current moves perpendicular in relation to wire.
 
-Demo: Circle attached to volt-ammeter; magnet moved around in the magnet
+*Demo:*: Circle attached to volt-ammeter; magnet moved around in the magnet
 creates current. Moving back and forth creates an alternating current (needle
 moves back and forth).
 
@@ -730,9 +730,9 @@ Current opposes change in magnetic field.
 Circle turns into a magnet with a north pole pointing up, to resist the north
 end of the magnet coming down.
 
-Demo: Metal ring flies off of electromagnetic coil rod. Ring with a cut in it
+*Demo:*: Metal ring flies off of electromagnetic coil rod. Ring with a cut in it
 doesn't move (no current flows).
-Demo: Chilled ring flies farther.
+*Demo:*: Chilled ring flies farther.
 
 
 ## Lecture 10
@@ -762,7 +762,7 @@ Rocket fundamentals
  - July 20 1969 first men on the moon (twelve of them!)
    - Saturn V rocket
 How do you generate power?
-Demo: Water rocket is launched but quickly runs out of thrust, and drops.
+*Demo:*: Water rocket is launched but quickly runs out of thrust, and drops.
 In order to fire a rocket, we need to have some sort of powerful reaction going
 on.
 Like balancing a broom, rocket nozzles do little twitchy movements making
@@ -843,7 +843,7 @@ Current: P=IV
 Alternating vs Direct Current
 Magnets and Electricity: Electric field can create a magnet, and vice-versa.
 
-Demo: Stationary magnetic field near conductor (ring on table) doesn't do
+*Demo:*: Stationary magnetic field near conductor (ring on table) doesn't do
 anything, but a moving magnetic field creates current. Slow movement generates
 less. Rotating magnet in place generates alternating current.
 
@@ -851,19 +851,19 @@ Lenz's Law "Explains what's going on here."
 The current induced by a changing magnetic field always produces a magnetic
 field that opposes the change.
 
-Demo: Rods of different metal next to each other. Looks like a ladder on its
+*Demo:*: Rods of different metal next to each other. Looks like a ladder on its
 side. Rings on each rod can be dropped down and "raced" and some fall faster
 than others. Copper is best. Aluminum is worse. Brass is even worse. Why?
 Because Copper is the best conductor here.
 
-Demo: "Guillotine" thing, looks like the base of a trebuchet made of metal,
+*Demo:*: "Guillotine" thing, looks like the base of a trebuchet made of metal,
 with a sawblad that swings downthrough a gap in a magnet at the base.
  - Blade with gaps in it (like a fork) passes right through, because the
    magnetic field isn't big enough to bridge it.
  - Blad with small gaps stops eerily fast as soon as it hits the bottom of hte
    arc, where the magnet is.
 
-Demo: Lethal 2000V capacitor discharged crumples a Monster Energy drink can
+*Demo:*: Lethal 2000V capacitor discharged crumples a Monster Energy drink can
 evenly.
 "With enough voltage, you can cut the can, but this one looks strong."
 
@@ -910,7 +910,7 @@ back down. So circuit breakers trip a spring-loaded mechanical switch to keep
 the circuit open once the strip bends once. So if something bad is happening,
 the current stays off until you reset the switch.
 
-Demo: Circuit breaker with exposed innards. *plays with switch*
+*Demo:*: Circuit breaker with exposed innards. *plays with switch*
 
 Q: Why don't you use circuit breakers everywhere?
 A: Circuit breakers are expensive. Fuses cost pennies, circuit breakers cost
@@ -925,7 +925,7 @@ Alternating current flowing through these wires causes two different magnetic
 fields that cancel each other out hwen all is well. If they differ slightly, a
 solenoid inside the coiled wires fires and opens a switch.
 
-Demo: "Household wiring example" (plank of wood with sockets, switch, GFCI
+*Demo:*: "Household wiring example" (plank of wood with sockets, switch, GFCI
 switch, fuse, circuit breaker, power metre, lightbulb)
 Lightbulb is demoed with all three breaking devices. All is well.
 Now let's plug in a radio instead of a lightbulb.
@@ -1042,7 +1042,7 @@ circuit. It only amplifies the same frequency signal coming in.
 
 Note: Optimal length of an antenna is a quarter of the wavelength.
 
-Demo: Radio transmitter and receiver cone things pointed at each other.
+*Demo:*: Radio transmitter and receiver cone things pointed at each other.
  - Strong signal when pointed at each other
  - Weak field when farther away
  - Rotated transmitter drops signal in receiver to zero
@@ -1072,8 +1072,8 @@ Radar jammers send powerfull disrruptive signals like this.
 Halloween! Spooky! The helper dog at the front of the class is wearing a devil
 costume!
 
-Demo: Theramin
-Demo: Drip generator
+*Demo:*: Theramin
+*Demo:*: Drip generator
 
 Past question: Why does one end of a pickle light up?
 A: Don't know. It's biology.
@@ -1092,7 +1092,7 @@ waves don't need any material to propogate.
 Question: Can you generate gravitational waves?
 A: Gravitational waves were just discovered. Talk to me after class!
 
-Demo: Radio waves are polarized. Here's an AM radio station being played on an
+*Demo:*: Radio waves are polarized. Here's an AM radio station being played on an
 old radio. If I rotate the radio 90 degrees, it gets quiet. When it's loud,
 assuming the radio's receiver is lengthwise along th width of the radio, we
 know the radio is perpendicular to the radio wave, and so the transmitter is
@@ -1140,7 +1140,7 @@ Television Tube (Cathode Ray Tube, or CRT)
 Note: The electron beam traveling through the vacuum is a part of the circuit!
 Electrons flow back around once they hit the metal plate at the front.
 
-Demo: Little glass CRT ball thing.
+*Demo:*: Little glass CRT ball thing.
 Coils on either side of the ball make it look like a Droid Rolling Tank.
 Voltage through electron gun paints a little green dot on the phospher.
 Putting voltage through coils aims the dot down or up, depending on direction
@@ -1165,7 +1165,7 @@ Colour Television
    a "degauss" button. It applies a massive electric current for a short time
    to demagnetize the shadow mask.
 
-Demo: Breaking open an old CRT with a hammer
+*Demo:*: Breaking open an old CRT with a hammer
  - Glass is a half centimeter thick
  - Little "getter" inside the tube collects stray gas particles
 
@@ -1282,7 +1282,7 @@ Living organisms spontaneously extract order from (the flow to) disorder.
 Machines exist all around us that spontaneously extract order fom (the flow to)
 disorder.
 
-Demo: Cup of hot water with a spinning wheel on top.
+*Demo:*: Cup of hot water with a spinning wheel on top.
 Like a car's piston, it absorbs only right-moving kinetic energy, from purely
 random kinetic energy.
 Humans are smart. We can build order. We can attach pulleys to wheels like
@@ -1400,24 +1400,24 @@ Sparks
    resistance and will heat up and melt, damaging the plate.
  - If a spark occurs near something combustible, fire results.
 
-Demo: Inside of a microwave.
+*Demo:*: Inside of a microwave.
  - Magnetron
  - Power supply (sometimes varies its output, sometimes magnetron varies pull).
  - Three switches: on/off, timer (?), and killswitch. Killswitch is tripped
    when door is open--short circuits and melts a fuse.
 
-Demo: White light shone through a prism.
+*Demo:*: White light shone through a prism.
 
-Demo: Record printing.
+*Demo:*: Record printing.
 Copper plate is a heavy cast of an original recording. It is used to stamp
 other stampers for mass production.
 Hihg-quality master plates can be cut directly with diamond needles, that are
 of the highest quality but can't be used in mass produciton due to degradation.
 
 Refraction
-Demo: Laser light bending through a block of plastic (?).
+*Demo:*: Laser light bending through a block of plastic (?).
 Concave vs. Convex mirrors / lenses.
-Demo: Magnifying glass focusing image of classroom lights onto a sheet of paper.
+*Demo:*: Magnifying glass focusing image of classroom lights onto a sheet of paper.
 Note: diagram describes a projector, not a magnifying glass, which is a
 "virtual image". Take another physics class to learn about that.
 Lenses have a single focal length, and two (?) focal points, one on either side
@@ -1464,12 +1464,12 @@ Plasma: Little flourescent tubes.
 
 Interference
 Constructive vs. Destructive
-Demo: "Zeussophone"--square piping structure with a loudspeaker on one side and
+*Demo:*: "Zeussophone"--square piping structure with a loudspeaker on one side and
 a cone on the opposite side. Structure is slid upwards like a trombone, and the
 sound coming out gets louder, quiter, louder,... as waves stack or interfere on
 the cone side.
 
-Demo: Laser pointer thing that projects a grid-like set of dots on the wall.
+*Demo:*: Laser pointer thing that projects a grid-like set of dots on the wall.
 This is constructive interference of unfoused beams of light.
 
 Digital Representation of Sound
@@ -1511,18 +1511,18 @@ Generator
   - Coil
   - Load, e.g. lightbulb (attached to each coil).
 
-Demo: Fan being blown by a turbine.
+*Demo:*: Fan being blown by a turbine.
  - Makes light blink while it turns (generates electricity)
  - Can attach power to a smaller fan to make it spin.
  "You can use wind to make wind!"
-Demo: Beach crawler spider thing that crawls when blown on.
+*Demo:*: Beach crawler spider thing that crawls when blown on.
 [https://www.youtube.com/watch?v=HSKyHmjyrkA]
 
-Demo: Put an alternating current across the coil instead of a load. It becomes
+*Demo:*: Put an alternating current across the coil instead of a load. It becomes
 an engine!
  - Magnet will spin at the same frequency as the AC.
 
-Demo: Spinning electromagnet engine.
+*Demo:*: Spinning electromagnet engine.
  - Instead of changing the field of the outer magnets, we are changing the
    field of the internal magnets. The split-ring commutator conducts direct
    current in different directions as it spins.
@@ -1535,7 +1535,7 @@ Demo: Spinning electromagnet engine.
  - Torque varies depending on angle of magnets.
  - More magnets make for smoother motion.
 
-Demo: 4-stroke gasoline combustion engine.
+*Demo:*: 4-stroke gasoline combustion engine.
  - Cylinder
  - Piston
  - Crankshaft
@@ -1613,7 +1613,7 @@ Hydrogen fuel cell
  - Instead of recharging a battery chemically, we continually replace both
    sides.
  - Polymer electrolyte membrane in the middle, with catalysts on either side.
-Demo: small hydrogen fuel cell
+*Demo:*: small hydrogen fuel cell
  - Two bubbles in the charger's tanks: one is twice as large (the hydrogen, as
    there are twice as many gas molecules).
  - Hydrogen fuel cells are rare in practice, because they are "finicky". Water
@@ -1626,7 +1626,7 @@ Solar Energy
  e.g. Parabolic mirror array directs light onto tower (with water inside).
   - Downside: birds
   - Downside: no storage of energy
-Demo: Lamp shining on little solar panel conncected to a fan; spins faster as
+*Demo:*: Lamp shining on little solar panel conncected to a fan; spins faster as
 lamp is closer to panel; needs a slight push because motor is stuck veritically
 between magnets.
 
@@ -1634,7 +1634,7 @@ between magnets.
 ## Lecture 18
 Project deadline is now 11am on Saturday.
 
-Demo: Oscilloscope
+*Demo:*: Oscilloscope
 Yellow flatline at the bottom at first indicates 0V.
 Blowing on a connected fan steadilly raises the yellow line.
 Stopping at a certain point, the line isn't flat, but bumpy. That's a "frozen
@@ -1713,7 +1713,7 @@ LEDs
    - Old cameras lack infrared filters. Newer cameras (i.e. our phones) don't
      pick up on infrared.
  - Infrared < Red < Green < Blue (power levels)
-Demo: 4 of these LEDs attached to a variable power supply. IR comes on first,
+*Demo:*: 4 of these LEDs attached to a variable power supply. IR comes on first,
 then red, etc.
 
 Solar Cell
@@ -1730,7 +1730,7 @@ Why is the sky blue (and sunset red)?
  - When looking directly at the sun, during sunset, blue light gets scattered
    away, and red light makes it to us.
 
-Demo: "A sunset"
+*Demo:*: "A sunset"
  - Water and pinesol in a thin fish tank thing.
  - Laser pointer bounces. "Different mediums can act like prisms, or mirrors,
    depending on the angle."
@@ -1754,7 +1754,7 @@ Rainbows?
 
 
 ## Lecture 19
-Demo: Foot-pump "rocket" thing.
+*Demo:*: Foot-pump "rocket" thing.
 Q: Is this a rocket?
 A: No. Air propels it form the ground, but no mass continues to exit it, so
    it's more akin to a projectile.
@@ -1811,7 +1811,7 @@ Nuclear Fission
 - Unstable atoms decay naturally--half life is how long it takes for unstable
   mass to decrease by 50% 
 
-Demo: Old, tube-powered geiger counter + Cesium.
+*Demo:*: Old, tube-powered geiger counter + Cesium.
 - Single stray particles flying through two plates causes a cascade of charges
   between the plates, causing current to flow through a connected speaker cone.
 
@@ -1874,10 +1874,14 @@ Fission Bomb
 
 ## Lecture 20
 Guest lecturer: Mike Fich
+
 Distant Planets and the Search for Life Beyond our Solar System
+
 A Canadian unofficially discovered the first extrasolar planet outside our solar
 system, but could not verify it.
+
 We are biased to look for planets like our own.
+
 Why is it hard to find planets like ours?
 - It's 109x times smaller than the sun
 - It's 300000x smaller in mass
@@ -1892,6 +1896,7 @@ Comet cloud / Oort cloud
 
 [Animation: Relative speed of planets' orbits]
 Planets that are closer to the sun move much much faster.
+
 Outermost planets are huge, move slowly.
 
 Other Planetary Systems
@@ -1902,13 +1907,18 @@ Other Planetary Systems
 
 [Animation: Pink planet orbiting a yellow star]
 Both the sun and the planet orbit around the centre of mass of the system.
+
 When the planet's coming towards us, the star is going away.
+
 Radial velocity can be measured by speed of body moving towards observer (EM
 shift).
+
 Black lines are when planet blocks sun (?)
+
 Shifts in lines lets us see the radial velocity.
 
 [Animation: Solar System Barycenter / SSB]
+
 Our sun's (complex) motion around a red diamond (centre of mass), dominated by
 Jupiter's orbit.
 
@@ -1944,8 +1954,11 @@ far"]
 3541 confirmed extrasolar planets (exoplanets)
 
 Is there life on any of these planets?
+
 Where should we look for life?
+
 What does life look like (from here)?
+
 What is life?
 
 Science fiction predicitons of alien organisms
@@ -1954,7 +1967,9 @@ Science fiction predicitons of alien organisms
 - Giant insects
 All of these lifeforms have something in common: they are based on water.
 Liquid water.
+
 "I think we will discover microscopic life first--algae!"
+
 Animal life requires oxygen and produces carbon dioxide; algae grows easily and
 produces oxygen.
 
