@@ -2053,3 +2053,251 @@ lightning--watch it and see if life evolves.
 
 Earth started out very barron. Lots of lightning and stuff, rain
 puddles--exactly that experiment repeated millions of times.
+
+
+## Lecture 21
+
+**Demo:** Attempt 2 at mousetrap experiement, with more sensitive mousetraps.
+
+Note: We didn't quite have critical mass, because some mousetraps jumped out.
+In a critical mass chain reaction, particles stay inside the mass and continue
+triggering the explosion.
+
+Recall: Plutonium, fission bomb (Uranium)
+
+Fission bomb - Plutonium
+- Subcritical mass of plutonium imploded with a high explosive.
+- Encapsulated with Uranium-238, which bounces back neutrons while also getting
+  converted into Plutonium when hit, adding to the explosion.
+
+Hydrogen / Thermonuclear / Fusion Bombs
+- deuterium + tritium => helium + neutron + energy
+- Proton needs a lot of energy to get close to another proton. Do this by
+  increasing energy of gaseus deuterium and tritium. When they collide and
+  fuse, they release energy.
+- Helium nucleus and neutron fly apart at incredible speed because so much
+  energy is released.
+- Very clean compared to fission bombs that emit various radioactive substances
+- Easiest way to make hot enough temperatures is to put a conventional
+  Plutonium fission bomb inside of a big U238 container, next to Deutrerium and
+  Tritium "salt" (solid). Plutonium can't be too big (subcritical mass) or it
+  will explode on its own. Deuterium and Tritium can be in any quantity.
+- Plutonium explosion is clean, creates a shockwave, but massive amount of U238
+  contaminates all of the surrounding area.
+
+Neutron Bomb
+- Like a Hydrogen bomb, but without the U238 casing.
+- Considered efficient, because it kills many without contaminating the
+  surrounding countryside for 1000s of years.
+- Currently outlawed.
+
+Thermal Fission Reactor
+- Needs slow assembly of critical mass.
+- This is done with a moderator--heavy water (H2O with Deuterium instead of
+  Hydrogen). Neutrons lose energy when travelling through this (down to
+  "thermal speed").
+- We want a *controlled* chain reaction. If it gets out of hand, we insert
+  control rods to absorb neutrons and slow/stop the reaction.
+
+Electricity Generation
+- Boiling water reactor: reactor core in vat of water, boils, steam runs a
+  turbine, exhaust runs through colling tower, pumped back to vat. If the pump
+  fails, the vat will over-pressurize and explode! Also, anything in contact
+  with the cooling water will be contaminated--radioactive waste.
+- Pressurized water reactor: Heat exchanger, reactor side is a full loop of
+  water, other side is hooked up to a turbine (not radioactive).
+
+Q: How do we get rid of radioactive waste?
+A: Dig a hole, try to encapsulate it so water doesn't run through, and bury it.
+
+Fast Fission Reactor / Breeder Reactor
+- No moderator anymore
+- Problem: Relative paucity of U235
+- Uses highly enriched uranium (25-50%) to maintain chain reaction
+- Side effect: fast neutrons are captured by U238 which is then transformed
+  into P239.
+- Typically cooled with salt.
+
+**Excercise:** 50+ people stand at the front of the room with handfuls of
+pingpong balls. Prof throws one ball into the crowd. Each person "reacts" and
+throws the pingpong balls in the air when they are hit by a pingpong ball. This
+simulates a critical mass/density. To slow down the reaction, we spread out and
+do it again. To simulate control rods, we open umbrellas and do it again. To
+simulate less control rods, half of us put down the umbrellas.
+
+Walls
+
+Fusion reactions cool rapidly if they are touching the walls of a container, so
+we suspend the reactants inside a tokomak donut-shaped thing.
+
+Accidents
+
+Fun fact: Jimmy Carter helped clean up the first nuclear reactor accident in
+Canada, Shock River (?).
+
+The first *major* accident was Windscale Pile 1 in Britain (1957). They were
+using an air-cooled graphite-moderator reactor. Radiation-heated graphite
+formed a crystalline structure, which can strain and store potential energy. So
+we must anneal it. But here, a "hot spot" of burning graphite exploded.
+
+Boron tends to absorb neutrons more effectively; can be used for faster plant
+shutdowns.
+
+3-Mile Island, Pennsylvania: Pressurized water thermal reactor; water pump
+failed in generating loop; reactor shut down with, but fissionable byproducts
+continued to generate heat without cooling, and radioactive steam was released.
+
+Chernobyl Reactor Number 4, Ukraine (1986): Water cooled, graphite moderator;
+control rods inserted too much during emergency cooling system test slowed the
+reactor way down; in manual mode, they withdrew lots of rods to get it going
+again; became too hot (partially due to over-moderation with graphite that also
+burned), and manually-disabled emergency cooling didn't properly stop the
+reaction.
+
+Fukushima Daiichi (2011): Earthquake properly caused shutdown of reactor;
+cooling water still being pumped to keep reactor cool while products continued
+to decay; on-site generators flooded, stopping pumps, stopping cooling of
+reactor core (note that the reactor can't generate electricity when off).
+Reactor core then overheated and melted; explosions; spew of radioactive
+material into environment.
+
+Next week preview: Making X-rays
+
+When a charged particle accelerates, it emits radiation.
+
+Shooting electrons at a material causes it to bend around the nuclei,
+generating an electric field in the form of a photon (particle of light)
+depending on speed of electron. Copper and tungsten are good targets for this.
+
+Fluorescence: Electron comes into atom and ejects another, creating an open
+spot where another electron can fall in, which emits light.
+
+Interactions of photons
+
+Elastic scattering: Atom absorbs and re-emits an xray (as waves). No energy
+lost; waves come in and out elastically.
+
+Photoelectric effect: Incoming xray causes atom to eject an electron.
+
+Compton scattering: Photon comes in and doesn't ocmpletely eject an electron;
+electron is ejected, and atom emits another electromagnetic wave. Looks like a
+2D momentum diagram! This proves that electromagnetic waves could be particles,
+and that these particles with no mass still had momentum.
+
+Electron-Positron Pair Produciton: Put photon near a strong magnetic field
+(like near an atom), and the photon can spontaneously split into matter and
+antimatter (electron-positron pair). When those two come together they are
+annihilated and release energy.
+
+
+## Lecture 22
+
+X-Rays
+- High-energy photons
+- Roentgen 1895
+- "X" because their nature was unknown
+- First clinical use was in 1896 "two month turnaround from discovery to
+  practical use"
+- Problem: overexposure caused burns (more powerful than UV-ray sunburns)
+
+**Demo:** Thorium piece inside a glass case above an ethanol vapour. Inside the
+cloud chamber, you can see trails following each radioactive decayed alpha
+particle.
+
+Making X-Rays
+- Bremsstrahlung accelerating charge creates photon
+  "don't worry about the names"
+- Fluorescence / characteristic radiation: high-energy particle ejects a core
+  electron; higher-up electron
+
+"anode is piece of metal that you're hitting"
+"whir before a click for xrays is a rotating anode spinning up before a shutter
+ lets some fly"
+
+- More absorbtion in heavier elements, heavier elements in your bones => bones
+  are dark on the xray image
+- If a photon has > 1 022 000 eV, it splits into electron-positron pair
+- photoelectric effect is dominant--large atoms absorb photons, small atoms let
+  them oass through
+- elastic scattering contributes to picture fuzziness
+
+Observe: This dental xray.
+- Film place in your mouth
+- Nowadays, a "storage phospher" is used in place of film
+
+We can't typically see fluid with an xray (not solid enough, like bone, yo
+contrast). So we inject patients with iodine dye that shows up.
+
+Computed Tomography (CT) Scan
+- Xrays
+- Creates 3D image
+- looks at slices through the body
+
+Excercise: Have your partner give you the peace sign (two fingers). Close one
+eye, have them displace their fingers away/towards you, and your depth
+perception doesn't work!
+
+But if you move your head in a circle, you can paint a picture in your mind of
+the position of the fingers. That's what a CT scan does.
+
+Video: Visible human cross-sections. "We used to have to cut up dead bodies in
+order to get these cross-sections."
+
+Video: bottom-to-top cross sections of a head CT scan. Notice the muscles next
+to your eyes at one point, the optic nerve behind your eys at another, etc.
+
+Can be reconstructed to be front-to-back.
+
+Radiation Therapy
+- Compton scattering is important
+- Need to deposit energy into a tumor (and minimize it everywhere else). To do
+  this, we rotate the source around the tumor to minimize damage occuring into
+  other parts of your body.
+- Energy >1MeV
+- Electron-positron annihilation is also important
+
+We want a high-energy photon to hit the body
+- We can generate it ourselves, or have natural decay
+- Cobalt60 undergoes beta decay, becomes Nickel60 + electron + photon
+- Gamma ray (higher power than xray)
+
+Particle Accelerator
+- Linear accelerator: series of alternatingly-charged plates with holes in the
+  middle; particle flies down the middle, flung through increasingly powerful
+  plates
+- Large xray generator (synchotron): positron (charged particles) flung around
+  a vacuum tube in a ring
+  - Alternately, the particles go through "wigglers" (bends in the tube); 
+
+Magnetic Resonance Imaging (MRI)
+- Actually nuclear magnetic resonance, but that acronym scared people
+- Radio waves hit you, as well as a strong static magnetic field
+- Looking at proton (i.e. in Hydrogen around your body)
+- Protons are the nucleus inside of a H atom
+- Protons have "spin", either spin up or spin down; this is responsible for the
+  magnetism of magnetic fields; spin-down points against the magnetic field; in
+  a magnetic field, there is an energy difference between spin=up and
+  spin-downs, the difference's magnitude changes with the magnitude of the
+  magnetic field. Flipping the spin of a proton causes it to lose energy, emit
+  a radio wave; measuring the radio wave tells us the strength of the magnetic
+  field of where the proton is.
+- In an MRI, a big solenoid spins around you, creating a magnetic field
+  pointing through the hole. We then slightly alter the field strength
+  throughout the chamber, a "magnetic field gradient", changing where we
+  recieve radio wave signals from protons. So we can deduce location. Magnetic
+  pulses are used to flip protons (low energy, safe for you unless you have
+  metal in your pocket).
+- Loud banging in machine is mechanical response to large spinning
+  magnets--hard to remove.
+- Burst flips protons, as they calm down they flip back and emit radio waves.
+  Intensity tells us how many there are; frequency tells us where the protons
+  are. (?)
+- Time to cool down tells us about chemical environment near the protons.
+- Great for soft tissue wiht lots of hydrogen in it.
+- Gives very detailed images of flesh, with no dye needed!
+- Typically doesn't hurt you like xrays, as it's just magnetic field
+  interactions (assuming your body is free of magnetic flakes).
+
+Functional MRI (fMRI)
+- Give stimulus to brain, look for chemical responses
+
